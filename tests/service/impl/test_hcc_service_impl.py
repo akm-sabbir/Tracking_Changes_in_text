@@ -50,27 +50,3 @@ class TestHCCServiceImpl(TestCase):
         assert response.demographics_score == {"INS_F75_79": 1.013}
         assert response.disease_interactions_score == {"INS_DIABETES_CHF": 0.17}
 
-    def test_map_to_hcc_response_dto_should_map_properly(self):
-        hccpy_response = {"risk_score": 2.195,
-                          "details": {
-                              "INS_F75_79": 1.013,
-                              "INS_HCC18": 0.442,
-                              "INS_HCC85": 0.204,
-                              "INS_DIABETES_CHF": 0.17},
-                          "hcc_map": {
-                              "I5030": "HCC85",
-                              "I509": "HCC85",
-                              "E1169": "HCC18"
-                          },
-                          "parameters": {
-                              "age": 70,
-                              "elig": "CNA"
-                          }}
-        mapped_dto = self.service.map_to_hcc_response_dto(hccpy_response, elig="INS")
-        assert type(mapped_dto) is HCCResponseDto
-        assert mapped_dto.aggregated_risk_score == 2.195
-        assert mapped_dto.hcc_maps == {"I5030": "HCC85", "I509": "HCC85", "E1169": "HCC18"}
-        assert mapped_dto.hcc_scores == {"INS_HCC18": 0.442, "INS_HCC85": 0.204}
-        assert mapped_dto.demographics_score == {"INS_F75_79": 1.013}
-        assert mapped_dto.disease_interactions_score == {"INS_DIABETES_CHF": 0.17}
-        assert mapped_dto.demographics_details == {"age": 70, "elig": "CNA"}
