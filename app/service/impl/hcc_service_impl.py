@@ -1,23 +1,15 @@
 import logging
 from injector import singleton
 from hccpy.hcc import HCCEngine
-import re
+from app.util.hcc.hcc_regex_pattern_util import HCCRegexPatternUtil
 
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
 
 
-def get_age_sex_score_key_pattern(hcc_eligibility: str):
-    return re.compile("^" + hcc_eligibility + r"[_]?[MF][0-9]?[0-9][_].*")
-
-
-def get_orec_score_key_pattern(hcc_eligibility: str):
-    return re.compile("^" + hcc_eligibility + r"[_]OriginallyDisabled[_].*")
-
-
 @singleton
-class HCCCServiceImpl(HCCService):
+class HCCServiceImpl(HCCService):
     __logger = logging.getLogger(__name__)
     __hcc = HCCEngine(version="23")
 
@@ -29,9 +21,9 @@ class HCCCServiceImpl(HCCService):
                                       medicaid=hcc_request_dto.medicaid,
                                       elig=hcc_request_dto.eligibility)
 
-        return self.__map_to_hcc_response_dto(response, hcc_request_dto.eligibility)
+        return self.__map_to_hcc_response_dto(response)
 
-    def __map_to_hcc_response_dto(self, hccpy_response: dict, elig: str) -> HCCResponseDto:
+    def __map_to_hcc_response_dto(self, hccpy_response: dict) -> HCCResponseDto:
         hcc_lst = [str(value) for value in hccpy_response["hcc_map"].values()]
         hcc_scores = self.__get_hcc_scores_from_hccpy_response(hcc_lst, hccpy_response)
         demographics_score = dict()
@@ -64,7 +56,7 @@ class HCCCServiceImpl(HCCService):
                                                                           disease_interactions_score: dict):
         elig = hccpy_response["parameters"]["elig"]
         for key in hccpy_response["details"].keys():
-            if get_age_sex_score_key_pattern(elig).match(key) or get_orec_score_key_pattern(elig).match(
+            if HCCRegexPatternUtil.get_age_sex_score_key_pattern(elig).match(key) or HCCRegexPatternUtil.get_orec_score_key_pattern(elig).match(
                     key):
                 demographics_score[key] = hccpy_response["details"][key]
             else:

@@ -1,13 +1,13 @@
 from fastapi import APIRouter
 from app.service.hcc_service import HCCService
-from app.service.impl.hcc_service_impl import HCCCServiceImpl
+from app.service.impl.hcc_service_impl import HCCServiceImpl
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.util.dependency_injector import DependencyInjector
 from app.dto.response.hcc_response_dto import HCCResponseDto
 
 router = APIRouter()
 prefix = "/hcc"
-__hcc_service: HCCService = DependencyInjector.get_instance(HCCCServiceImpl)
+__hcc_service: HCCService = DependencyInjector.get_instance(HCCServiceImpl)
 
 
 @router.get("/")

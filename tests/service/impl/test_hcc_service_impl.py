@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from app.dto.request.hcc_request_dto import HCCRequestDto
-from app.service.impl.hcc_service_impl import HCCCServiceImpl
+from app.service.impl.hcc_service_impl import HCCServiceImpl
 from app.dto.response.hcc_response_dto import HCCResponseDto
 
 
@@ -37,9 +37,9 @@ class MockedHCCEngine():
 
 
 class TestHCCServiceImpl(TestCase):
-    service: HCCCServiceImpl = HCCCServiceImpl()
+    service: HCCServiceImpl = HCCServiceImpl()
 
-    @patch.object(HCCCServiceImpl, "_HCCCServiceImpl__hcc", MockedHCCEngine(version="23"))
+    @patch.object(HCCServiceImpl, "_HCCCServiceImpl__hcc", MockedHCCEngine(version="23"))
     def test_hcc_service_get_hcc_risk_scores_should_return_correct_response(self):
         request_dto = HCCRequestDto(icd_codes_list=["code1", "code2"], age=70, sex="F",
                                     original_reason_for_entitlement="1", medicaid=True, eligibility="INS")
