@@ -39,7 +39,7 @@ class MockedHCCEngine():
 class TestHCCServiceImpl(TestCase):
     service: HCCServiceImpl = HCCServiceImpl()
 
-    @patch.object(HCCServiceImpl, "_HCCCServiceImpl__hcc", MockedHCCEngine(version="23"))
+    @patch.object(HCCServiceImpl, "_HCCServiceImpl__hcc", MockedHCCEngine(version="23"))
     def test_hcc_service_get_hcc_risk_scores_should_return_correct_response(self):
         request_dto = HCCRequestDto(icd_codes_list=["code1", "code2"], age=70, sex="F",
                                     original_reason_for_entitlement="1", medicaid=True, eligibility="INS")

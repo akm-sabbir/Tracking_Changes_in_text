@@ -9,5 +9,5 @@ class HCCRequestDto(BaseDto):
     age: Optional[float] = 70
     eligibility: Optional[str] = Field("CNA", regex="^(CPA|CPD|CNA|CND|INS|CFA|CFD|NE|SNPNE)$")
     medicaid: Optional[bool] = False
-    original_reason_for_entitlement: Optional[str] = Field("0", regex="(0|1|2|3)")
+    original_reason_for_entitlement: Optional[str] = Field("0", regex="^(0|1|2|3)$")
     sex: Optional[str] = Field("M", regex="^(M|F)$")
