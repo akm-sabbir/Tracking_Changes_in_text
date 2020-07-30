@@ -3,7 +3,6 @@ from unittest.mock import patch
 
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.service.impl.hcc_service_impl import HCCServiceImpl
-from app.dto.response.hcc_response_dto import HCCResponseDto
 
 
 class MockedHCCEngine():
