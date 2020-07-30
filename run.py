@@ -31,6 +31,14 @@ if __name__ == "__main__":
     if script_type == 'setup':
         __setup__()
 
+    elif script_type == 'server':
+        from app.main import app
+        import uvicorn
+        from app.util.config_manager import ConfigManager
+
+        server_config = ConfigManager.get_config_section(section="server")
+        uvicorn.run(app, host=server_config["host"], port=int(server_config["port"]))
+
     elif script_type == 'coverage' or script_type == 'coverage/html':
         _run_coverage_("html")
 
