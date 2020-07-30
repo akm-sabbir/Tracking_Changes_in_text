@@ -23,7 +23,7 @@ def __setup__():
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('script_type', help="test | coverage | coverage/xml")
+    parser.add_argument('script_type', help="server | test | coverage | coverage/xml")
     args = parser.parse_args()
 
     script_type = args.script_type
@@ -48,4 +48,4 @@ if __name__ == "__main__":
     elif script_type == 'test':
         os.system('python -m unittest discover -s tests')
     else:
-        print("invalid script name - test | coverage/html | coverage/xml")
+        print("invalid script name - server | test | coverage/html | coverage/xml")
