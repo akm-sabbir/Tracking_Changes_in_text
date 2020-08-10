@@ -4,6 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app import app_base_path
 from app.exception.exception_handler import ExceptionHandler
@@ -12,6 +13,14 @@ from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
 
 app = FastAPI()
+#allow cors
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 ConfigManager.initiate_config()
 ExceptionHandler.initiate_exception_handlers(app)
 
