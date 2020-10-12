@@ -1,4 +1,4 @@
-FROM python:buster
+FROM python:3.8-buster
 EXPOSE 8080
 RUN mkdir -p /hcc_backend
 COPY . /hcc_backend/
