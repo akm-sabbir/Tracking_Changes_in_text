@@ -11,7 +11,7 @@ class TestBasePipelineComponent(TestCase):
     def test__init__should_raise_error__if_dependencies_not_defined(self):
         with self.assertRaises(ServiceException) as error:
             MockComponent()
-        assert str(error.exception) == "Please define DEPENDS_ON for annotator " + MockComponent.__name__
+        assert str(error.exception) == "Please define DEPENDS_ON (it can be []) for annotator " + MockComponent.__name__
 
 
 class MockComponent(BasePipelineComponent):
