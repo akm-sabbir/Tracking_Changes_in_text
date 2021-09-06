@@ -6,13 +6,12 @@ from app.exception.service_exception import ServiceException
 
 
 class BasePipelineComponent(ABC):
-    ANNOTATION_LABEL_NAME: str = ""
     DEPENDS_ON: List = None
 
     def __init__(self):
-        if self.ANNOTATION_LABEL_NAME == "" or self.DEPENDS_ON is None:
+        if self.DEPENDS_ON is None:
             raise ServiceException(
-                "Please define ANNOTATION_LABEL_NAME and DEPENDS_ON for annotator " + self.__class__.__name__)
+                "Please define DEPENDS_ON for annotator " + self.__class__.__name__)
 
     @abstractmethod
     def run(self, annotation_results: dict) -> List[BasePipelineComponentResult]:

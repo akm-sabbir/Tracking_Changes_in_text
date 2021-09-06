@@ -6,7 +6,6 @@ from app.service.pipeline.components.dummy_component_one import DummyComponentOn
 
 
 class DummyComponentTwo(BasePipelineComponent):
-    ANNOTATION_LABEL_NAME: str = "dummy_one"
     DEPENDS_ON: List = [DummyComponentOne]
 
     def run(self, annotation_results: dict) -> List[DummyComponentTwoResult]:
