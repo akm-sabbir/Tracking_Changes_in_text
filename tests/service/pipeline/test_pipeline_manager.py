@@ -10,11 +10,11 @@ from app.service.pipeline.pipeline_manager import PipelineManager
 class TestPipelineManager(TestCase):
 
     def test__run_pipeline__should_return_correct_response__given_correct_components(self):
-        pipeline_components = [DummyComponentTwo(), DummyComponentThree(), DummyComponentOne()]
+        pipeline_components = [DummyComponentOne(), DummyComponentTwo(), DummyComponentThree()]
         pipeline_result = PipelineManager(pipeline_components).run_pipeline()
-        assert pipeline_result[DummyComponentOne.ANNOTATION_LABEL_NAME][0].message == "dummy"
-        assert pipeline_result[DummyComponentThree.ANNOTATION_LABEL_NAME][0].message == "dummy"
-        assert pipeline_result[DummyComponentThree.ANNOTATION_LABEL_NAME][0].message == "dummy"
+        assert pipeline_result[DummyComponentOne.RESULT_KEY][0].message == "dummy"
+        assert pipeline_result[DummyComponentTwo.RESULT_KEY][0].message == "dummy two"
+        assert pipeline_result[DummyComponentThree.RESULT_KEY][0].message == "dummy three"
 
     def test__run_pipeline__should_raise_exception__given_dependencies_not_added(self):
         with self.assertRaises(ServiceException) as error:
