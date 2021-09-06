@@ -9,8 +9,8 @@ class PipelineManager:
         self.__pipeline_components = pipeline_components
         self.__check_dependencies()
 
-    def run_pipeline(self):
-        annotation_results = {}
+    def run_pipeline(self, initial_input: dict):
+        annotation_results = initial_input
         for component in self.__pipeline_components:
             annotation_results[component.__class__] = component.run(annotation_results)
         return annotation_results
