@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from app.dto.pipeline.base_annotation import BaseAnnotation
+from app.dto.pipeline.base_pipeline_component_result import BasePipelineComponentResult
 from app.exception.service_exception import ServiceException
 
 
@@ -15,5 +15,5 @@ class BasePipelineComponent(ABC):
                 "Please define ANNOTATION_LABEL_NAME and DEPENDS_ON for annotator " + self.__class__.__name__)
 
     @abstractmethod
-    def run(self, annotation_results: dict) -> List[BaseAnnotation]:
+    def run(self, annotation_results: dict) -> List[BasePipelineComponentResult]:
         pass
