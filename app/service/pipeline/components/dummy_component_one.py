@@ -8,4 +8,4 @@ class DummyComponentOne(BasePipelineComponent):
     DEPENDS_ON: List = []
 
     def run(self, annotation_results: dict) -> List[DummyComponentOneResult]:
-        return [DummyComponentOneResult("dummy")]
+        return [DummyComponentOneResult(annotation_results['text'])]
