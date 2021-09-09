@@ -12,7 +12,7 @@ class TestPipelineManager(TestCase):
     def test__run_pipeline__should_return_correct_response__given_correct_components(self):
         pipeline_components = [DummyComponentOne(), DummyComponentTwo(), DummyComponentThree()]
         pipeline_result = PipelineManager(pipeline_components).run_pipeline(text='text')
-        assert pipeline_result[DummyComponentOne][0].message == "dummy"
+        assert pipeline_result[DummyComponentOne][0].message == "text"
         assert pipeline_result[DummyComponentTwo][0].message == "dummy two"
         assert pipeline_result[DummyComponentThree][0].message == "dummy three"
 
