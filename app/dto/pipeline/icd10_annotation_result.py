@@ -8,4 +8,5 @@ class ICD10AnnotationResult(BaseDto):
     medical_condition: str
     begin_offset: int
     end_offset: int
+    is_negated: bool
     suggested_codes: List[ICD10Annotation]
