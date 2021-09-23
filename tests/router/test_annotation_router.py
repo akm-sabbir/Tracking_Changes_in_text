@@ -5,6 +5,8 @@ from unittest.mock import Mock, patch
 
 from pydantic import ValidationError
 
+from app.dto.pipeline.icd10_annotation import ICD10Annotation
+from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.request.icd10_annotation_request import ICD10AnnotationRequest
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.router import annotation_router
@@ -23,12 +25,30 @@ class Test(TestCase):
 
     @patch.object(annotation_router, "__icd10_service")
     def test__annotation_router__given_correct_input__should_return_correct_response(self, mock_icd10_service: Mock):
-        mock_icd10_service.annotate_icd_10 = Mock()
-        mock_icd10_service.annotate_icd_10.return_value = ICD10AnnotationResponse(icd10_annotations=["a", "b", "c"])
+        icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
+        icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
+                                             score=0.54)
+        icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
+                                                          end_offset=24, is_negated=False,
+                                                          suggested_codes=[icd10_annotation_1, icd10_annotation_2])
+
+        icd10_annotation_3 = ICD10Annotation(code="J12.0", description="Adenoviral pneumonia", score=0.89)
+        icd10_annotation_4 = ICD10Annotation(code="J12.89", description="Other viral pneumonia",
+                                             score=0.45)
+
+        icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=45, end_offset=54,
+                                                          is_negated=True,
+                                                          suggested_codes=[icd10_annotation_3, icd10_annotation_4])
+
+        mock_icd10_results = [icd10_annotation_result_1, icd10_annotation_result_2]
+
+        mock_icd10_service.run_icd10_pipeline = Mock()
+        mock_icd10_service.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
+            icd10_annotations=mock_icd10_results)
         response = self.__loop.run_until_complete(
             annotation_router.annotate_icd_10(ICD10AnnotationRequest(text="text")))
-        assert response.icd10_annotations == ["a", "b", "c"]
-        mock_icd10_service.annotate_icd_10.assert_called_once_with("text")
+        assert response.icd10_annotations == mock_icd10_results
+        mock_icd10_service.run_icd10_pipeline.assert_called_once_with("text")
 
     def test_annotation_router__given_boolean_input__should_raise_validation_error(self):
         with self.assertRaises(ValidationError) as error:
@@ -59,5 +79,3 @@ class Test(TestCase):
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
         assert error_message == 'must be string and cannot be empty'
-
-
