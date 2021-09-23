@@ -20,6 +20,7 @@ class TestPipelineManager(TestCase):
         assert dummy_icd10_results[0].begin_offset == 12
         assert dummy_icd10_results[0].end_offset == 24
         assert dummy_icd10_results[0].medical_condition == "Tuberculosis"
+        assert not dummy_icd10_results[0].is_negated
 
         assert dummy_icd10_results[0].suggested_codes[0].code == "A15.0"
         assert dummy_icd10_results[0].suggested_codes[0].description == "Tuberculosis of lung"
@@ -32,6 +33,7 @@ class TestPipelineManager(TestCase):
         assert dummy_icd10_results[1].begin_offset == 45
         assert dummy_icd10_results[1].end_offset == 54
         assert dummy_icd10_results[1].medical_condition == "pneumonia"
+        assert dummy_icd10_results[1].is_negated
 
         assert dummy_icd10_results[1].suggested_codes[0].code == "J12.0"
         assert dummy_icd10_results[1].suggested_codes[0].description == "Adenoviral pneumonia"
