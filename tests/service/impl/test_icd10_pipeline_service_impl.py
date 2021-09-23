@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from app.dto.pipeline.dummy_component_one_result import DummyComponentOneResult
 from app.dto.pipeline.dummy_component_two_result import DummyComponentTwoResult
@@ -14,7 +14,8 @@ from service.pipeline.components.dummy_component_two import DummyComponentTwo
 
 class TestICD10PipelineServiceImpl(TestCase):
 
-    def test__annotate_icd_10__should_return_correct_response__given_correct_input(self):
+    @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
+    def test__annotate_icd_10__should_return_correct_response__given_correct_input(self, mock_boto3):
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
         icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
                                              score=0.54)

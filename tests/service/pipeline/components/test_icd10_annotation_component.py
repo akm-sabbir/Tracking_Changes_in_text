@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import Mock, call
+from unittest.mock import Mock, call, patch
 
 from app.dto.core.paragraph import Paragraph
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
@@ -10,7 +10,8 @@ from app.service.pipeline.components.note_preprocessing_component import NotePre
 
 
 class TestICD10AnnotationComponent(TestCase):
-    def test__run__should_return_correct_response__given_correct_input(self):
+    @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
+    def test__run__should_return_correct_response__given_correct_input(self, mock_boto3):
         paragraph1 = Paragraph("some text", 0, 10)
         paragraph2 = Paragraph("some other text", 11, 20)
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
