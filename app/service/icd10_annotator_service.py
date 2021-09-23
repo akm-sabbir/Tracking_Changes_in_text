@@ -1,9 +1,8 @@
 from abc import abstractmethod, ABC
-
-from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
+from typing import List
 
 
 class ICD10AnnotatorService(ABC):
     @abstractmethod
-    def annotate_icd_10(self, text: str) -> ICD10AnnotationResponse:
+    def get_icd_10_codes(self, text: str) -> List:
         raise NotImplementedError()
