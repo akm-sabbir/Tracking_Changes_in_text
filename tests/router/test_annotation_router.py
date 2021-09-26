@@ -52,6 +52,15 @@ class Test(TestCase):
         assert response.icd10_annotations == mock_icd10_results
         mock_icd10_service.run_icd10_pipeline.assert_called_once_with("text")
 
+    def test_annotation_router__given_empty_input__should_raise_validation_error(self):
+        from app.router import annotation_router
+        with self.assertRaises(ValidationError) as error:
+            annotation_router.annotate_icd_10(ICD10AnnotationRequest(text="  "))
+        error_location = error.exception.errors()[0]['loc'][0]
+        error_message = error.exception.errors()[0]['msg']
+        assert error_location == 'text'
+        assert error_message == 'must be string and cannot be empty'
+
     def test_annotation_router__given_boolean_input__should_raise_validation_error(self):
         from app.router import annotation_router
         with self.assertRaises(ValidationError) as error:
