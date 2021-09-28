@@ -1,69 +1,83 @@
+from typing import List
+
 from spacy.lang.en import English
-from collections import deque
+from spacy.tokens import Span
+
 from app.dto.core.paragraph import Paragraph
+from app.dto.core.sentence import Sentence
 
 
 class EncounterNoteUtil:
 
     @staticmethod
     def break_note_into_paragraphs(note: str, limit: int) -> []:
-        paragraphs = EncounterNoteUtil._get_paragraphs(note, limit)
-        paragraph_dto = EncounterNoteUtil._map_to_paragraph_dto(paragraphs)
-        return paragraph_dto
-
-    @staticmethod
-    def _get_paragraphs(note, limit):
-        if len(note) < limit:
-            return [note]
-
-        sentences = EncounterNoteUtil._break_note_into_sentences(note)
-        queue = deque(sentences)
-        paragraphs = []
-        paragraph = ""
-        sentence = ""
-        while queue:
-            top = queue[0]
-            if len(top) >= limit:
-                long_sentence = queue.popleft()
-                broken_sentences = EncounterNoteUtil._split_sentence_into_list_of_words(long_sentence, limit)
-                paragraphs += broken_sentences
-                continue
-
-            if len(paragraph) + len(top) < limit:
-                sentence = queue.popleft()
-                paragraph += sentence
-                paragraph += " "
-
-            else:
-                paragraphs.append(paragraph.rstrip())
-                paragraph = ""
-
-        if sentence:
-            paragraphs.append(sentence)
+        if len(note) <= limit:
+            return [Paragraph(note, 0, len(note))]
+        sentences: List[Sentence] = EncounterNoteUtil.__break_note_into_sentences(note, limit)
+        paragraphs: List[Paragraph] = EncounterNoteUtil.__get_paragraphs(sentences, note, limit)
         return paragraphs
 
     @staticmethod
-    def _break_note_into_sentences(note: str) -> []:
+    def __get_paragraphs(sentences: List[Sentence], note: str, limit: int) -> List[Paragraph]:
+        text = ""
+        start = 0
+        end = 0
+        paragraphs = []
+        curr_sent = None
+
+        for sentence in sentences:
+            curr_end = sentence.end
+            curr_sent = sentence
+            if curr_end - start < limit:
+                text = note[start:curr_end]
+                end = sentence.end
+            else:
+                paragraphs.append(Paragraph(text, start, end))
+                start = sentence.start
+                text = note[start:curr_end]
+                end = curr_end
+        if paragraphs[-1].end_index < len(note):
+            paragraphs.append(Paragraph(note[start:curr_sent.end], start, curr_sent.end))
+
+        return paragraphs
+
+    @staticmethod
+    def __break_note_into_sentences(note: str, limit: int) -> List[Sentence]:
         nlp = English()
         nlp.add_pipe('sentencizer')
         doc = nlp(note)
-        sentences = [sent.text.strip() for sent in doc.sents]
+        sentence_spans: List[Span] = [sent for sent in doc.sents]
+        sentences: List[Sentence] = []
+        for sentence_span in sentence_spans:
+            if sentence_span.end_char - sentence_span.start_char > limit:
+                sentences.extend(EncounterNoteUtil.__break_into_multiple_sentences(sentence_span, limit))
+            else:
+                sentences.append(Sentence(sentence_span.text, sentence_span.start_char, sentence_span.end_char))
+
         return sentences
 
     @staticmethod
-    def _split_sentence_into_list_of_words(sentence: str, limit: int) -> []:
-        return [sentence[i: i + limit] for i in range(0, len(sentence), limit)]
-
-    @staticmethod
-    def _map_to_paragraph_dto(paragraphs: []) -> []:
-        paragraph_dto = []
-        curr_index = 0
-        for i in range(len(paragraphs)):
-            text = paragraphs[i]
-            start = curr_index
-            end = curr_index + len(text)
-            curr_index = end + 1
-            dto = Paragraph(text, start, end)
-            paragraph_dto.append(dto)
-
-        return paragraph_dto
+    def __break_into_multiple_sentences(sentence_span: Span, limit: int) -> List[Sentence]:
+        span = None
+        sentences = []
+        text = ""
+        start = 0
+        end = 0
+        current_tok_idx = 0
+        for i in range(sentence_span.__len__() + 1):
+            span = sentence_span[current_tok_idx:i]
+            if len(span.text) < limit:
+                text = span.text
+                start = sentence_span.start_char + span.start_char
+                end = sentence_span.start_char + span.end_char
+            else:
+                sentences.append(Sentence(text, start, end))
+                current_tok_idx = i - 1
+                span = sentence_span[current_tok_idx:i]
+                text = span.text
+                start = sentence_span.start_char + span.start_char
+                end = sentence_span.start_char + span.end_char
+        if sentences[-1].end != span.end_char:
+            end = start + len(span.text)
+            sentences.append(Sentence(span.text, start, end))
+        return sentences
