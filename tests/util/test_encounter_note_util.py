@@ -50,12 +50,13 @@ class TestEncounterNoteUtil(TestCase):
         max_limit = 50
 
         note = "This is the first sentence This is the second sentence \n\nThis is the third sentence."
-        paragraphs = EncounterNoteUtil.break_note_into_paragraphs(note, max_limit)
-        expected_no_of_paragraphs = math.ceil(len(note) / max_limit)
-        actual_no_of_paragraphs = len(paragraphs)
+        actual_paragraphs = EncounterNoteUtil.break_note_into_paragraphs(note, max_limit)
 
-        assert actual_no_of_paragraphs == expected_no_of_paragraphs
-
+        expected_texts = ['This is the first sentence This is the second', 'sentence \n\nThis is the third sentence.']
+        expected_starts = [0, 46]
+        expected_ends = [45, 84]
+        self.__assert_actual_paragraph_values_with_expected(actual_paragraphs, expected_texts, expected_starts,
+                                                            expected_ends)
     def __assert_actual_paragraph_values_with_expected(self, paragraphs: List[Paragraph], expected_texts,
                                                        expected_starts,
                                                        expected_ends):
