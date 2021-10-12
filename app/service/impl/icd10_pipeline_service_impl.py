@@ -10,6 +10,12 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
         self.__pipeline_components = [NotePreprocessingComponent(), ICD10AnnotationComponent()]
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)
 
+    def set_pipeline_components(self, components: list) -> None:
+        if components is None:
+            raise ValueError()
+        self.__pipeline_components = components
+        self.__pipeline_manager.se
+
     def run_icd10_pipeline(self, text: str) -> ICD10AnnotationResponse:
         pipeline_result = self.__pipeline_manager.run_pipeline(text=text)
         return ICD10AnnotationResponse(

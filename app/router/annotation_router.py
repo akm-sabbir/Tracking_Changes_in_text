@@ -14,3 +14,8 @@ __icd10_service: ICD10PipelineServiceImpl = DependencyInjector.get_instance(ICD1
 @router.post(path="/icd10", response_model=ICD10AnnotationResponse)
 async def annotate_icd_10(icd10_annotation_request: ICD10AnnotationRequest) -> ICD10AnnotationResponse:
     return __icd10_service.run_icd10_pipeline(icd10_annotation_request.text)
+
+
+@router.post(path="/icd10/dx_icd_filter", response_model=ICD10AnnotationResponse)
+async def annotate_icd_10_by_filter(icd10_annotation_request: ICD10AnnotationRequest) -> ICD10AnnotationResponse:
+    return __icd10_service.run_icd10_pipeline(icd10_annotation_request.text)
