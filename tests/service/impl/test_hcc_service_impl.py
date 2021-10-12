@@ -44,8 +44,18 @@ class TestHCCServiceImpl(TestCase):
                                     original_reason_for_entitlement="1", medicaid=True, eligibility="INS")
         response = self.service.get_hcc_risk_scores(request_dto)
         assert response.aggregated_risk_score == 2.195
-        assert response.hcc_maps == {"I5030": "HCC85", "I509": "HCC85", "E1169": "HCC18", "I209": "HCC88"}
-        assert response.hcc_scores == {"INS_HCC88": 0.366, "INS_HCC18": 0.442, "INS_HCC85": 0.204}
+
+        assert response.hcc_maps["I5030"].code == "HCC85"
+        assert response.hcc_maps["I5030"].score == 0.204
+
+        assert response.hcc_maps["I509"].code == "HCC85"
+        assert response.hcc_maps["I509"].score == 0.204
+
+        assert response.hcc_maps["E1169"].code == "HCC18"
+        assert response.hcc_maps["E1169"].score == 0.442
+
+        assert response.hcc_maps["I209"].code == "HCC88"
+        assert response.hcc_maps["I209"].score == 0.366
+
         assert response.demographics_score == {"INS_F75_79": 1.013}
         assert response.disease_interactions_score == {"INS_DIABETES_CHF": 0.17}
-
