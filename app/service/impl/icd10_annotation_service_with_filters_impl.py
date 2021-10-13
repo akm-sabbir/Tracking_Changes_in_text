@@ -13,12 +13,14 @@ from collections import defaultdict
 class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
 
     def get_icd_10_filtered_codes(self, icd_10_entities: list[ICD10AnnotationResult],
-                                  dx_threshold: float, icd10_threshod: float,
+                                  hcc_map: dict,
+                                  dx_threshold: float, icd10_threshold: float,
                                   parent_threshold: float) -> List:
+        print(hcc_map)
         icd_10_entities = self.apply_dx_threshold(icd_10_entities=icd_10_entities, dx_thresh=dx_threshold,
                                                   operate=operator.gt)
         icd_10_entities = self.apply_icd10_threshold(icd_10_entities=icd_10_entities,
-                                                     icd_thresh=icd10_threshod,
+                                                     icd_thresh=icd10_threshold,
                                                      operate=operator.gt)
         icd_10_entities = self.apply_parent_icd_10_threshold(icd_10_entities=icd_10_entities,
                                                              parent_thresh=parent_threshold,
@@ -37,10 +39,11 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
                                          if operate(entity.score, icd_thresh)]
         return icd_10_entity
 
-    def apply_parent_icd_10_threshold(self, icd_10_entities: list[ICD10AnnotationResult], parent_thresh: float, operate):
-        partially_applied = partial(self.apply_parent_threshold_to_get_parent_code(
-            parent_thresh=parent_thresh, operate=operate))
-        parent_set = map(partially_applied, icd_10_entities)
+    def apply_parent_icd_10_threshold(self, icd_10_entities: list[ICD10AnnotationResult], parent_thresh: float,
+                                      operate) -> list[ICD10AnnotationResult]:
+        partially_applied = partial(self.apply_parent_threshold_to_get_parent_code,
+            parent_thresh=parent_thresh, operate=operate)
+        parent_set = list(map(partially_applied, icd_10_entities))
         return parent_set
 
     def apply_parent_threshold_to_get_parent_code(self, icd_10_entity: ICD10AnnotationResult,
@@ -58,10 +61,11 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
             generate_parents(each.code, each.score, parent_hash_code)
         suggested_codes = []
         for suggested_code in icd_10_entity.suggested_codes:
-            if ((parent_hash_code.__contains__(suggested_code.code) is True)
+            if ((parent_hash_code.__contains__(suggested_code.code) is True and
+                operate(suggested_hash_code[parent_hash_code[suggested_code.code][1]], parent_thresh))
                 and
-                (parent_hash_code[suggested_code.code][0] > suggested_hash_code[
-                    parent_hash_code[suggested_code.code][1]])):
+                (operate(parent_hash_code[suggested_code.code][0], suggested_hash_code[
+                    parent_hash_code[suggested_code.code][1]]))):
                 suggested_codes.append(suggested_code)
         icd_10_entity.suggested_codes = suggested_codes
-        return
+        return icd_10_entity

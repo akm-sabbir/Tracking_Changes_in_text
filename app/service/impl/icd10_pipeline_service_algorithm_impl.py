@@ -18,9 +18,11 @@ class ICD10PipelineServiceAlgoImpl(ICD10PipelineServiceWithFilter):
     def run_icd10_pipeline(self, text: str, dx_threshold: float = 0.5,
                            icd10_threshold: float = 0.5,
                            parent_threshold: float = 0.5) -> ICD10AnnotationResponse:
-        params = namedtuple("Parameters", "text dx_threshold icd10_threshold parent_threshold")
-        annotation_result = params(text, dx_threshold, icd10_threshold, parent_threshold)
-        pipeline_result = self.__pipeline_manager.run_pipeline(annotation_result._asdict())
+        pipeline_result = self.__pipeline_manager.run_pipeline(text=text,
+                                                               dx_threshold=dx_threshold,
+                                                               icd10_threshold=icd10_threshold,
+                                                               parent_threshold=parent_threshold)
+        print(pipeline_result[ICD10AnnotationAlgoComponent])
         return ICD10AnnotationResponse(
             icd10_annotations=pipeline_result[ICD10AnnotationAlgoComponent]
         )
