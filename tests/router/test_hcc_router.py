@@ -6,9 +6,10 @@ from unittest.mock import patch
 from fastapi.exceptions import RequestValidationError
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
 
+from app.dto.core.hcc_code import HCCCode
 from app.dto.request.hcc_request_dto import HCCRequestDto
-from app.router import hcc_router
 from app.dto.response.hcc_response_dto import HCCResponseDto
+from app.router import hcc_router
 
 
 def get_mocked_request_validation_error(req_dto: HCCRequestDto):
@@ -20,7 +21,7 @@ def get_mocked_request_validation_error(req_dto: HCCRequestDto):
 
 class MockedHCCService:
     def get_hcc_risk_scores(self, request_dto: HCCRequestDto) -> HCCResponseDto:
-        response = HCCResponseDto(hcc_maps={"I5030": "HCC85"}, hcc_scores={"CND_HCC85": 0.404},
+        response = HCCResponseDto(hcc_maps={"I5030": HCCCode(code="HCC85", score=0.404)},
                                   demographics_score={}, disease_interactions_score={"CHF_Diabetes": 0.33},
                                   aggregated_risk_score=1.82, demographics_details={})
         return response
@@ -46,8 +47,8 @@ class TestHCCRouter(TestCase):
     def test_get_hcc_risk_scores__given_correct_input__should_return_correct_output(self):
         req_dto = HCCRequestDto(icd_codes_list=["code1", "code2"])
         response = self.__loop.run_until_complete(hcc_router.calculate_hcc_scores(req_dto))
-        assert response.hcc_maps == {'I5030': 'HCC85'}
-        assert response.hcc_scores == {'CND_HCC85': 0.404}
+        assert response.hcc_maps['I5030'].code == 'HCC85'
+        assert response.hcc_maps['I5030'].score == 0.404
         assert response.demographics_score == {}
         assert response.disease_interactions_score == {'CHF_Diabetes': 0.33}
         assert response.aggregated_risk_score == 1.82

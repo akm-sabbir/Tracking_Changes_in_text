@@ -1,11 +1,14 @@
 import logging
-from injector import singleton
-from hccpy.hcc import HCCEngine
-from app.util.hcc.hcc_regex_pattern_util import HCCRegexPatternUtil
+from typing import Dict
 
+from hccpy.hcc import HCCEngine
+from injector import singleton
+
+from app.dto.core.hcc_code import HCCCode
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
+from app.util.hcc.hcc_regex_pattern_util import HCCRegexPatternUtil
 
 
 @singleton
@@ -31,8 +34,14 @@ class HCCServiceImpl(HCCService):
         self.__set_demographics_disease_interactions_score_from_hccpy_response(hccpy_response,
                                                                                demographics_score,
                                                                                disease_interactions_score)
+        hcc_maps = hccpy_response["hcc_map"]
+        hcc_codes_map: Dict[str, HCCCode] = {}
+        for icd10 in hcc_maps:
+            hcc = hcc_maps[icd10]
+            hcc_code = HCCCode(code=hcc, score=hcc_scores[hcc])
+            hcc_codes_map[icd10] = hcc_code
 
-        response_dto = HCCResponseDto(hcc_maps=hccpy_response["hcc_map"], hcc_scores=hcc_scores,
+        response_dto = HCCResponseDto(hcc_maps=hcc_codes_map,
                                       demographics_score=demographics_score,
                                       disease_interactions_score=disease_interactions_score,
                                       aggregated_risk_score=hccpy_response["risk_score"],
@@ -44,9 +53,9 @@ class HCCServiceImpl(HCCService):
         hcc_scores = {}
         elig = hccpy_response["parameters"]["elig"]
         for hcc in hcc_lst:
-            key = elig+"_"+hcc
+            key = elig + "_" + hcc
             if key in hccpy_response["details"].keys():
-                hcc_scores[key] = hccpy_response["details"][key]
+                hcc_scores[hcc] = hccpy_response["details"][key]
                 del hccpy_response["details"][key]
         return hcc_scores
 
