@@ -7,6 +7,8 @@ from app.exception.service_exception import ServiceException
 from app.service.icd10_annotator_service_with_filters import ICD10AnnotatorServiceWithFilter
 import operator
 from functools import partial
+from collections import defaultdict
+
 
 class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilter):
 
@@ -38,8 +40,15 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilter):
         parent_set = map(partially_applied, icd_10_entities)
         return parent_set
 
-    def apply_parent_threshold_to_get_parent_code(self, icd_10_entity: list[ICD10Annotation],
+    def apply_parent_threshold_to_get_parent_code(self, icd_10_entity: ICD10AnnotationResult,
                                                   parent_thresh: float = 0.5,
                                                   operate=None):
-        pass
+        suggested_hash_code = defaultdict(float)
+        parent_hash_code = defaultdict(float)
 
+        def generate_parents(code, score, parent_hash_code):
+            for i in range(3, len(code)):
+                parent_hash_code[code[:i]] = score
+        for each in icd_10_entity.suggested_codes:
+            suggested_hash_code[each.code] = each.score
+            generate_parents(each.code, each.score, parent_hash_code)
