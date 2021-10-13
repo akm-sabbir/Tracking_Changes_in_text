@@ -4,13 +4,13 @@ from typing import List
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.exception.service_exception import ServiceException
-from app.service.icd10_annotator_service_with_filters import ICD10AnnotatorServiceWithFilter
+from app.service.icd10_annotation_service_with_filters import ICD10AnnotatorServiceWithFilters
 import operator
 from functools import partial
 from collections import defaultdict
 
 
-class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilter):
+class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
 
     def get_icd_10_filtered_codes(self, icd_10_entities: list[ICD10AnnotationResult],
                                   dx_threshold: float, icd10_threshod: float,
@@ -20,6 +20,9 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilter):
         icd_10_entities = self.apply_icd10_threshold(icd_10_entities=icd_10_entities,
                                                      icd_thresh=icd10_threshod,
                                                      operate=operator.gt)
+        icd_10_entities = self.apply_parent_icd_10_threshold(icd_10_entities=icd_10_entities,
+                                                             parent_thresh=parent_threshold,
+                                                             operate=operator.gt)
         return icd_10_entities
 
     def apply_dx_threshold(self, icd_10_entities: list[ICD10AnnotationResult], dx_thresh: float, operate) -> list:
@@ -34,7 +37,7 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilter):
                                          if operate(entity.score, icd_thresh)]
         return icd_10_entity
 
-    def get_parent_icd_10_code(self, icd_10_entities: list[ICD10AnnotationResult], parent_thresh: float, operate):
+    def apply_parent_icd_10_threshold(self, icd_10_entities: list[ICD10AnnotationResult], parent_thresh: float, operate):
         partially_applied = partial(self.apply_parent_threshold_to_get_parent_code(
             parent_thresh=parent_thresh, operate=operate))
         parent_set = map(partially_applied, icd_10_entities)

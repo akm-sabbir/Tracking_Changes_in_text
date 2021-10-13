@@ -2,8 +2,8 @@ from abc import abstractmethod, ABC
 from typing import List
 
 
-class ICD10AnnotatorServiceWithFilter(ABC):
+class ICD10PipelineServiceWithFilter(ABC):
     @abstractmethod
-    def get_icd_10_filtered_codes(self, text: str, dx_threshold: float,
+    def run_icd10_pipeline(self, text: str, dx_threshold: float,
                                   icd10_threshold: float, parent_threshold: float) -> List:
         raise NotImplementedError()

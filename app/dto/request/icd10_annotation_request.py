@@ -1,7 +1,7 @@
 import re
 
 from pydantic import validator, Field
-from pyparsing import Optional
+from typing import Optional
 
 from app.dto.base_dto import BaseDto
 
