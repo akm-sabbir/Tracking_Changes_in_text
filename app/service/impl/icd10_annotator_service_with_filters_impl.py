@@ -48,7 +48,17 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilter):
 
         def generate_parents(code, score, parent_hash_code):
             for i in range(3, len(code)):
-                parent_hash_code[code[:i]] = score
+                parent_hash_code[code[:i]] = (score, code)
+
         for each in icd_10_entity.suggested_codes:
             suggested_hash_code[each.code] = each.score
             generate_parents(each.code, each.score, parent_hash_code)
+        suggested_codes = []
+        for suggested_code in icd_10_entity.suggested_codes:
+            if ((parent_hash_code.__contains__(suggested_code.code) is True)
+                and
+                (parent_hash_code[suggested_code.code][0] > suggested_hash_code[
+                    parent_hash_code[suggested_code.code][1]])):
+                suggested_codes.append(suggested_code)
+        icd_10_entity.suggested_codes = suggested_codes
+        return
