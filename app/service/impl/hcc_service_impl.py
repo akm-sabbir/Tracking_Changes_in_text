@@ -4,7 +4,7 @@ from typing import Dict
 from hccpy.hcc import HCCEngine
 from injector import singleton
 
-from app.dto.core.hcc_code import HCCCode
+from app.dto.core.service.hcc_code import HCCCode
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
