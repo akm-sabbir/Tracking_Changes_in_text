@@ -6,7 +6,7 @@ from unittest.mock import patch
 from fastapi.exceptions import RequestValidationError
 from pydantic.error_wrappers import ErrorWrapper, ValidationError
 
-from app.dto.core.hcc_code import HCCCode
+from app.dto.core.service.hcc_code import HCCCode
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.router import hcc_router
