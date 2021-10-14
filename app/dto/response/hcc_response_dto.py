@@ -1,7 +1,7 @@
 from typing import Dict
 
 from app.dto.base_dto import BaseDto
-from app.dto.core.hcc_code import HCCCode
+from app.dto.core.service.hcc_code import HCCCode
 
 
 class HCCResponseDto(BaseDto):

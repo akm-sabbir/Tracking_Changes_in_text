@@ -6,5 +6,5 @@ from app.dto.pipeline.base_pipeline_component_result import BasePipelineComponen
 class ICD10PipelineService(ABC):
 
     @abstractmethod
-    def run_icd10_pipeline(self, text: str) -> BasePipelineComponentResult:
+    async def run_icd10_pipeline(self, note_id: str, text: str) -> BasePipelineComponentResult:
         raise NotImplementedError()

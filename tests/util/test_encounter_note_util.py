@@ -1,8 +1,7 @@
-import math
 from typing import List
 from unittest import TestCase
 
-from app.dto.core.paragraph import Paragraph
+from app.dto.core.pipeline.paragraph import Paragraph
 from app.util.encounter_note_util import EncounterNoteUtil
 
 
