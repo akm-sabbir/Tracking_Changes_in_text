@@ -16,9 +16,10 @@ from service.pipeline.components.dummy_component_two import DummyComponentTwo
 
 class TestICD10PipelineServiceImpl(TestCase):
 
-    @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
+    @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
-    def test__annotate_icd_10__should_return_correct_response__given_correct_input(self, mock_boto3: Mock,
+    def test__annotate_icd_10__should_return_correct_response__given_correct_input(self,
                                                                                    mock_get_config: Mock):
         mock_get_config.return_value = "table_name"
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
@@ -58,9 +59,10 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert pipeline_acm_cache_arg.id == "123"
         assert pipeline_acm_cache_arg.icd10_annotations == []
 
-    @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
+    @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
-    def test__annotate_icd_10__should_return_correct_response__given_correct_input_and_no_cache(self, mock_boto3: Mock,
+    def test__annotate_icd_10__should_return_correct_response__given_correct_input_and_no_cache(self,
                                                                                    mock_get_config: Mock):
         mock_get_config.return_value = "table_name"
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)

@@ -11,9 +11,10 @@ from app.service.pipeline.components.note_preprocessing_component import NotePre
 
 
 class TestICD10AnnotationComponent(TestCase):
-    @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
-    @patch("app.util.config_manager.ConfigManager.get_specific_config")
-    def test__run__should_return_correct_response__given_correct_input(self, mock_boto3, mock_get_config):
+    @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.dynamo_db_service.boto3", Mock())
+    @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
+    def test__run__should_return_correct_response__given_correct_input(self):
         paragraph1 = Paragraph("some text", 0, 10)
         paragraph2 = Paragraph("some other text", 11, 20)
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
@@ -63,9 +64,10 @@ class TestICD10AnnotationComponent(TestCase):
         assert icd10_result[1].suggested_codes[1].description == "Other viral pneumonia"
         assert icd10_result[1].suggested_codes[1].score == 0.45
 
-    @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
-    @patch("app.util.config_manager.ConfigManager.get_specific_config")
-    def test__run__should_return_correct_response__given_correct_input_and_cached_data(self, mock_boto3, mock_get_config):
+    @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.dynamo_db_service.boto3", Mock())
+    @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
+    def test__run__should_return_correct_response__given_correct_input_and_cached_data(self):
         paragraph1 = Paragraph("some text", 0, 10)
         paragraph2 = Paragraph("some other text", 11, 20)
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
