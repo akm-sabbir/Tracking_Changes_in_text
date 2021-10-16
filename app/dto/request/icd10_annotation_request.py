@@ -8,9 +8,6 @@ from app.dto.base_dto import BaseDto
 
 class ICD10AnnotationRequest(BaseDto):
     text: str
-    dx_threshold: Optional[float]
-    icd10_threshold: Optional[float]
-    parent_threshold: Optional[float]
 
     @validator('text')
     def text_must_be_string_and_nonempty(cls, text: str):
