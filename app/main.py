@@ -49,3 +49,6 @@ Settings.set_settings_icd10_threshold(icd_threshold=__icd10_threshold)
 
 __parent_threshold = ConfigManager.get_specific_config(section="parents_threshold", key="parent_threshold")
 Settings.set_settings_parent_threshold(p_threshold=__parent_threshold)
+
+__caching_usage = ConfigManager.get_specific_config(section="caching_facility", key="use_cache")
+Settings.set_settings_use_cache(caching=__caching_usage)

@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     dx_threshold: float
     parent_threshold: float
     icd10_threshold: float
+    use_cache: bool
 
     @staticmethod
     def get_settings_dx_threshold() -> float:
@@ -22,6 +23,14 @@ class Settings(BaseSettings):
     @staticmethod
     def set_settings_parent_threshold(p_threshold: float):
         Settings.parent_threshold = p_threshold
+
+    @staticmethod
+    def get_settings_use_cache() -> float:
+        return Settings.use_cache
+
+    @staticmethod
+    def set_settings_use_cache(caching: bool):
+        Settings.use_cache = caching
 
     @staticmethod
     def get_settings_icd10_threshold() -> float:
