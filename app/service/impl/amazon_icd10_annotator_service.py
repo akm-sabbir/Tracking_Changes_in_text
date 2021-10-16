@@ -24,11 +24,10 @@ class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
         text = icd_10_entity['Text']
         begin_offset = icd_10_entity['BeginOffset']
         end_offset = icd_10_entity['EndOffset']
-        score = icd_10_entity['Score']
         is_negated = "NEGATION" in [trait["Name"] for trait in icd_10_entity["Traits"]]
         suggested_codes = [
             ICD10Annotation(code=concept['Code'], description=concept['Description'], score=concept['Score'])
             for concept in icd_10_entity['ICD10CMConcepts']
         ]
         return ICD10AnnotationResult(medical_condition=text, begin_offset=begin_offset, end_offset=end_offset,
-                                     score=score, is_negated=is_negated, suggested_codes=suggested_codes)
+                                      is_negated=is_negated, suggested_codes=suggested_codes)

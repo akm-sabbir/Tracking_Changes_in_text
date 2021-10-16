@@ -10,5 +10,4 @@ class ICD10AnnotationResult(BaseDto, BasePipelineComponentResult):
     begin_offset: int
     end_offset: int
     is_negated: bool
-    score: float
     suggested_codes: List[ICD10Annotation]

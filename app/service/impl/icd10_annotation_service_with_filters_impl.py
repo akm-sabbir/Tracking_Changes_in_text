@@ -12,6 +12,9 @@ from collections import defaultdict
 
 class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
 
+    def __init__(self):
+        return
+
     def get_icd_10_filtered_codes(self, icd_10_entities: list[ICD10AnnotationResult],
                                   hcc_map: dict,
                                   dx_threshold: float, icd10_threshold: float,
@@ -25,6 +28,7 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
                                                              parent_thresh=parent_threshold,
                                                              operate=operator.gt,
                                                              hcc_map=hcc_map)
+
         return icd_10_entities
 
     def apply_dx_threshold(self, icd_10_entities: list[ICD10AnnotationResult], dx_thresh: float, operate) -> list:
@@ -44,7 +48,7 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
     def apply_parent_icd_10_threshold(self, icd_10_entities: list[ICD10AnnotationResult], parent_thresh: float,
                                       operate: operator, hcc_map) -> list[ICD10AnnotationResult]:
         partially_applied = partial(self.apply_parent_threshold_to_get_parent_code,
-            parent_thresh=parent_thresh, operate=operate, hcc_map=hcc_map)
+                                    parent_thresh=parent_thresh, operate=operate, hcc_map=hcc_map)
         parent_set = list(map(partially_applied, icd_10_entities))
         return parent_set
 
@@ -56,6 +60,8 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
 
         def generate_parents(code, score, parent_hash_code) -> dict:
             for i in range(3, len(code)):
+                if parent_hash_code.__contains__(code[:i]) is True and parent_hash_code[code[:i]][0] > score:
+                    continue
                 parent_hash_code[code[:i]] = (score, code)
             return parent_hash_code
 
@@ -64,9 +70,9 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
             if hcc_map.get(code) is not None:
                 return True
             if (parent_hash_code.__contains__(code) is True and
-                 cond_operator(suggested_hash_code[parent_hash_code[code][1]], parent_thresh) is True):
-                if(cond_operator(suggested_hash_code[parent_hash_code[suggested_code.code][1]],
-                        parent_hash_code[suggested_code.code][0]) is True):
+                    cond_operator(suggested_hash_code[parent_hash_code[code][1]], parent_thresh) is True):
+                if (cond_operator(suggested_hash_code[parent_hash_code[code][1]],
+                                  suggested_hash_code[code]) is True):
                     return False
             return True
 
@@ -74,10 +80,10 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
             suggested_hash_code[each.code] = each.score
             parent_hash_code = generate_parents(each.code, each.score, parent_hash_code)
         suggested_codes = []
-        condtional_expr = partial(condition_check, parent_hash_code=parent_hash_code, cond_operator=operate,
+        conditional_expr = partial(condition_check, parent_hash_code=parent_hash_code, cond_operator=operate,
                                   hcc_map=hcc_map, suggested_hash_code=suggested_hash_code)
         for suggested_code in icd_10_entity.suggested_codes:
-            if (condtional_expr(code=suggested_code.code) is True):
+            if conditional_expr(code=suggested_code.code) is True:
                 suggested_codes.append(suggested_code)
         icd_10_entity.suggested_codes = suggested_codes
         return icd_10_entity
