@@ -11,3 +11,4 @@ class ICD10AnnotationResult(BaseDto, BasePipelineComponentResult):
     end_offset: int
     is_negated: bool
     suggested_codes: List[ICD10Annotation]
+    raw_acm_response: dict
