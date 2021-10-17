@@ -48,14 +48,14 @@ class Test(TestCase):
         mock_get_instance.return_value = mock_icd10_service
         from app.router import annotation_router
         response = self.__loop.run_until_complete(
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="123", text="text")))
-        assert response.icd10_annotations == mock_icd10_results
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text="text")]))
+        assert response[0].icd10_annotations == mock_icd10_results
         mock_icd10_service.run_icd10_pipeline.assert_called_once_with("123", "text")
 
     def test_annotation_router__given_empty_input__should_raise_validation_error(self):
         from app.router import annotation_router
         with self.assertRaises(ValidationError) as error:
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="123", text="  "))
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text="  ")])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
@@ -66,14 +66,14 @@ class Test(TestCase):
         mock_get_instance.return_value = Mock()
         from app.router import annotation_router
         with self.assertRaises(ValidationError) as error:
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="123", text="true"))
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text="true")])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
         assert error_message == 'must be string and cannot be empty'
 
         with self.assertRaises(ValidationError) as error:
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="123", text=False))
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text=False)])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
@@ -84,14 +84,14 @@ class Test(TestCase):
         mock_get_instance.return_value = Mock()
         from app.router import annotation_router
         with self.assertRaises(ValidationError) as error:
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="123", text="1.12"))
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text="1.12")])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
         assert error_message == 'must be string and cannot be empty'
 
         with self.assertRaises(ValidationError) as error:
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="123", text=111))
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text=111)])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
@@ -102,14 +102,14 @@ class Test(TestCase):
         mock_get_instance.return_value = Mock()
         from app.router import annotation_router
         with self.assertRaises(ValidationError) as error:
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="true", text="1.12"))
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="true", text="1.12")])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'id'
         assert error_message == 'must be string and cannot be empty'
 
         with self.assertRaises(ValidationError) as error:
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="true", text=111))
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="true", text=111)])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'id'
