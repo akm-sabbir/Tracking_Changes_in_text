@@ -29,7 +29,8 @@ class Test(TestCase):
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,
-                                                          suggested_codes=[icd10_annotation_1, icd10_annotation_2])
+                                                          suggested_codes=[icd10_annotation_1, icd10_annotation_2],
+                                                          raw_acm_response={"data": "data1"})
 
         icd10_annotation_3 = ICD10Annotation(code="J12.0", description="Adenoviral pneumonia", score=0.89)
         icd10_annotation_4 = ICD10Annotation(code="J12.89", description="Other viral pneumonia",
@@ -37,7 +38,8 @@ class Test(TestCase):
 
         icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=45, end_offset=54,
                                                           is_negated=True,
-                                                          suggested_codes=[icd10_annotation_3, icd10_annotation_4])
+                                                          suggested_codes=[icd10_annotation_3, icd10_annotation_4],
+                                                          raw_acm_response={"data": "data2"})
 
         mock_icd10_results = [icd10_annotation_result_1, icd10_annotation_result_2]
 
