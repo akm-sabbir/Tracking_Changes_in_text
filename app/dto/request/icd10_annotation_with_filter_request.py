@@ -11,6 +11,7 @@ class ICD10AnnotationWithFilterRequest(BaseDto):
     dx_threshold: Optional[float]
     icd10_threshold: Optional[float]
     parent_threshold: Optional[float]
+    error_message: str = "must be floating point number"
 
     @validator('text')
     def text_must_be_string_and_nonempty(cls, text: str):
@@ -21,17 +22,17 @@ class ICD10AnnotationWithFilterRequest(BaseDto):
     @validator('dx_threshold')
     def dx_threshold_must_be_float(cls, dx_threshold: float):
         if  not type(dx_threshold).__name__ == 'float':
-            raise ValueError("must be floating point number")
+            raise ValueError(ICD10AnnotationWithFilterRequest.error_message)
         return dx_threshold
 
     @validator('icd10_threshold')
     def icd10_threshold_must_be_float(cls, icd10_threshold: float):
         if not type(icd10_threshold).__name__ == 'float':
-            raise ValueError("must be floating point number")
+            raise ValueError(ICD10AnnotationWithFilterRequest.error_message)
         return icd10_threshold
 
     @validator('parent_threshold')
     def parent_threshold_must_be_float(cls, parent_threshold: float):
         if not type(parent_threshold).__name__ == 'float':
-            raise ValueError("must be floating point number")
+            raise ValueError(ICD10AnnotationWithFilterRequest.error_message)
         return parent_threshold
