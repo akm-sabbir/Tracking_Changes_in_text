@@ -19,7 +19,7 @@ class ICD10ToHccAnnotationComponent(BasePipelineComponent):
         super().__init__()
         self.__hcc_service: ICD10AnnotatorService = HCCEngine(version="23")
 
-    def run(self, annotation_results: dict) -> List[ICD10AnnotationResult]:
+    def run(self, annotation_results: dict) -> dict:
         annotated_list: List[ICD10AnnotationResult] = annotation_results[ICD10AnnotationComponent]
         annotation_result_set = {}
 

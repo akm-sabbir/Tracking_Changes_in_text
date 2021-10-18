@@ -10,6 +10,26 @@ from functools import partial
 from collections import defaultdict
 
 
+def condition_check(parent_hash_code: dict, cond_operator: operator
+                    , hcc_map: dict, suggested_hash_code: dict, parent_thresh: float, code: str):
+    if hcc_map.get(code) is not None:
+        return True
+    if (parent_hash_code.__contains__(code) is True and
+            cond_operator(suggested_hash_code[parent_hash_code[code][1]], parent_thresh) is True and
+            cond_operator(suggested_hash_code[parent_hash_code[code][1]],
+                          suggested_hash_code[code]) is True):
+        return False
+    return True
+
+
+def generate_parents(code, score, parent_hash_code) -> dict:
+    for i in range(3, len(code)):
+        if parent_hash_code.__contains__(code[:i]) is True and parent_hash_code[code[:i]][0] > score:
+            continue
+        parent_hash_code[code[:i]] = (score, code)
+    return parent_hash_code
+
+
 class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
 
     def __init__(self):
@@ -58,30 +78,13 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
         suggested_hash_code = defaultdict(float)
         parent_hash_code = defaultdict(float)
 
-        def generate_parents(code, score, parent_hash_code) -> dict:
-            for i in range(3, len(code)):
-                if parent_hash_code.__contains__(code[:i]) is True and parent_hash_code[code[:i]][0] > score:
-                    continue
-                parent_hash_code[code[:i]] = (score, code)
-            return parent_hash_code
-
-        def condition_check(parent_hash_code: dict, cond_operator: operator
-                            , hcc_map: dict, suggested_hash_code: dict, code: str):
-            if hcc_map.get(code) is not None:
-                return True
-            if (parent_hash_code.__contains__(code) is True and
-                    cond_operator(suggested_hash_code[parent_hash_code[code][1]], parent_thresh) is True):
-                if (cond_operator(suggested_hash_code[parent_hash_code[code][1]],
-                                  suggested_hash_code[code]) is True):
-                    return False
-            return True
-
         for each in icd_10_entity.suggested_codes:
             suggested_hash_code[each.code] = each.score
             parent_hash_code = generate_parents(each.code, each.score, parent_hash_code)
         suggested_codes = []
         conditional_expr = partial(condition_check, parent_hash_code=parent_hash_code, cond_operator=operate,
-                                  hcc_map=hcc_map, suggested_hash_code=suggested_hash_code)
+                                   hcc_map=hcc_map, suggested_hash_code=suggested_hash_code,
+                                   parent_thresh=parent_thresh)
         for suggested_code in icd_10_entity.suggested_codes:
             if conditional_expr(code=suggested_code.code) is True:
                 suggested_codes.append(suggested_code)

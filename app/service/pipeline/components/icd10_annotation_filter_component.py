@@ -19,13 +19,13 @@ class ICD10AnnotationAlgoComponent(BasePipelineComponent):
             DependencyInjector.get_instance(ICD10AnnotatorServiceWithFilterImpl)
 
     def run(self, annotation_results: dict) -> List[ICD10AnnotationResult]:
-        icd10AnnotationResult: List[ICD10AnnotationResult] = annotation_results[ICD10AnnotationComponent]
+        icd10_annotation_result: List[ICD10AnnotationResult] = annotation_results[ICD10AnnotationComponent]
         hcc_mapping: dict = annotation_results[ICD10ToHccAnnotationComponent]
         dx_threshold = annotation_results['dx_threshold']
         icd10_threshold = annotation_results['icd10_threshold']
         parent_threshold = annotation_results['parent_threshold']
-        filtered_results = self.__icd10_annotation_service_with_filters.get_icd_10_filtered_codes(icd10AnnotationResult,
-                                    hcc_map=hcc_mapping['hcc_map'] if hcc_mapping.get('hcc_map') is not None else {},
+        filtered_results = self.__icd10_annotation_service_with_filters.get_icd_10_filtered_codes\
+            (icd10_annotation_result, hcc_map=hcc_mapping['hcc_map'] if hcc_mapping.get('hcc_map') is not None else {},
                                                                                dx_threshold=dx_threshold,
                                                                                icd10_threshold=icd10_threshold,
                                                                                parent_threshold=parent_threshold)
