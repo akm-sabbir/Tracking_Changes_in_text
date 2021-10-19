@@ -27,8 +27,7 @@ class ICD10ToHccAnnotationComponent(BasePipelineComponent):
             annotations: List[ICD10Annotation] = self.get_icd10_list(annotation_entity)
             hcc_annotation: dict = self.__hcc_service.profile(dx_lst=annotations)
             if hcc_annotation.get('hcc_map') is not None:
-                annotation_result_set.update(hcc_annotation)
-
+                annotation_result_set.update(hcc_annotation['hcc_map'])
         return annotation_result_set
 
     def get_icd10_list(self, annotation_entity: ICD10AnnotationResult):
