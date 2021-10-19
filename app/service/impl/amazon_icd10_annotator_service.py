@@ -30,4 +30,4 @@ class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
             for concept in icd_10_entity['ICD10CMConcepts']
         ]
         return ICD10AnnotationResult(medical_condition=text, begin_offset=begin_offset, end_offset=end_offset,
-                                     is_negated=is_negated, suggested_codes=suggested_codes)
+                                      is_negated=is_negated, suggested_codes=suggested_codes)

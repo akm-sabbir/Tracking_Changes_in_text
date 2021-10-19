@@ -9,8 +9,9 @@ from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
 from app.service.pipeline.components.icd10_annotation_component import ICD10AnnotationComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
-from service.pipeline.components.dummy_component_one import DummyComponentOne
-from service.pipeline.components.dummy_component_two import DummyComponentTwo
+from tests.service.pipeline.components.dummy_component_one import DummyComponentOne
+from tests.service.pipeline.components.dummy_component_two import DummyComponentTwo
+
 
 
 class TestICD10PipelineServiceImpl(TestCase):
