@@ -1,13 +1,10 @@
-from abc import abstractmethod, ABC
+import operator
+from collections import defaultdict
+from functools import partial
 from typing import List
 
-from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
-from app.exception.service_exception import ServiceException
 from app.service.icd10_annotation_service_with_filters import ICD10AnnotatorServiceWithFilters
-import operator
-from functools import partial
-from collections import defaultdict
 
 
 def condition_check(parent_hash_code: dict, cond_operator: operator
@@ -35,7 +32,7 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
     def __init__(self):
         return
 
-    def get_icd_10_filtered_codes(self, icd_10_entities: list[ICD10AnnotationResult],
+    def get_icd_10_filtered_codes(self, icd_10_entities: List[ICD10AnnotationResult],
                                   hcc_map: dict,
                                   dx_threshold: float, icd10_threshold: float,
                                   parent_threshold: float) -> List:
@@ -51,10 +48,10 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
 
         return icd_10_entities
 
-    def apply_dx_threshold(self, icd_10_entities: list[ICD10AnnotationResult], dx_thresh: float, operate) -> list:
+    def apply_dx_threshold(self, icd_10_entities: List[ICD10AnnotationResult], dx_thresh: float, operate) -> list:
         return [icd_10_entity for icd_10_entity in icd_10_entities if operate(icd_10_entity.score, dx_thresh)]
 
-    def apply_icd10_threshold(self, icd_10_entities: list[ICD10AnnotationResult], icd_thresh: float, operate: operator,
+    def apply_icd10_threshold(self, icd_10_entities: List[ICD10AnnotationResult], icd_thresh: float, operate: operator,
                               hcc_map: dict = {}) -> list:
         return [self.filter_icd10_codes(icd_10_entity, icd_thresh, operate, hcc_map)
                 for icd_10_entity in icd_10_entities]
@@ -65,8 +62,8 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
                                          if operate(entity.score, icd_thresh) or hcc_map.__contains__(entity.code)]
         return icd_10_entity
 
-    def apply_parent_icd_10_threshold(self, icd_10_entities: list[ICD10AnnotationResult], parent_thresh: float,
-                                      operate: operator, hcc_map) -> list[ICD10AnnotationResult]:
+    def apply_parent_icd_10_threshold(self, icd_10_entities: List[ICD10AnnotationResult], parent_thresh: float,
+                                      operate: operator, hcc_map) -> List[ICD10AnnotationResult]:
         partially_applied = partial(self.apply_parent_threshold_to_get_parent_code,
                                     parent_thresh=parent_thresh, operate=operate, hcc_map=hcc_map)
         parent_set = list(map(partially_applied, icd_10_entities))
