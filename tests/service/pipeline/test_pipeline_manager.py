@@ -2,8 +2,8 @@ from unittest import TestCase
 
 from app.exception.service_exception import ServiceException
 from app.service.pipeline.pipeline_manager import PipelineManager
-from service.pipeline.components.dummy_component_one import DummyComponentOne
-from service.pipeline.components.dummy_component_two import DummyComponentTwo
+from tests.service.pipeline.components.dummy_component_one import DummyComponentOne
+from tests.service.pipeline.components.dummy_component_two import DummyComponentTwo
 
 
 class TestPipelineManager(TestCase):
