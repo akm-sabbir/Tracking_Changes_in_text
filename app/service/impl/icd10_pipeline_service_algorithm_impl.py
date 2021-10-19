@@ -22,7 +22,7 @@ class ICD10PipelineServiceAlgoImpl(ICD10PipelineServiceWithFilter):
                                                                dx_threshold=dx_threshold,
                                                                icd10_threshold=icd10_threshold,
                                                                parent_threshold=parent_threshold)
-        print(pipeline_result[ICD10AnnotationAlgoComponent])
+        #print(pipeline_result[ICD10AnnotationAlgoComponent])
         return ICD10AnnotationResponse(
             icd10_annotations=pipeline_result[ICD10AnnotationAlgoComponent]
         )
