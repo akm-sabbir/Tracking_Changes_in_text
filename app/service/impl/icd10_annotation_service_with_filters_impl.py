@@ -37,6 +37,7 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
                                   dx_threshold: float, icd10_threshold: float,
                                   parent_threshold: float) -> List:
 
+        icd_10_entities = self.apply_is_negated(icd_10_entities=icd_10_entities)
         icd_10_entities = self.apply_icd10_threshold(icd_10_entities=icd_10_entities,
                                                      icd_thresh=icd10_threshold,
                                                      operate=operator.gt)
@@ -47,6 +48,9 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
                                                              hcc_map=hcc_map)
 
         return icd_10_entities
+
+    def apply_is_negated(self, icd_10_entities: List[ICD10AnnotationResult]):
+        return [icd10_entity for icd10_entity in icd_10_entities if icd10_entity.is_negated is False]
 
     def apply_dx_threshold(self, icd_10_entities: List[ICD10AnnotationResult], dx_thresh: float, operate) -> list:
         return [icd_10_entity for icd_10_entity in icd_10_entities if operate(icd_10_entity.score, dx_thresh)]
