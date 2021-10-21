@@ -1,4 +1,3 @@
-from collections import namedtuple
 from typing import List
 
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result

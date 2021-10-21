@@ -22,6 +22,7 @@ class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
 
     def __map_to_icd_dto(self, icd_10_entity: dict) -> ICD10AnnotationResult:
         text = icd_10_entity['Text']
+        score = icd_10_entity['Score']
         begin_offset = icd_10_entity['BeginOffset']
         end_offset = icd_10_entity['EndOffset']
         is_negated = "NEGATION" in [trait["Name"] for trait in icd_10_entity["Traits"]]
@@ -29,6 +30,5 @@ class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
             ICD10Annotation(code=concept['Code'], description=concept['Description'], score=concept['Score'])
             for concept in icd_10_entity['ICD10CMConcepts']
         ]
-        return ICD10AnnotationResult(medical_condition=text, begin_offset=begin_offset, end_offset=end_offset,
-                                     is_negated=is_negated, suggested_codes=suggested_codes,
-                                     raw_acm_response=icd_10_entity)
+        return ICD10AnnotationResult(medical_condition=text, score =score, begin_offset=begin_offset, end_offset=end_offset,
+                                      is_negated=is_negated, suggested_codes=suggested_codes)
