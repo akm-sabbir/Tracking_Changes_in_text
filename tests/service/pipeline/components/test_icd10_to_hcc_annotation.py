@@ -19,7 +19,7 @@ class TestICD10ToHccAnnotationComponent(TestCase):
             Mock(ICD10AnnotatorServiceWithFilterImpl)
 
         params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold": 0.80,
-                  ACMICD10AnnotationComponent: [ACMICD10Result("123", self.__get_dummy_icd10_data())]
+                  ACMICD10AnnotationComponent: [ACMICD10Result("123", self.__get_dummy_icd10_data(), [{}])]
                   }
         results = icd10_to_hcc_annotation_component.run(params)
 

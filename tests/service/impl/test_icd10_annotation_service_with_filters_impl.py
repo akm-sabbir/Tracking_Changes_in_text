@@ -16,7 +16,7 @@ class TestICD10AnnotatorServiceWithFilterImpl(TestCase):
         mock_client.infer_icd10_cm = Mock()
         mock_client.infer_icd10_cm.return_value = self.__get_dummy_icd10_response()
 
-        responses = AmazonICD10AnnotatorServiceImpl().get_icd_10_codes("text")
+        acm_data, responses = AmazonICD10AnnotatorServiceImpl().get_icd_10_codes("text")
         result_sets = self.__filtering_object.get_icd_10_filtered_codes(responses, hcc_map={},
                                                                         dx_threshold=0.9,
                                                                         icd10_threshold=0.67,
@@ -29,9 +29,11 @@ class TestICD10AnnotatorServiceWithFilterImpl(TestCase):
         assert result_sets[0].end_offset == 9
         assert not result_sets[0].is_negated
         assert len(result_sets[0].suggested_codes) == 2
+
         assert result_sets[0].suggested_codes[0].code == "B00.2"
         assert result_sets[0].suggested_codes[0].description == "Disease 6"
         assert result_sets[0].suggested_codes[0].score == 0.81
+        assert acm_data == self.__get_dummy_icd10_response()["Entities"]
 
 
     @patch('boto3.client')

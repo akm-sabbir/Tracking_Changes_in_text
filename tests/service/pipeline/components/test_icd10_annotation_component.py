@@ -38,7 +38,11 @@ class TestICD10AnnotationComponent(TestCase):
         assert mock_icd10_service.get_icd_10_codes.call_count == 2
 
         icd10_result = acm_result.icd10_annotations
+
         assert acm_result.id == "123"
+
+        assert acm_result.raw_acm_data[0] == {"raw_data": "data1"}
+        assert acm_result.raw_acm_data[1] == {"raw_data": "data2"}
 
         assert icd10_result[0].begin_offset == 12
         assert icd10_result[0].end_offset == 24
@@ -83,7 +87,10 @@ class TestICD10AnnotationComponent(TestCase):
 
         mock_icd10_service.get_icd_10_codes = Mock()
         mock_icd10_service.get_icd_10_codes.side_effect = self.__get_dummy_icd10_data()
-        dummy_result = ACMICD10Result("123", [item for sublist in self.__get_dummy_icd10_data() for item in sublist])
+        dummy_data = self.__get_dummy_icd10_data()
+        annotations = [item[1][0] for item in dummy_data]
+        raw_acm_data = [item[0][0] for item in dummy_data]
+        dummy_result = ACMICD10Result("123", annotations, raw_acm_data)
         acm_result: ACMICD10Result = icd10_annotation_component.run(
             {NotePreprocessingComponent: [paragraph1, paragraph2], "acm_cached_result": [dummy_result], "id": "123"})[0]
 
@@ -91,6 +98,9 @@ class TestICD10AnnotationComponent(TestCase):
 
         icd10_result = acm_result.icd10_annotations
         assert acm_result.id == "123"
+
+        assert acm_result.raw_acm_data[0] == {"raw_data": "data1"}
+        assert acm_result.raw_acm_data[1] == {"raw_data": "data2"}
 
         assert icd10_result[0].begin_offset == 12
         assert icd10_result[0].end_offset == 24
@@ -134,4 +144,5 @@ class TestICD10AnnotationComponent(TestCase):
                                                           suggested_codes=[icd10_annotation_3, icd10_annotation_4],
                                                           raw_acm_response={"data": "data"})
 
-        return [[icd10_annotation_result_1], [icd10_annotation_result_2]]
+        return [([{"raw_data": "data1"}], [icd10_annotation_result_1]),
+                ([{"raw_data": "data2"}], [icd10_annotation_result_2])]

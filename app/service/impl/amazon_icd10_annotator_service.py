@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple, Dict
 
 import boto3
 
@@ -12,13 +12,13 @@ class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
     def __init__(self):
         self.__client = boto3.client(service_name='comprehendmedical')
 
-    def get_icd_10_codes(self, text: str) -> List[ICD10AnnotationResult]:
+    def get_icd_10_codes(self, text: str) -> Tuple[List[Dict], List[ICD10AnnotationResult]]:
         try:
             result = self.__client.infer_icd10_cm(Text=text)
         except Exception:
             raise ServiceException(message="Error getting ICD10 annotation from ACM")
         icd_10_entities = result['Entities']
-        return [self.__map_to_icd_dto(icd_10_entity) for icd_10_entity in icd_10_entities]
+        return icd_10_entities, [self.__map_to_icd_dto(icd_10_entity) for icd_10_entity in icd_10_entities]
 
     def __map_to_icd_dto(self, icd_10_entity: dict) -> ICD10AnnotationResult:
         text = icd_10_entity['Text']
