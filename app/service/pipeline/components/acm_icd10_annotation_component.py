@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Dict
 
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
@@ -27,12 +27,14 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
         paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent]
 
         icd10_annotation_results: List[ICD10AnnotationResult] = []
+        raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
-            annotations: List[ICD10AnnotationResult] = self.__icd10_annotation_service.get_icd_10_codes(paragraph.text)
+            acm_data, annotations = self.__icd10_annotation_service.get_icd_10_codes(paragraph.text)
+            raw_acm_data.extend(acm_data)
             for annotation in annotations:
                 annotation.begin_offset += paragraph.start_index
                 annotation.end_offset += paragraph.start_index
             icd10_annotation_results += annotations
-        result = ACMICD10Result(annotation_results["id"], icd10_annotation_results)
+        result = ACMICD10Result(annotation_results["id"], icd10_annotation_results, raw_acm_data)
         self.__db_service.save_item(result)
         return [result]
