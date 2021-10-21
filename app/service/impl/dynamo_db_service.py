@@ -37,5 +37,5 @@ class DynamoDbService(DBService):
                 Item=model_dict
             )
             return response
-        except Exception as ex:
+        except Exception:
             self.__logger.error("Error saving data to DynamoDB. Data:" + json.dumps(model_dict), exc_info=True)
