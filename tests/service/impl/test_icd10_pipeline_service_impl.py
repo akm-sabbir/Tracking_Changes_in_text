@@ -28,7 +28,8 @@ class TestICD10PipelineServiceImpl(TestCase):
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,
-                                                          suggested_codes=[icd10_annotation_1, icd10_annotation_2])
+                                                          suggested_codes=[icd10_annotation_1, icd10_annotation_2],
+                                                          raw_acm_response={"data": "data1"})
 
         icd10_annotator_service: ICD10PipelineServiceImpl = ICD10PipelineServiceImpl()
 
@@ -78,7 +79,9 @@ class TestICD10PipelineServiceImpl(TestCase):
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,
-                                                          suggested_codes=[icd10_annotation_1, icd10_annotation_2])
+                                                          suggested_codes=[icd10_annotation_1, icd10_annotation_2],
+                                                          raw_acm_response={"data": "data"}
+                                                          )
 
         icd10_annotator_service: ICD10PipelineServiceImpl = ICD10PipelineServiceImpl()
 
