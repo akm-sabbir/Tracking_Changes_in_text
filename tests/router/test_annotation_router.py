@@ -7,9 +7,11 @@ from pydantic import ValidationError
 
 from app.Settings import Settings
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
+from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.request.icd10_annotation_request import ICD10AnnotationRequest
+from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 
 
@@ -50,8 +52,11 @@ class Test(TestCase):
 
         mock_icd10_service = Mock()
         mock_icd10_service.run_icd10_pipeline = Mock()
+
+        mock_hcc_maps = Mock(HCCResponseDto)
+        mock_hcc_maps.hcc_maps = {"A123": HCCCode(code="HCC108", score=0.5)}
         mock_icd10_service.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
-            id="123", icd10_annotations=mock_icd10_results)
+            id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps)
         mock_get_instance.return_value = mock_icd10_service
         from app.router import annotation_router
         response = self.__loop.run_until_complete(

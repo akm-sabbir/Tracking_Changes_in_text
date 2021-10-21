@@ -28,7 +28,7 @@ class TestICD10AnnotationAlgoComponent(TestCase):
         mock_hcc_response.hcc_maps = {"A15.9": mock_hcc_code}
 
         params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold": 0.80,
-                  ACMICD10AnnotationComponent: [ACMICD10Result("1213", icd10_list)],
+                  ACMICD10AnnotationComponent: [ACMICD10Result("1213", icd10_list, [{}])],
                   ICD10ToHccAnnotationComponent: [mock_hcc_response]}
         results = icd10_annotation_filter_component.run(params)
 

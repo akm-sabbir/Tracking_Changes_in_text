@@ -2,14 +2,18 @@ from unittest import TestCase
 from unittest.mock import Mock, patch
 
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
+from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
+from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.dummy_component_one_result import DummyComponentOneResult
 from app.dto.pipeline.dummy_component_two_result import DummyComponentTwoResult
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
+from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from tests.service.pipeline.components.dummy_component_one import DummyComponentOne
 from tests.service.pipeline.components.dummy_component_two import DummyComponentTwo
@@ -35,9 +39,21 @@ class TestICD10PipelineServiceImpl(TestCase):
 
         mock_run_pipeline = Mock()
 
+        hcc_maps = {"A123": HCCCode(code="HCC108", score=0.5)}
+        mock_hcc_maps = HCCResponseDto(hcc_maps=hcc_maps,
+                                       demographics_score={},
+                                       disease_interactions_score={},
+                                       aggregated_risk_score=0.0,
+                                       demographics_details={})
+
+        mock_acm_response = Mock(ACMICD10Result)
+        mock_acm_response.raw_acm_data = [{"acm_data": "data"}]
+
         mock_run_pipeline.return_value = {DummyComponentOne: [DummyComponentOneResult("a")],
                                           DummyComponentTwo: [DummyComponentTwoResult("b")],
-                                          ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data()
+                                          ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data(),
+                                          ICD10ToHccAnnotationComponent: [mock_hcc_maps],
+                                          ACMICD10AnnotationComponent: [mock_acm_response]
                                           }
 
         icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_manager = Mock()
@@ -52,10 +68,17 @@ class TestICD10PipelineServiceImpl(TestCase):
 
         response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
         assert response.icd10_annotations[0] == icd10_annotation_result_1
+        assert response.id == "123"
+        assert response.hcc_maps == mock_hcc_maps
+        assert response.raw_acm_data == mock_acm_response.raw_acm_data
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[0],
                           NotePreprocessingComponent)
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[1],
                           ACMICD10AnnotationComponent)
+        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[2],
+                          ICD10ToHccAnnotationComponent)
+        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[3],
+                          ICD10AnnotationAlgoComponent)
         mock_run_pipeline.assert_called_once()
         pipeline_args = mock_run_pipeline.call_args[1]
         assert pipeline_args["id"] == "123"
@@ -85,10 +108,23 @@ class TestICD10PipelineServiceImpl(TestCase):
 
         icd10_annotator_service: ICD10PipelineServiceImpl = ICD10PipelineServiceImpl()
 
+        hcc_maps = {"A123": HCCCode(code="HCC108", score=0.5)}
+        mock_hcc_maps = HCCResponseDto(hcc_maps=hcc_maps,
+                                       demographics_score={},
+                                       disease_interactions_score={},
+                                       aggregated_risk_score=0.0,
+                                       demographics_details={})
+
+        mock_acm_response = Mock(ACMICD10Result)
+        mock_acm_response.raw_acm_data = [{"acm_data": "data"}]
+
         mock_run_pipeline = Mock()
         mock_run_pipeline.return_value = {DummyComponentOne: [DummyComponentOneResult("a")],
                                           DummyComponentTwo: [DummyComponentTwoResult("b")],
-                                          ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data()}
+                                          ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data(),
+                                          ICD10ToHccAnnotationComponent: [mock_hcc_maps],
+                                          ACMICD10AnnotationComponent: [mock_acm_response]
+                                          }
 
         icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_manager = Mock()
         icd10_annotator_service._ICD10PipelineServiceImpl__db_service = Mock()
@@ -106,6 +142,10 @@ class TestICD10PipelineServiceImpl(TestCase):
                           NotePreprocessingComponent)
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[1],
                           ACMICD10AnnotationComponent)
+        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[2],
+                          ICD10ToHccAnnotationComponent)
+        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[3],
+                          ICD10AnnotationAlgoComponent)
         mock_run_pipeline.assert_called_once()
         pipeline_args = mock_run_pipeline.call_args[1]
         assert pipeline_args["id"] == "123"
