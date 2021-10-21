@@ -38,7 +38,7 @@ class HCCServiceImpl(HCCService):
         hcc_codes_map: Dict[str, HCCCode] = {}
         for icd10 in hcc_maps:
             hcc = hcc_maps[icd10]
-            hcc_code = HCCCode(code=hcc, score=hcc_scores[hcc])
+            hcc_code = HCCCode(code=hcc, score=hcc_scores[hcc] if hcc in hcc_scores else 0)
             hcc_codes_map[icd10] = hcc_code
 
         response_dto = HCCResponseDto(hcc_maps=hcc_codes_map,
