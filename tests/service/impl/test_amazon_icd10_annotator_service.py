@@ -22,6 +22,7 @@ class TestAmazonICD10AnnotatorService(TestCase):
         assert responses[0].begin_offset == 1
         assert responses[0].end_offset == 3
         assert responses[0].is_negated
+        assert responses[0].score == 0.8
 
         assert responses[0].suggested_codes[0].code == "A00.1"
         assert responses[0].suggested_codes[0].description == "Disease 1"
@@ -35,6 +36,7 @@ class TestAmazonICD10AnnotatorService(TestCase):
         assert responses[1].begin_offset == 5
         assert responses[1].end_offset == 9
         assert not responses[1].is_negated
+        assert responses[1].score == 0.9
 
         assert responses[1].suggested_codes[0].code == "B00.12"
         assert responses[1].suggested_codes[0].description == "Disease 0"
@@ -62,6 +64,7 @@ class TestAmazonICD10AnnotatorService(TestCase):
                 "Text": "abcd",
                 "BeginOffset": 1,
                 "EndOffset": 3,
+                "Score": 0.8,
                 "ICD10CMConcepts": [
                     {
                         "Code": "A00.1",
@@ -84,6 +87,7 @@ class TestAmazonICD10AnnotatorService(TestCase):
                 "Text": "efgh",
                 "BeginOffset": 5,
                 "EndOffset": 9,
+                "Score": 0.9,
                 "ICD10CMConcepts": [
                     {
                         "Code": "B00.12",

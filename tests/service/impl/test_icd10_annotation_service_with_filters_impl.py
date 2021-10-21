@@ -6,7 +6,7 @@ from app.service.impl.amazon_icd10_annotator_service import AmazonICD10Annotator
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
 
 
-class ICD10AnnotatorServiceWithFilterImpl(TestCase):
+class TestICD10AnnotatorServiceWithFilterImpl(TestCase):
     __filtering_object = ICD10AnnotatorServiceWithFilterImpl()
 
     @patch('boto3.client')
@@ -65,6 +65,7 @@ class ICD10AnnotatorServiceWithFilterImpl(TestCase):
                 "Text": "abcd",
                 "BeginOffset": 1,
                 "EndOffset": 3,
+                "Score":0.8,
                 "ICD10CMConcepts": [
                     {
                         "Code": "A00.1",
@@ -92,6 +93,7 @@ class ICD10AnnotatorServiceWithFilterImpl(TestCase):
                 "Text": "efgh",
                 "BeginOffset": 5,
                 "EndOffset": 9,
+                "Score": 0.9,
                 "ICD10CMConcepts": [
                     {
                         "Code": "B00.12",

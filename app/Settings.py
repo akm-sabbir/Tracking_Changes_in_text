@@ -1,7 +1,4 @@
-from pydantic import BaseSettings
-
-
-class Settings(BaseSettings):
+class Settings:
     app_name: str = "HCC API"
     dx_threshold: float
     parent_threshold: float

@@ -4,7 +4,7 @@ from typing import Dict
 from hccpy.hcc import HCCEngine
 from injector import singleton
 
-from app.dto.core.hcc_code import HCCCode
+from app.dto.core.service.hcc_code import HCCCode
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
@@ -38,7 +38,7 @@ class HCCServiceImpl(HCCService):
         hcc_codes_map: Dict[str, HCCCode] = {}
         for icd10 in hcc_maps:
             hcc = hcc_maps[icd10]
-            hcc_code = HCCCode(code=hcc, score=hcc_scores[hcc])
+            hcc_code = HCCCode(code=hcc, score=hcc_scores[hcc] if hcc in hcc_scores else 0)
             hcc_codes_map[icd10] = hcc_code
 
         response_dto = HCCResponseDto(hcc_maps=hcc_codes_map,

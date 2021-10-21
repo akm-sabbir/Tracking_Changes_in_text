@@ -24,7 +24,17 @@ app.add_middleware(
 )
 ConfigManager.initiate_config()
 ExceptionHandler.initiate_exception_handlers(app)
+__dx_threshold = ConfigManager.get_specific_config(section="entity_threshold", key="dx_threshold")
+Settings.set_settings_dx_threshold(dx_threshold=float(__dx_threshold))
 
+__icd10_threshold = ConfigManager.get_specific_config(section="icd10cm_threshold", key="icd10_threshold")
+Settings.set_settings_icd10_threshold(icd_threshold=float(__icd10_threshold))
+
+__parent_threshold = ConfigManager.get_specific_config(section="parents_threshold", key="parent_threshold")
+Settings.set_settings_parent_threshold(p_threshold=float(__parent_threshold))
+
+__caching_usage = ConfigManager.get_specific_config(section="caching_facility", key="use_cache")
+Settings.set_settings_use_cache(caching=bool(__caching_usage))
 # add routers
 __router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base_path)
 for router_module in __router_modules:
@@ -40,15 +50,3 @@ logging.config.fileConfig(logging_config_file_path,
                           defaults={'date': datetime.now().strftime('%Y-%m-%d-%H-%M-%S')},
                           # specifies value for %(date)s in logging.ini file
                           disable_existing_loggers=False)
-
-__dx_threshold = ConfigManager.get_specific_config(section="entity_threshold", key="dx_threshold")
-Settings.set_settings_dx_threshold(dx_threshold=__dx_threshold)
-
-__icd10_threshold = ConfigManager.get_specific_config(section="icd10cm_threshold", key="icd10_threshold")
-Settings.set_settings_icd10_threshold(icd_threshold=__icd10_threshold)
-
-__parent_threshold = ConfigManager.get_specific_config(section="parents_threshold", key="parent_threshold")
-Settings.set_settings_parent_threshold(p_threshold=__parent_threshold)
-
-__caching_usage = ConfigManager.get_specific_config(section="caching_facility", key="use_cache")
-Settings.set_settings_use_cache(caching=__caching_usage)

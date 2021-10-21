@@ -3,8 +3,8 @@ from typing import List
 from spacy.lang.en import English
 from spacy.tokens import Span
 
-from app.dto.core.paragraph import Paragraph
-from app.dto.core.sentence import Sentence
+from app.dto.core.pipeline.paragraph import Paragraph
+from app.dto.core.pipeline.sentence import Sentence
 
 
 class EncounterNoteUtil:

@@ -1,34 +1,35 @@
 from unittest import TestCase
-from unittest.mock import Mock, call, patch
+from unittest.mock import Mock, patch
 
-from app.dto.core.paragraph import Paragraph
+from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
+from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
-from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
-from app.service.pipeline.components.icd10_annotation_component import ICD10AnnotationComponent
-from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
-from app.service.pipeline.components.icd10_annotation_filter_component import  ICD10AnnotationAlgoComponent
+from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
+from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 
 
 class TestICD10AnnotationAlgoComponent(TestCase):
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
     def test__run__should_return_correct_response__given_correct_input(self, mock_boto3):
-        paragraph1 = Paragraph("some text", 0, 10)
-        paragraph2 = Paragraph("some other text", 11, 20)
-        mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
-        icd10_annotation_component = ICD10AnnotationComponent()
         icd10_annotation_filter_component = ICD10AnnotationAlgoComponent()
-        icd10_annotation_component._ICD10AnnotationComponent__icd10_annotation_service = mock_icd10_service
         icd10_annotation_filter_component._ICD10AnnotationAlgoComponent____icd10_annotation_service_with_filters = \
             Mock(ICD10AnnotatorServiceWithFilterImpl)
-        mock_icd10_service.get_icd_10_codes = Mock()
-        mock_icd10_service.get_icd_10_codes.side_effect = self.__get_dummy_icd10_data()
+        icd10_list = self.__get_dummy_icd10_data()
 
-        params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold":0.80,
-                  ICD10AnnotationComponent:self.__get_dummy_icd10_data(),
-                  ICD10ToHccAnnotationComponent:{}}
+        mock_hcc_response = Mock(HCCResponseDto)
+        mock_hcc_code = Mock(HCCCode)
+        mock_hcc_code.code = "HCC100"
+        mock_hcc_code.score = 0.7
+
+        mock_hcc_response.hcc_maps = {"A15.9": mock_hcc_code}
+
+        params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold": 0.80,
+                  ACMICD10AnnotationComponent: [ACMICD10Result("1213", icd10_list)],
+                  ICD10ToHccAnnotationComponent: [mock_hcc_response]}
         results = icd10_annotation_filter_component.run(params)
 
         assert results[0].suggested_codes[0].code == "A15.0"
