@@ -5,6 +5,8 @@ from unittest.mock import Mock, patch
 
 from pydantic import ValidationError
 
+from app.Settings import Settings
+from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.request.icd10_annotation_request import ICD10AnnotationRequest
@@ -24,6 +26,11 @@ class Test(TestCase):
 
     @patch("app.util.dependency_injector.DependencyInjector.get_instance")
     def test__annotation_router__given_correct_input__should_return_correct_response(self, mock_get_instance: Mock):
+        Settings.dx_threshold = 0.7
+        Settings.parent_threshold = 0.7
+        Settings.icd10_threshold = 0.7
+        Settings.use_cache = True
+
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
         icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
                                              score=0.54)
@@ -48,9 +55,15 @@ class Test(TestCase):
         mock_get_instance.return_value = mock_icd10_service
         from app.router import annotation_router
         response = self.__loop.run_until_complete(
-            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="123", text="text")))
+            annotation_router.annotate_icd_10(ICD10AnnotationRequest(id="123", text="text"), dx_threshold=0.7,
+                                              icd10_threshold=0.7, parent_threshold=0.7, use_cache=True))
         assert response.icd10_annotations == mock_icd10_results
-        mock_icd10_service.run_icd10_pipeline.assert_called_once_with("123", "text")
+        call_args: ICD10PipelineParams = mock_icd10_service.run_icd10_pipeline.call_args[0][0]
+        assert call_args.note_id == "123"
+        assert call_args.text == "text"
+        assert call_args.dx_threshold == 0.7
+        assert call_args.icd10_threshold == 0.7
+        assert call_args.parent_threshold == 0.7
 
     def test_annotation_router__given_empty_input__should_raise_validation_error(self):
         from app.router import annotation_router
