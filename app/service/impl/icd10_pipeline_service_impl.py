@@ -3,7 +3,9 @@ from typing import List
 from munch import munchify
 
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
+from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.icd10_pipeline_service import ICD10PipelineService
 from app.service.impl.dynamo_db_service import DynamoDbService
@@ -41,7 +43,12 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                                                parent_threshold=params.parent_threshold
                                                                )
         icd10_annotations: List[ICD10AnnotationResult] = pipeline_result[ICD10AnnotationAlgoComponent]
+        hcc_maps: HCCResponseDto = pipeline_result[ICD10ToHccAnnotationComponent][0]
+        acm_annotation_result: ACMICD10Result = pipeline_result[ACMICD10AnnotationComponent][0]
+
         return ICD10AnnotationResponse(
             id=params.note_id,
-            icd10_annotations=icd10_annotations
+            icd10_annotations=icd10_annotations,
+            raw_acm_data=acm_annotation_result.raw_acm_data,
+            hcc_maps=hcc_maps
         )
