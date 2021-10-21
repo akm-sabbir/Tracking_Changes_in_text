@@ -24,29 +24,17 @@ class TestICD10AnnotatorServiceWithFilterImpl(TestCase):
         mock_boto3_client.assert_called_once_with(service_name="comprehendmedical")
         mock_client.infer_icd10_cm.assert_called_once_with(Text="text")
 
+        assert result_sets[0].medical_condition == "efgh"
+        assert result_sets[0].begin_offset == 5
+        assert result_sets[0].end_offset == 9
+        assert not result_sets[0].is_negated
+        assert len(result_sets[0].suggested_codes) == 2
+
+        assert result_sets[0].suggested_codes[0].code == "B00.2"
+        assert result_sets[0].suggested_codes[0].description == "Disease 6"
+        assert result_sets[0].suggested_codes[0].score == 0.81
         assert acm_data == self.__get_dummy_icd10_response()["Entities"]
-        assert responses[0].medical_condition == "abcd"
-        assert responses[0].begin_offset == 1
-        assert responses[0].end_offset == 3
-        assert responses[0].is_negated
 
-        assert len(responses[0].suggested_codes) == 1
-        assert responses[0].suggested_codes[0].code == "A00.1"
-        assert responses[0].suggested_codes[0].description == "Disease 1"
-        assert responses[0].suggested_codes[0].score == 0.81
-
-        assert responses[1].medical_condition == "efgh"
-        assert responses[1].begin_offset == 5
-        assert responses[1].end_offset == 9
-        assert not responses[1].is_negated
-
-        assert responses[1].suggested_codes[0].code == "B00.2"
-        assert responses[1].suggested_codes[0].description == "Disease 6"
-        assert responses[1].suggested_codes[0].score == 0.81
-
-        assert responses[1].suggested_codes[1].code == "B00"
-        assert responses[1].suggested_codes[1].description == "Disease 6"
-        assert responses[1].suggested_codes[1].score == 0.82
 
     @patch('boto3.client')
     def test__get_icd_10_codes__should_raise_service_exception__given_internal_exception_raise(self,
