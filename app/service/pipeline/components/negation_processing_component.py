@@ -15,11 +15,10 @@ from app.service.pipeline.components.note_preprocessing_component import NotePre
 
 class NegationHandlingComponent(BasePipelineComponent):
 
-
-    DEPENDS_ON = []
+    DEPENDS_ON = [NotePreprocessingComponent]
 
     def run(self, annotation_results: dict) -> List[Paragraph]:
         if annotation_results['acm_cached_result'] is not None:
             return []
-        text = annotation_results['text']
-        return annotation_results
+        paragraphs: List[Paragraph]= annotation_results[NotePreprocessingComponent]
+        return paragraphs

@@ -1,5 +1,6 @@
 from collections import defaultdict
 
+from app.Settings import Settings
 from app.service.icd10_negation_service import ICD10NegationService
 
 
@@ -18,6 +19,9 @@ class Trie(object):
 
 
 class Icd10NegationServiceImpl(ICD10NegationService):
+
+    def __init__(self):
+        self.dict = Settings.get_settings_dictionary()
 
     def insert_in(self, word, trie, value=None, index=0):
         if index == len(word) - 1:
