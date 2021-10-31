@@ -11,7 +11,9 @@ from app.exception.exception_handler import ExceptionHandler
 from app.router import routers_base_path
 from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
-from app.Settings import  Settings
+from app.util.english_dictionary import EnglishDictionary
+from app.Settings import Settings
+from app.util.trie_structure import Trie
 from nltk.corpus import words
 from spacy.lang.en import English
 
@@ -38,8 +40,11 @@ Settings.set_settings_parent_threshold(p_threshold=float(__parent_threshold))
 __caching_usage = ConfigManager.get_specific_config(section="caching_facility", key="use_cache")
 Settings.set_settings_use_cache(caching=bool(__caching_usage))
 # add routers
-
-Settings.set_settings_dictionary(words.words('en'))
+eng_dic = EnglishDictionary()
+root = Trie()
+for each_word in words.words('en'):
+    eng_dic.insert_in(each_word, root)
+Settings.set_settings_dictionary(root)
 Settings.set_settings_tokenizer(English())
 
 __router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base_path)
