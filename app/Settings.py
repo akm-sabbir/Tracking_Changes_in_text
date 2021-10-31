@@ -1,9 +1,14 @@
+import spacy
+
+
 class Settings:
     app_name: str = "HCC API"
     dx_threshold: float
     parent_threshold: float
     icd10_threshold: float
     use_cache: bool
+    eng_dict: set
+    spacy_tokenizer: spacy.Any
 
     @staticmethod
     def get_settings_dx_threshold() -> float:
@@ -36,3 +41,19 @@ class Settings:
     @staticmethod
     def set_settings_icd10_threshold(icd_threshold: float):
         Settings.icd10_threshold = icd_threshold
+
+    @staticmethod
+    def set_settings_dictionary(dictionary: set):
+        Settings.eng_dict = set(dictionary)
+
+    @staticmethod
+    def get_settings_dictionary():
+        return Settings.eng_dict
+
+    @staticmethod
+    def set_settings_tokenizer(tokenizer: object):
+        Settings.spacy_tokenizer = tokenizer
+
+    @staticmethod
+    def get_settings_tokenizer():
+        return Settings.spacy_tokenizer

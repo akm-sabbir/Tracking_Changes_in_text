@@ -12,6 +12,8 @@ from app.router import routers_base_path
 from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
 from app.Settings import  Settings
+from nltk.corpus import words
+import spacy
 
 app = FastAPI()
 #allow cors
@@ -36,6 +38,10 @@ Settings.set_settings_parent_threshold(p_threshold=float(__parent_threshold))
 __caching_usage = ConfigManager.get_specific_config(section="caching_facility", key="use_cache")
 Settings.set_settings_use_cache(caching=bool(__caching_usage))
 # add routers
+
+Settings.set_settings_dictionary(words.words('en'))
+Settings.set_settings_tokenizer(spacy.load("en_core_web_sm"))
+
 __router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base_path)
 for router_module in __router_modules:
     app.include_router(router_module.router, prefix=router_module.prefix)
