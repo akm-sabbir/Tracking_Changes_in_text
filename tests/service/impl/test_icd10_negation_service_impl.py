@@ -9,6 +9,7 @@ from nltk.corpus import words
 from app.util.english_dictionary import EnglishDictionary
 from app.util.trie_structure import Trie
 
+
 class Icd10NegationServiceImpl(TestCase):
     word = words.words()
     eng_dict = EnglishDictionary()
