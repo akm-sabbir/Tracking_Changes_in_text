@@ -6,8 +6,8 @@ from app.service.icd10_negation_service import ICD10NegationService
 
 class Icd10NegationServiceImpl(ICD10NegationService):
 
-    def __init__(self):
-        self.dict = Settings.get_settings_dictionary()
+    def __init__(self, dictionary=None):
+        self.dict = Settings.get_settings_dictionary() if dictionary is None else dictionary
 
     def dfs_search(self, trie, word, index, one_edit_words, form_strings, dist):
 

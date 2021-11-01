@@ -1,5 +1,5 @@
 import spacy
-
+from app.util.trie_structure import Trie
 
 class Settings:
     app_name: str = "HCC API"
@@ -7,7 +7,7 @@ class Settings:
     parent_threshold: float
     icd10_threshold: float
     use_cache: bool
-    eng_dict: set
+    eng_dict: Trie
     spacy_tokenizer: spacy.Any
 
     @staticmethod
@@ -43,8 +43,8 @@ class Settings:
         Settings.icd10_threshold = icd_threshold
 
     @staticmethod
-    def set_settings_dictionary(dictionary: set):
-        Settings.eng_dict = set(dictionary)
+    def set_settings_dictionary(dictionary: Trie):
+        Settings.eng_dict = dictionary
 
     @staticmethod
     def get_settings_dictionary():
