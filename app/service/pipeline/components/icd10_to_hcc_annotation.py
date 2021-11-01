@@ -13,7 +13,7 @@ from app.service.pipeline.components.negation_processing_component import Negati
 
 
 class ICD10ToHccAnnotationComponent(BasePipelineComponent):
-    DEPENDS_ON: List = [NegationHandlingComponent,NotePreprocessingComponent, ACMICD10AnnotationComponent]
+    DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent, ACMICD10AnnotationComponent]
 
     def __init__(self):
         super().__init__()
