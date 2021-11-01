@@ -33,6 +33,6 @@ class EnglishDictionary(object):
                 return True
             else:
                 return False
-        if trie.current_elem[word[index]] is None:
+        if trie.current_elem.get(word[index]) is None:
             return False
         return self.is_valid_word(word, trie.current_elem[word[index]], index + 1)

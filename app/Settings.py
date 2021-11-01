@@ -1,5 +1,9 @@
 import spacy
+from spacy.lang.en import English
+
+from app.util.english_dictionary import EnglishDictionary
 from app.util.trie_structure import Trie
+from nltk.corpus import words
 
 class Settings:
     app_name: str = "HCC API"
@@ -57,3 +61,12 @@ class Settings:
     @staticmethod
     def get_settings_tokenizer():
         return Settings.spacy_tokenizer
+
+    @staticmethod
+    def start_initialize_dictionary():
+        eng_dic = EnglishDictionary()
+        root = Trie()
+        for each_word in words.words('en'):
+            eng_dic.insert_in(each_word, root)
+        Settings.set_settings_dictionary(root)
+        Settings.set_settings_tokenizer(English())
