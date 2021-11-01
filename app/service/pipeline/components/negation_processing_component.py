@@ -28,4 +28,6 @@ class NegationHandlingComponent(BasePipelineComponent):
         for index, each_token in enumerate(text_tokens):
             if each_token.lower().find("no") == 0:
                 text_tokens[index] = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
-        return " ".join(text_tokens)
+        text_tokens = [" " + each_token if each_token not in [",", "?", "!", ".", ";"] else each_token for each_token in
+                        text_tokens]
+        return "".join(text_tokens).strip()

@@ -21,12 +21,13 @@ class TestNegationProcesingComponent(TestCase):
         Settings.set_settings_dictionary(root)
         Settings.set_settings_tokenizer(English())
         component = NegationHandlingComponent()
-        result = component.run({"text": "nodizzyness noanxity noanxieti normal nothing nobreathleessness",
+        result = component.run({"text": "nodizzyness, noanxity, noanxieti, normal nothing nobreathleessness",
                                 "acm_cached_result": None})
-
-        tokens = result.split(" ")
-        assert "dizziness" in tokens
-        assert "anxiety" in tokens
+        print(result)
+        tokens = result.split(", ")
+        print(tokens)
+        assert "no dizziness" in tokens
+        assert "no anxiety" in tokens
 
 
 
