@@ -24,9 +24,9 @@ class TestNegationProcesingComponent(TestCase):
         result = component.run({"text": "nodizzyness noanxity noanxieti normal nothing nobreathleessness",
                                 "acm_cached_result": None})
 
-        tokens = result.split(",")
-        assert "no dizziness" in tokens
-        assert "no anxiety" in tokens
+        tokens = result.split(" ")
+        assert "dizziness" in tokens
+        assert "anxiety" in tokens
 
 
 
