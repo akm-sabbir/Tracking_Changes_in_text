@@ -2,13 +2,6 @@
 from collections import defaultdict
 from typing import List
 
-from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
-from app.dto.core.pipeline.paragraph import Paragraph
-from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
-from app.dto.request.hcc_request_dto import HCCRequestDto
-from app.dto.response.hcc_response_dto import HCCResponseDto
-from app.service.hcc_service import HCCService
-from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.impl.icd10_negation_service_impl import Icd10NegationServiceImpl
 from app.util.dependency_injector import DependencyInjector
@@ -30,9 +23,10 @@ class NegationHandlingComponent(BasePipelineComponent):
             return []
         tokenize = Settings.get_settings_tokenizer()
         text = annotation_results['text']
-        tokens = tokenize(text)
-        for index, each_token in enumerate(tokens):
+        tokens = tokenize(text.lower())
+        text_tokens = [each.text for each in tokens]
+        for index, each_token in enumerate(text_tokens):
             if each_token.lower().find("no") == 0:
-                tokens[index] = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
+                text_tokens[index] = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
 
-        return " ".join(tokens)
+        return ",".join(text_tokens)
