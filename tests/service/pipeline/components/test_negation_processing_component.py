@@ -25,7 +25,6 @@ class TestNegationProcesingComponent(TestCase):
                                 "acm_cached_result": None})
 
         tokens = result.split(",")
-        print(tokens)
         assert "no dizziness" in tokens
         assert "no anxiety" in tokens
 
