@@ -1,7 +1,7 @@
 from app.util.trie_structure import Trie
 
 
-class EnglishDictionary():
+class EnglishDictionary(object):
 
     def insert_in(self, word, trie, value=None, index=0):
         if index == len(word) - 1:

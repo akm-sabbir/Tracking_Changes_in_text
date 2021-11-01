@@ -28,11 +28,15 @@ class Icd10NegationServiceImpl(ICD10NegationService):
         one_edit_words = self.dfs_search(trie, word, index + 1, one_edit_words, form_strings, dist + 1)
         return one_edit_words
 
-    def build_one_edit_distance(self, word, trie, index=0):
+    def build_one_edit_distance(self, word, index=0):
         one_edit_words = set()
-        form_strings = trie.current_elem[word[index]].word
-        one_edit_words = self.dfs_search(trie.current_elem[word[index]], word, index + 1, one_edit_words, form_strings, 0)
+        form_strings = self.dict.current_elem[word[index]].word
+        one_edit_words = self.dfs_search(self.dict.current_elem[word[index]], word, index + 1, one_edit_words, form_strings, 0)
         return list(one_edit_words)
 
     def get_icd_10_text_negation_fixed(self, text: str) -> str:
+        if text.lower().find("no") == 0:
+            results = self.build_one_edit_distance(text[2:], index=0)
+            results = ["no " + word for word in results]
+            text = ",".join(results)
         return text
