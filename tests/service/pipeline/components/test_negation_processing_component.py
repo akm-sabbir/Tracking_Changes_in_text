@@ -1,12 +1,10 @@
 from unittest import TestCase
-from unittest.mock import patch, Mock
 
-from app.dto.core.pipeline.paragraph import Paragraph
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.Settings import Settings
 from nltk.corpus import words
 from app.util.english_dictionary import EnglishDictionary
-from app.util.trie_structure import Trie
+from app.dto.core.trie_structure import Trie
 from spacy.lang.en import English
 
 

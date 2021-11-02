@@ -1,5 +1,4 @@
-from app.util.trie_structure import Trie
-from typing import List
+from app.dto.core.trie_structure import Trie
 from unittest import TestCase
 from app.util.english_dictionary import EnglishDictionary
 

@@ -2,7 +2,7 @@ import spacy
 from spacy.lang.en import English
 
 from app.util.english_dictionary import EnglishDictionary
-from app.util.trie_structure import Trie
+from app.dto.core.trie_structure import Trie
 from nltk.corpus import words
 
 class Settings:

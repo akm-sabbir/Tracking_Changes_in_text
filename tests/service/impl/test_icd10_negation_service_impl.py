@@ -1,13 +1,10 @@
 from unittest import TestCase
-from unittest.mock import patch, Mock
 
-from app.exception.service_exception import ServiceException
-from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
 from app.service.impl.icd10_negation_service_impl import Icd10NegationServiceImpl
 from app.Settings import Settings
 from nltk.corpus import words
 from app.util.english_dictionary import EnglishDictionary
-from app.util.trie_structure import Trie
+from app.dto.core.trie_structure import Trie
 
 
 class Icd10NegationServiceImpl(TestCase):
