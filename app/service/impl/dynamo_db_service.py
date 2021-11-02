@@ -18,7 +18,6 @@ class DynamoDbService(DBService):
         if self.dynamodb is None:
             self.dynamodb = boto3.resource('dynamodb')
         self.table = self.dynamodb.Table(table_name)
-        self.cache = {}
 
     @lru_cache(maxsize=1024)
     def get_item(self, item_id: Any):
@@ -26,7 +25,6 @@ class DynamoDbService(DBService):
             response = self.table.query(
                 KeyConditionExpression=Key('id').eq(item_id)
             )
-            self.cache[item_id] = response['Items']
             return response['Items']
         except Exception:
             self.__logger.error("Error getting data from DynamoDB. Item Id: " + item_id, exc_info=True)
