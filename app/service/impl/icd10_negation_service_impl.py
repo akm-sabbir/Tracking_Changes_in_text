@@ -13,7 +13,7 @@ class Icd10NegationServiceImpl(ICD10NegationService):
 
     def dfs_search(self, trie, word, index, one_edit_words, form_strings, dist):
 
-        if (trie.isWord is True) and (dist <= 1) and (abs(len(word) - len(form_strings)) < 2):
+        if (trie.is_word is True) and (dist <= 1) and (abs(len(word) - len(form_strings)) < 2):
             one_edit_words.add(form_strings)
 
         if (trie is None) or (dist > 1):
