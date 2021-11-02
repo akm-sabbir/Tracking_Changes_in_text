@@ -71,13 +71,13 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert response.id == "123"
         assert response.hcc_maps == mock_hcc_maps
         assert response.raw_acm_data == mock_acm_response.raw_acm_data
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[0],
-                          NotePreprocessingComponent)
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[1],
-                          ACMICD10AnnotationComponent)
+                          NotePreprocessingComponent)
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[2],
-                          ICD10ToHccAnnotationComponent)
+                          ACMICD10AnnotationComponent)
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[3],
+                          ICD10ToHccAnnotationComponent)
+        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[4],
                           ICD10AnnotationAlgoComponent)
         mock_run_pipeline.assert_called_once()
         pipeline_args = mock_run_pipeline.call_args[1]
@@ -138,13 +138,13 @@ class TestICD10PipelineServiceImpl(TestCase):
 
         response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
         assert response.icd10_annotations[0] == icd10_annotation_result_1
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[0],
-                          NotePreprocessingComponent)
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[1],
-                          ACMICD10AnnotationComponent)
+                          NotePreprocessingComponent)
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[2],
-                          ICD10ToHccAnnotationComponent)
+                          ACMICD10AnnotationComponent)
         assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[3],
+                          ICD10ToHccAnnotationComponent)
+        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[4],
                           ICD10AnnotationAlgoComponent)
         mock_run_pipeline.assert_called_once()
         pipeline_args = mock_run_pipeline.call_args[1]
