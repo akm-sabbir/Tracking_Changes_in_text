@@ -11,7 +11,6 @@ from app.exception.exception_handler import ExceptionHandler
 from app.router import routers_base_path
 from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
-from app.util.english_dictionary import EnglishDictionary
 from app.Settings import Settings
 
 
