@@ -8,7 +8,7 @@ from app.dto.core.trie_structure import Trie
 
 
 class Icd10NegationServiceImpl(TestCase):
-    word = words.words()
+    word = ["dizziness", "anxiety", "appropriate", "breathlessness"]
     eng_dict = EnglishDictionary()
     root = Trie()
     for each_word in word:

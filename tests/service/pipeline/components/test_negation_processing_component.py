@@ -13,7 +13,7 @@ class TestNegationProcesingComponent(TestCase):
 
     def test__run__should_return_correct_response__given_correct_input(self, ):
         start_time = time.time()
-        word = words.words()
+        word = ["dizziness", "anxiety", "appropriate", "breathlessness", "normal", "nothing"]
         root = Trie()
         eng_dict = EnglishDictionary()
         for each_word in word:
