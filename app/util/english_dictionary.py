@@ -23,7 +23,7 @@ class EnglishDictionary(object):
                 trie.current_elem[word[index]].isWord = False
                 trie.current_elem[word[index]].isLeaf = False
                 trie.current_elem[word[index]].word = word[index]
-                #trie.current_elem[word[index]].unicodePoint = ord(word[index])
+                trie.current_elem[word[index]].unicodePoint = ord(word[index])
         index = self.insert_in(word, trie.current_elem[word[index]], value=value, index=index + 1)
         return index
 

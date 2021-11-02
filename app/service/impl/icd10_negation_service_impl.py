@@ -16,8 +16,6 @@ class Icd10NegationServiceImpl(ICD10NegationService):
         if (trie.isWord is True) and (dist <= 1) and (abs(len(word) - len(form_strings)) < 2):
             one_edit_words.add(form_strings)
 
-        #if (len(word) == index) or (trie is None) or (dist > 1):
-        #    return one_edit_words
         if (trie is None) or (dist > 1):
             return one_edit_words
 

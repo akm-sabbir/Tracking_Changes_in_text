@@ -23,9 +23,10 @@ class TestNegationProcesingComponent(TestCase):
         print("--- %s seconds ---" % (time.time() - start_time))
         component = NegationHandlingComponent()
         start_time = time.time()
-        result = component.run({"text": "nodizzyness, noanxity, noanxieti, noanxiet, normal nothing, nobreathlessnes",
+        result = component.run({"text": "nodizzyness, noanxieety, noanxieti, noanxiet, normal nothing, nobreathlessnes",
                                 "acm_cached_result": None})
         print("--- %s seconds ---" % (time.time() - start_time))
+        print(result)
         tokens = result.split(", ")
         assert "no dizziness" in tokens
         assert "no anxiety" in tokens
