@@ -8,7 +8,7 @@ from app.util.english_dictionary import EnglishDictionary
 class Icd10NegationServiceImpl(ICD10NegationService):
 
     def __init__(self, dictionary=None):
-        self.dict = Settings.get_settings_dictionary() if dictionary is None else dictionary
+        self.dict = dictionary
         self.utilize_dict = EnglishDictionary()
 
     def dfs_search(self, trie, word, index, one_edit_words, form_strings, dist):
@@ -38,6 +38,7 @@ class Icd10NegationServiceImpl(ICD10NegationService):
         return list(one_edit_words)
 
     def get_icd_10_text_negation_fixed(self, text: str) -> str:
+        self.dict = Settings.get_settings_dictionary() if self.dict is None else self.dict
         if text.lower().find("no") == 0 and not self.utilize_dict.is_valid_word(text.lower(), self.dict, 0):
             results = self.build_one_edit_distance(text[2:].lower(), index=0)
             results = ["no " + word for word in results] if len(results) != 0 else text.lower()

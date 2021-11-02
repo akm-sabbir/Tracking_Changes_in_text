@@ -5,6 +5,7 @@ from app.util.english_dictionary import EnglishDictionary
 from app.dto.core.trie_structure import Trie
 from nltk.corpus import words
 
+
 class Settings:
     app_name: str = "HCC API"
     dx_threshold: float
