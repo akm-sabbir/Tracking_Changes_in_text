@@ -15,7 +15,7 @@ class EnglishDictionary(object):
                 trie.current_elem[word[index]].is_word = True
                 trie.current_elem[word[index]].is_leaf = True
                 trie.current_elem[word[index]].word = word[index]
-            trie.current_elem[word[index]].unicodePoint = ord(word[index])
+            trie.current_elem[word[index]].unicode_point = ord(word[index])
             return index
         else:
             if trie.current_elem.get(word[index]) is None:
@@ -23,7 +23,7 @@ class EnglishDictionary(object):
                 trie.current_elem[word[index]].is_word = False
                 trie.current_elem[word[index]].is_leaf = False
                 trie.current_elem[word[index]].word = word[index]
-                trie.current_elem[word[index]].unicodePoint = ord(word[index])
+                trie.current_elem[word[index]].unicode_point = ord(word[index])
         index = self.insert_in(word, trie.current_elem[word[index]], value=value, index=index + 1)
         return index
 

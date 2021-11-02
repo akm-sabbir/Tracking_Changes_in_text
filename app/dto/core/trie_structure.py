@@ -10,8 +10,7 @@ class Trie(object):
         self.is_leaf = True
         self.is_root = False
         self.word = None
-        self.unicodePoint = None
-        return
+        self.unicode_point = None
 
     def __call__(self):
         return
