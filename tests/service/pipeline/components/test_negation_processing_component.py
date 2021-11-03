@@ -27,7 +27,7 @@ class TestNegationProcesingComponent(TestCase):
                                 "acm_cached_result": None})
         print("--- %s seconds ---" % (time.time() - start_time))
         print(result)
-        tokens = result.split(", ")
+        tokens = result[0].split(", ")
         assert "no dizziness" in tokens
         assert "no anxiety" in tokens
 
