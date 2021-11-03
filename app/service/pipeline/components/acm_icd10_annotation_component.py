@@ -7,13 +7,14 @@ from app.service.icd10_annotator_service import ICD10AnnotatorService
 from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
 from app.service.impl.dynamo_db_service import DynamoDbService
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
+from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
 
 
 class ACMICD10AnnotationComponent(BasePipelineComponent):
-    DEPENDS_ON: List = [NotePreprocessingComponent]
+    DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent]
 
     def __init__(self):
         super().__init__()

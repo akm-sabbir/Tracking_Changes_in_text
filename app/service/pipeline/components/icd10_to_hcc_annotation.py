@@ -9,10 +9,11 @@ from app.service.impl.hcc_service_impl import HCCServiceImpl
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
+from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 
 
 class ICD10ToHccAnnotationComponent(BasePipelineComponent):
-    DEPENDS_ON: List = [NotePreprocessingComponent, ACMICD10AnnotationComponent]
+    DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent, ACMICD10AnnotationComponent]
 
     def __init__(self):
         super().__init__()

@@ -11,7 +11,8 @@ from app.exception.exception_handler import ExceptionHandler
 from app.router import routers_base_path
 from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
-from app.Settings import  Settings
+from app.Settings import Settings
+
 
 app = FastAPI()
 #allow cors
@@ -36,6 +37,9 @@ Settings.set_settings_parent_threshold(p_threshold=float(__parent_threshold))
 __caching_usage = ConfigManager.get_specific_config(section="caching_facility", key="use_cache")
 Settings.set_settings_use_cache(caching=bool(__caching_usage))
 # add routers
+
+Settings.start_initialize_dictionary()
+
 __router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base_path)
 for router_module in __router_modules:
     app.include_router(router_module.router, prefix=router_module.prefix)
