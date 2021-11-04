@@ -12,7 +12,9 @@ class PipelineManager:
     def run_pipeline(self, **initial_input) -> dict:
         annotation_results: dict = initial_input
         for component in self.__pipeline_components:
+
             annotation_results[component.__class__] = component.run(annotation_results)
+
         return annotation_results
 
     def __check_dependencies(self) -> NoReturn:

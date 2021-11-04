@@ -18,7 +18,8 @@ from app.service.pipeline.pipeline_manager import PipelineManager
 from app.util.config_manager import ConfigManager
 
 
-class ICD10PipelineServiceImpl(ICD10PipelineService):
+class \
+        ICD10PipelineServiceImpl(ICD10PipelineService):
     def __init__(self):
         self.__pipeline_components = [NegationHandlingComponent(), NotePreprocessingComponent(),
                                       ACMICD10AnnotationComponent(), ICD10ToHccAnnotationComponent(),
