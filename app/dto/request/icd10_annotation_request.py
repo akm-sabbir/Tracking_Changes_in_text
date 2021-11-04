@@ -17,6 +17,7 @@ class ICD10AnnotationRequest(BaseDto):
 
     @validator('text')
     def text_must_be_string_and_nonempty(cls, text: str):
-        if len(text.strip()) == 0 or re.match(r"[0-9.]+|true|false", text.lower()):
-            raise ValueError("must be string and cannot be empty")
+        if len(text.strip()) == 0 or re.match(r".*[a-zA-Z]+", text.lower()) is None:
+            print(text)
+            raise ValueError("text must be string and cannot be empty")
         return text
