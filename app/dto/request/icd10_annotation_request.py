@@ -11,13 +11,12 @@ class ICD10AnnotationRequest(BaseDto):
 
     @validator('id')
     def id_must_be_string_and_nonempty(cls, id_value: str):
-        if len(id_value.strip()) == 0 or re.match(r"^true$|^false$", id_value.lower()):
+        if len(id_value.strip()) == 0 or re.match(r"^true$|^false$", id_value.strip().lower()):
             raise ValueError("id must be string and cannot be empty")
         return id_value
 
     @validator('text')
     def text_must_be_string_and_nonempty(cls, text: str):
-        if len(text.strip()) == 0 or re.match(r"^true$|^false$", text.lower()) or re.match(r".*[a-zA-Z]+",
-                                                                                           text.lower()) is None:
+        if len(text.strip()) == 0 or re.match(r"^true$|^false$|^[0-9.]+$", text.strip().lower()):
             raise ValueError("text must be string and cannot be empty")
         return text
