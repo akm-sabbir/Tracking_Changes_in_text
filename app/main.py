@@ -47,7 +47,13 @@ for router_module in __router_modules:
 # initiate logging
 logging_folder = ConfigManager.get_specific_config(section="logging", key="folder")
 
+exclusion_list_folder = ConfigManager.get_specific_config(section="exclusion", key="list_")
+
 Path(os.path.join(os.path.dirname(app_base_path), logging_folder)).mkdir(exist_ok=True)
+
+exclusion_list_ = os.path.join(os.path.dirname(app_base_path), 'exclusions.json')
+
+Settings.set_exclusion_dict(path_=exclusion_list_)
 
 logging_config_file_path = os.path.join(os.path.dirname(app_base_path), 'logging.ini')
 logging.config.fileConfig(logging_config_file_path,
