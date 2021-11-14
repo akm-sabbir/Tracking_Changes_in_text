@@ -18,7 +18,7 @@ class NegationHandlingComponent(BasePipelineComponent):
         self.__icd10_negation_fixing_service: ICD10NegationService = DependencyInjector.get_instance(
             Icd10NegationServiceImpl)
 
-    def run(self, annotation_results: dict) -> str:
+    def run(self, annotation_results: dict) -> list:
         if annotation_results['acm_cached_result'] is not None:
             return []
         tokenize = Settings.get_settings_tokenizer()
@@ -30,4 +30,4 @@ class NegationHandlingComponent(BasePipelineComponent):
                 text_tokens[index] = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
         text_tokens = [" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
                        for each_token in text_tokens]
-        return "".join(text_tokens).strip()
+        return ["".join(text_tokens).strip()]
