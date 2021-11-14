@@ -9,13 +9,13 @@ from app.service.icd10_negation_service import ICD10NegationService
 from app.Settings import Settings
 
 
-class NegationHandlingComponent(BasePipelineComponent):
+class ExclusionHandlingComponent(BasePipelineComponent):
 
     DEPENDS_ON = []
 
     def __init__(self):
         super().__init__()
-        self.__icd10_negation_fixing_service: ICD10NegationService = DependencyInjector.get_instance(
+        self.__icd10_exclusion_handling_service: ICD10NegationService = DependencyInjector.get_instance(
             ICD10ExclusionService)
 
     def run(self, annotation_results: dict) -> str:
@@ -27,7 +27,7 @@ class NegationHandlingComponent(BasePipelineComponent):
         text_tokens = [each.text for each in tokens]
         for index, each_token in enumerate(text_tokens):
             if each_token.lower().find("no") == 0:
-                text_tokens[index] = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
+                text_tokens[index] = self.__icd10_exclusion_handling_service.get_icd_10_text_negation_fixed(each_token)
         text_tokens = [" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
                        for each_token in text_tokens]
         return "".join(text_tokens).strip()
