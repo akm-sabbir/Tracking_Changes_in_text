@@ -51,7 +51,7 @@ exclusion_list_folder = ConfigManager.get_specific_config(section="exclusion", k
 
 Path(os.path.join(os.path.dirname(app_base_path), logging_folder)).mkdir(exist_ok=True)
 
-exclusion_list_ = os.path.join(os.path.dirname(app_base_path), 'exclusions.json')
+exclusion_list_ = os.path.join(os.path.join(os.path.dirname(app_base_path), exclusion_list_folder), "exclusions.json")
 
 Settings.set_exclusion_dict(path_=exclusion_list_)
 
