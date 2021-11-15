@@ -1,4 +1,3 @@
-
 from collections import defaultdict
 from typing import List
 
@@ -7,7 +6,7 @@ from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
-from app.service.impl.icd10_exclusion_service_impl import ICD10ExclusionService
+from app.service.impl.icd10_exclusion_service_impl import Icd10ExclusionServiceImpl
 from app.util.dependency_injector import DependencyInjector
 from app.service.icd10_negation_service import ICD10NegationService
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
@@ -17,14 +16,12 @@ from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAn
 
 
 class ExclusionHandlingComponent(BasePipelineComponent):
-
     DEPENDS_ON = [NegationHandlingComponent, NotePreprocessingComponent,
-                        ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
+                  ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
+    __icd10_exclusion_handling_service: Icd10ExclusionServiceImpl = Icd10ExclusionServiceImpl()
 
     def __init__(self):
         super().__init__()
-        self.__icd10_exclusion_handling_service: ICD10ExclusionService = DependencyInjector.get_instance(
-            ICD10ExclusionService)
 
     def run(self, annotation_results: dict) -> List[ACMICD10Result]:
         acm_result: List[ACMICD10Result] = annotation_results[ACMICD10AnnotationComponent]

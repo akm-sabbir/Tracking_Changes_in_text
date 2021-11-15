@@ -16,7 +16,7 @@ class Settings:
     eng_dict: Trie
     spacy_tokenizer: spacy.Any
     exclusion_list_path: str
-
+    exclusion_dict : dict
 
     @staticmethod
     def get_settings_dx_threshold() -> float:
@@ -72,8 +72,12 @@ class Settings:
 
     @staticmethod
     def get_exclusion_dict():
-        with codecs.open(Settings.exclusion_list_path, mode="r",encodings="utf-8", errors="ignore") as json_file:
-            return json.load(json_file)
+        return Settings.exclusion_dict
+
+    @staticmethod
+    def init_exclusion_dict():
+        with codecs.open(Settings.exclusion_list_path, mode="r", encodings="utf-8", errors="ignore") as json_file:
+            Settings.exclusion_dict = json.load(json_file)
 
     @staticmethod
     def start_initialize_dictionary():
@@ -83,3 +87,4 @@ class Settings:
             eng_dic.insert_in(each_word, root)
         Settings.set_settings_dictionary(root)
         Settings.set_settings_tokenizer(English())
+        Settings.init_exclusion_dict()

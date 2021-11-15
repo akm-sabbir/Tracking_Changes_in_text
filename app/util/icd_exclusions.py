@@ -3,12 +3,17 @@ import os
 
 class ICDExclusions:
     def __init__(self, exclusions_json=None):
-        if exclusions_json is None:
-            raise ValueError("exclusion list is None")
+        #if exclusions_json is None:
+        #    raise ValueError("exclusion list is None")
         self.exclusion_dictionary = exclusions_json
 
     # get the common substring between two codes
     # E001, E002 = E00
+    def set_exclusion_dictionary(self, dic_: dict) -> None:
+        if dic_ is None:
+            raise ValueError("exclusion list is None")
+        self.exclusion_dictionary = dic_
+
     def get_common_substring(self, string1, string2):
         common = os.path.commonprefix([string1, string2])
         return common
@@ -70,6 +75,8 @@ class ICDExclusions:
             return excluded
         # get lists
         exclusions = self.exclusion_dictionary.get(source_code)
+        if exclusions is None:
+            return excluded
         for code in codes_to_check_against:
             if self.is_excluded(exclusions, code):
                 excluded.append(code)

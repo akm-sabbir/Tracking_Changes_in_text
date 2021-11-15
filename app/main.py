@@ -38,8 +38,6 @@ __caching_usage = ConfigManager.get_specific_config(section="caching_facility", 
 Settings.set_settings_use_cache(caching=bool(__caching_usage))
 # add routers
 
-Settings.start_initialize_dictionary()
-
 __router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base_path)
 for router_module in __router_modules:
     app.include_router(router_module.router, prefix=router_module.prefix)
@@ -54,6 +52,8 @@ Path(os.path.join(os.path.dirname(app_base_path), logging_folder)).mkdir(exist_o
 exclusion_list_ = os.path.join(os.path.join(os.path.dirname(app_base_path), exclusion_list_folder), "exclusions.json")
 
 Settings.set_exclusion_dict(path_=exclusion_list_)
+
+Settings.start_initialize_dictionary()
 
 logging_config_file_path = os.path.join(os.path.dirname(app_base_path), 'logging.ini')
 logging.config.fileConfig(logging_config_file_path,
