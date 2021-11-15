@@ -11,7 +11,7 @@ class Icd10ExclusionServiceImpl(ICD10ExclusionService):
     def __init__(self, exclusion_dict=Settings.get_exclusion_dict()):
         self.icd_exclusion_util = ICDExclusions(exclusion_dict)
 
-    def get_icd_10_exclusion_service_(self, icd10_metainfo: dict) -> str:
+    def get_icd_10_exclusion_service_(self, icd10_metainfo: dict) -> dict:
         icd10_lists = icd10_metainfo.keys()
 
         for key, value in icd10_metainfo.items():
@@ -21,7 +21,7 @@ class Icd10ExclusionServiceImpl(ICD10ExclusionService):
                     icd10s_to_remove = self.get_not_selected_icd10_list(key, exclusion_list, icd10_metainfo)
                     for each in icd10s_to_remove:
                         icd10_metainfo[each].remove = True
-        return
+        return icd10_metainfo
 
     def get_exclusion_list_hccmap(self, exclusion_list: list, meta_info: dict):
         for each_elem in exclusion_list:

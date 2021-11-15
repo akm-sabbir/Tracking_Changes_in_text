@@ -23,7 +23,7 @@ class ExclusionHandlingComponent(BasePipelineComponent):
 
     def __init__(self):
         super().__init__()
-        self.__icd10_exclusion_handling_service: ICD10NegationService = DependencyInjector.get_instance(
+        self.__icd10_exclusion_handling_service: ICD10ExclusionService = DependencyInjector.get_instance(
             ICD10ExclusionService)
 
     def run(self, annotation_results: dict) -> List[ACMICD10Result]:
@@ -32,7 +32,7 @@ class ExclusionHandlingComponent(BasePipelineComponent):
         hcc_result: HCCResponseDto = annotation_results[ICD10ToHccAnnotationComponent][0]
         icd10_meta_info: dict = annotation_results[ICD10ToHccAnnotationComponent][1]
         hcc_mapping: dict = hcc_result.hcc_maps
-        self.__icd10_exclusion_handling_service.get_icd_10_text_negation_fixed()
+        icd10_meta_info = self.__icd10_exclusion_handling_service.get_icd_10_exclusion_service_(icd10_meta_info)
         for annotation_entity in annotated_list:
             annotation_entity.suggested_codes: List[ICD10Annotation] \
                 = [icd10.code for icd10 in annotation_entity.suggested_codes
