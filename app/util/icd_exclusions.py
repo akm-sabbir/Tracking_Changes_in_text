@@ -14,7 +14,7 @@ class ICDExclusions:
         return common
 
     # If E00 is common, get 2 from E002
-    def get_trailing_number(self,code, prefix):
+    def get_trailing_number(self, code, prefix):
         return int(code.replace(prefix, ''))
 
     # if range is E001-E007, then E002 is excluded but E009 is not
@@ -57,6 +57,7 @@ class ICDExclusions:
             else:
                 return self.is_exlusion_in_range(stubs, target)
 
+        return False
     # given a code, and a list of codes; return those that are mutually exclusive
     # 
     def get_excluded_list(self, source_code, codes_to_check_against):

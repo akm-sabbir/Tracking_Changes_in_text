@@ -2,32 +2,40 @@
 from collections import defaultdict
 from typing import List
 
+from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
+from app.dto.pipeline.icd10_annotation import ICD10Annotation
+from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.impl.icd10_exclusion_service_impl import ICD10ExclusionService
 from app.util.dependency_injector import DependencyInjector
 from app.service.icd10_negation_service import ICD10NegationService
-from app.Settings import Settings
+from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
+from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
+from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 
 
 class ExclusionHandlingComponent(BasePipelineComponent):
 
-    DEPENDS_ON = []
+    DEPENDS_ON = [NegationHandlingComponent, NotePreprocessingComponent,
+                        ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
 
     def __init__(self):
         super().__init__()
         self.__icd10_exclusion_handling_service: ICD10NegationService = DependencyInjector.get_instance(
             ICD10ExclusionService)
 
-    def run(self, annotation_results: dict) -> str:
-        if annotation_results['acm_cached_result'] is not None:
-            return []
-        tokenize = Settings.get_settings_tokenizer()
-        text = annotation_results['text']
-        tokens = tokenize(text.lower())
-        text_tokens = [each.text for each in tokens]
-        for index, each_token in enumerate(text_tokens):
-            if each_token.lower().find("no") == 0:
-                text_tokens[index] = self.__icd10_exclusion_handling_service.get_icd_10_text_negation_fixed(each_token)
-        text_tokens = [" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
-                       for each_token in text_tokens]
-        return "".join(text_tokens).strip()
+    def run(self, annotation_results: dict) -> List[ACMICD10Result]:
+        acm_result: List[ACMICD10Result] = annotation_results[ACMICD10AnnotationComponent]
+        annotated_list: List[ICD10AnnotationResult] = acm_result[0].icd10_annotations
+        hcc_result: HCCResponseDto = annotation_results[ICD10ToHccAnnotationComponent][0]
+        icd10_meta_info: dict = annotation_results[ICD10ToHccAnnotationComponent][1]
+        hcc_mapping: dict = hcc_result.hcc_maps
+        self.__icd10_exclusion_handling_service.get_icd_10_text_negation_fixed()
+        for annotation_entity in annotated_list:
+            annotation_entity.suggested_codes: List[ICD10Annotation] \
+                = [icd10.code for icd10 in annotation_entity.suggested_codes
+                   if icd10_meta_info[icd10.code.replace(".", "")].remove is not True]
+        acm_result[0].icd10_annotations = annotated_list
+        return acm_result
