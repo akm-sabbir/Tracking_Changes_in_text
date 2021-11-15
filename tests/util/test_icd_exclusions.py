@@ -2,14 +2,24 @@ import unittest
 import collections
 from app.util.icd_exclusions import ICDExclusions
 
-
+from app.util.config_manager import ConfigManager
+from app.Settings import Settings
+import os
+from app import app_base_path
 class TestICDExclusions(unittest.TestCase):
 
     def setUp(self):
-        self.icd_exclusions = ICDExclusions('exclusions.json')
+        ConfigManager.initiate_config()
+        exclusion_list_folder = ConfigManager.get_specific_config(section="exclusion", key="list_")
+        exclusion_list_ = os.path.join(os.path.join(os.path.dirname(app_base_path), exclusion_list_folder),
+                                       "exclusions.json")
+
+        Settings.set_exclusion_dict(path_=exclusion_list_)
+        Settings.init_exclusion_dict()
+        self.icd_exclusions = ICDExclusions(Settings.get_exclusion_dict())
 
     def test_get_common_substring(self):
-        self.assertEqual(self.icd_exclusions.get_common_substring('E00', 'E05'),'E0', 'Should be E0')
+        self.assertEqual(self.icd_exclusions.get_common_substring('E00', 'E05'), 'E0', 'Should be E0')
 
     def test_get_trailing_number(self):
         self.assertEqual(self.icd_exclusions.get_trailing_number('E00', 'E0'), 0, 'Should be 0')
@@ -43,8 +53,6 @@ class TestICDExclusions(unittest.TestCase):
         codes = ['E00', 'E01', 'F89']
         actual_excluded_codes = ['E00', 'E01']
         extracted_excluded_codes = self.icd_exclusions.get_excluded_list(code, codes)
-        self.assertTrue(collections.Counter(actual_excluded_codes) == collections.Counter(extracted_excluded_codes), 'Should be equal')
+        self.assertTrue(collections.Counter(actual_excluded_codes) == collections.Counter(extracted_excluded_codes),
+                        'Should be equal')
 
-
-if __name__ == '__main__':
-    unittest.main()

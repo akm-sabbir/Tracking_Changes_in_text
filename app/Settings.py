@@ -76,7 +76,7 @@ class Settings:
 
     @staticmethod
     def init_exclusion_dict():
-        with codecs.open(Settings.exclusion_list_path, mode="r", encodings="utf-8", errors="ignore") as json_file:
+        with codecs.open(Settings.exclusion_list_path, mode="r", encoding="utf-8", errors="ignore") as json_file:
             Settings.exclusion_dict = json.load(json_file)
 
     @staticmethod
