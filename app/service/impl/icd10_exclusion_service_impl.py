@@ -8,7 +8,7 @@ from app.Settings import Settings
 class Icd10ExclusionServiceImpl(ICD10ExclusionService):
     icd_exclusion_util: ICDExclusions = ICDExclusions()
 
-    def __init__(self, exclusion_dict=None):
+    def __init__(self,):
         pass
 
     def get_icd_10_exclusion_service_(self, icd10_metainfo: dict) -> dict:
@@ -41,7 +41,7 @@ class Icd10ExclusionServiceImpl(ICD10ExclusionService):
     def get_decision_on_choice(self, icd10_metainfo: dict, key: str, exclusion_list: list):
         if (math.fabs(
                 icd10_metainfo.get(key).score - self.get_avg_acm_score(exclusion_list, icd10_metainfo)) > 0.15):
-            if icd10_metainfo.get(key).score > self.get_avg_acm_score(exclusion_list):
+            if icd10_metainfo.get(key).score > self.get_avg_acm_score(exclusion_list, icd10_metainfo):
                 return [key]
             else:
                 return exclusion_list
