@@ -10,6 +10,7 @@ from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.icd10_pipeline_service import ICD10PipelineService
 from app.service.impl.dynamo_db_service import DynamoDbService
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
@@ -22,7 +23,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
     def __init__(self):
         self.__pipeline_components = [NegationHandlingComponent(), NotePreprocessingComponent(),
                                       ACMICD10AnnotationComponent(), ICD10ToHccAnnotationComponent(),
-                                      ICD10AnnotationAlgoComponent()]
+                                      ICD10AnnotationAlgoComponent(), FilteredICD10ToHccAnnotationComponent()]
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)
         self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))
 
@@ -45,7 +46,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                                                parent_threshold=params.parent_threshold
                                                                )
         icd10_annotations: List[ICD10AnnotationResult] = pipeline_result[ICD10AnnotationAlgoComponent]
-        hcc_maps: HCCResponseDto = pipeline_result[ICD10ToHccAnnotationComponent][0]
+        hcc_maps: HCCResponseDto = pipeline_result[FilteredICD10ToHccAnnotationComponent][0]
         acm_annotation_result: ACMICD10Result = pipeline_result[ACMICD10AnnotationComponent][0]
 
         return ICD10AnnotationResponse(
