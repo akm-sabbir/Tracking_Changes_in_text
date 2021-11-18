@@ -26,13 +26,11 @@ class ExclusionHandlingComponent(BasePipelineComponent):
     def run(self, annotation_results: dict) -> List[ACMICD10Result]:
         acm_result: List[ACMICD10Result] = annotation_results[ACMICD10AnnotationComponent]
         annotated_list: List[ICD10AnnotationResult] = acm_result[0].icd10_annotations
-        hcc_result: HCCResponseDto = annotation_results[ICD10ToHccAnnotationComponent][0]
         icd10_meta_info: dict = annotation_results[ICD10ToHccAnnotationComponent][1]
-        hcc_mapping: dict = hcc_result.hcc_maps
         icd10_meta_info = self.__icd10_exclusion_handling_service.get_icd_10_exclusion_service_(icd10_meta_info)
         for annotation_entity in annotated_list:
             annotation_entity.suggested_codes: List[ICD10Annotation] \
-                = [icd10.code for icd10 in annotation_entity.suggested_codes
+                = [icd10 for icd10 in annotation_entity.suggested_codes
                    if icd10_meta_info[icd10.code.replace(".", "")].remove is not True]
         acm_result[0].icd10_annotations = annotated_list
         return acm_result

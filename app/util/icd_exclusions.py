@@ -1,4 +1,5 @@
 import os
+import re
 
 
 class ICDExclusions:
@@ -20,6 +21,9 @@ class ICDExclusions:
 
     # If E00 is common, get 2 from E002
     def get_trailing_number(self, code, prefix):
+        if len(re.findall("[A-Za-z]+", code.replace(prefix, ''))) !=0:
+            return 999999
+        # invalid literals "1, 3"
         return int(code.replace(prefix, ''))
 
     # if range is E001-E007, then E002 is excluded but E009 is not
