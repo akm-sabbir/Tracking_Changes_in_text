@@ -35,7 +35,7 @@ __parent_threshold = ConfigManager.get_specific_config(section="parents_threshol
 Settings.set_settings_parent_threshold(p_threshold=float(__parent_threshold))
 
 __caching_usage = ConfigManager.get_specific_config(section="caching_facility", key="use_cache")
-Settings.set_settings_use_cache(caching=bool(__caching_usage))
+Settings.set_settings_use_cache(caching=bool(__caching_usage.lower() == "true"))
 # add routers
 
 Settings.start_initialize_dictionary()
