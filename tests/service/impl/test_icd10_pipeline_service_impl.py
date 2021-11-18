@@ -12,6 +12,7 @@ from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_exclusion_list_processing_component import ExclusionHandlingComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
@@ -54,7 +55,7 @@ class TestICD10PipelineServiceImpl(TestCase):
         mock_run_pipeline.return_value = {DummyComponentOne: [DummyComponentOneResult("a")],
                                           DummyComponentTwo: [DummyComponentTwoResult("b")],
                                           ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data(),
-                                          ICD10ToHccAnnotationComponent: [mock_hcc_maps],
+                                          FilteredICD10ToHccAnnotationComponent: [mock_hcc_maps],
                                           ACMICD10AnnotationComponent: [mock_acm_response]
                                           }
 
@@ -126,7 +127,7 @@ class TestICD10PipelineServiceImpl(TestCase):
         mock_run_pipeline.return_value = {DummyComponentOne: [DummyComponentOneResult("a")],
                                           DummyComponentTwo: [DummyComponentTwoResult("b")],
                                           ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data(),
-                                          ICD10ToHccAnnotationComponent: [mock_hcc_maps],
+                                          FilteredICD10ToHccAnnotationComponent: [mock_hcc_maps],
                                           ACMICD10AnnotationComponent: [mock_acm_response]
                                           }
 
