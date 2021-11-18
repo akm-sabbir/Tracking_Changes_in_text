@@ -10,6 +10,7 @@ from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10Ann
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
+from app.service.pipeline.components.icd10_exclusion_list_processing_component import ExclusionHandlingComponent
 
 
 class TestICD10AnnotationAlgoComponent(TestCase):
@@ -29,6 +30,7 @@ class TestICD10AnnotationAlgoComponent(TestCase):
 
         params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold": 0.80,
                   ACMICD10AnnotationComponent: [ACMICD10Result("1213", icd10_list, [{}])],
+                  ExclusionHandlingComponent: [ACMICD10Result("1213", icd10_list, [{}])],
                   ICD10ToHccAnnotationComponent: [mock_hcc_response]}
         results = icd10_annotation_filter_component.run(params)
 
