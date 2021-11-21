@@ -4,7 +4,8 @@ from spacy.lang.en import English
 from app.util.english_dictionary import EnglishDictionary
 from app.dto.core.trie_structure import Trie
 from nltk.corpus import words
-
+import json
+import codecs
 
 class Settings:
     app_name: str = "HCC API"
@@ -14,6 +15,8 @@ class Settings:
     use_cache: bool
     eng_dict: Trie
     spacy_tokenizer: spacy.Any
+    exclusion_list_path: str
+    exclusion_dict : dict
 
     @staticmethod
     def get_settings_dx_threshold() -> float:
@@ -64,6 +67,19 @@ class Settings:
         return Settings.spacy_tokenizer
 
     @staticmethod
+    def set_exclusion_dict(path_: str):
+        Settings.exclusion_list_path = path_
+
+    @staticmethod
+    def get_exclusion_dict():
+        return Settings.exclusion_dict
+
+    @staticmethod
+    def init_exclusion_dict():
+        with codecs.open(Settings.exclusion_list_path, mode="r", encoding="utf-8", errors="ignore") as json_file:
+            Settings.exclusion_dict = json.load(json_file)
+
+    @staticmethod
     def start_initialize_dictionary():
         eng_dic = EnglishDictionary()
         root = Trie()
@@ -71,3 +87,4 @@ class Settings:
             eng_dic.insert_in(each_word, root)
         Settings.set_settings_dictionary(root)
         Settings.set_settings_tokenizer(English())
+        Settings.init_exclusion_dict()

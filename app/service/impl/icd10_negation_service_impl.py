@@ -38,10 +38,12 @@ class Icd10NegationServiceImpl(ICD10NegationService):
         return list(one_edit_words)
 
     def get_icd_10_text_negation_fixed(self, text: str) -> str:
+
         self.dict = Settings.get_settings_dictionary() if self.dict is None else self.dict
         if text.lower().find("no") == 0 and not self.utilize_dict.is_valid_word(text.lower(), self.dict, 0)\
                 and len(text) > 3:
             results = self.build_one_edit_distance(text[2:].lower(), index=0)
             results = ["no " + word for word in results] if len(results) != 0 else text.lower()
             text = ",".join(results)
+
         return text
