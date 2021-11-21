@@ -19,10 +19,15 @@ class ICDExclusions:
 
     # If E00 is common, get 2 from E002
     def get_trailing_number(self, code, prefix):
-        if len(re.findall("[A-Za-z]+", code.replace(prefix, ''))) !=0:
+        if len(re.findall("[A-Za-z]+", code.replace(prefix, ''))) != 0:
             return 999999
         # invalid literals "1, 3"
-        return int(code.replace(prefix, ''))
+        matches = re.findall("[0-9]+", code.replace(prefix, ''))
+        if len(matches) > 0:
+            trailing_number = matches[0]
+            return int(trailing_number)
+        else:
+            return 999999
 
     # if range is E001-E007, then E002 is excluded but E009 is not
     def is_exlusion_in_range(self, both, target):
