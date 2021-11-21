@@ -6,7 +6,7 @@ from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
-from app.service.impl.icd10_exclusion_service_impl import Icd10CodeExclusionServiceImpl
+from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
 from app.util.dependency_injector import DependencyInjector
 from app.service.icd10_negation_service import ICD10NegationService
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent

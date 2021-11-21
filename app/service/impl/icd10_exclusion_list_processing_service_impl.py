@@ -1,4 +1,3 @@
-from collections import defaultdict
 from app.service.icd10_exclusion_service import ICD10ExclusionService
 from app.util.icd_exclusions import ICDExclusions
 import math
@@ -17,12 +16,12 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
             if value.remove is False:
                 exclusion_list = self.icd_exclusion_util.get_excluded_list(key, icd10_lists)
                 if len(exclusion_list) > 0:
-                    icd10s_to_remove = self.__get_not_selected_icd10_list(key, exclusion_list, icd10_metainfo)
+                    icd10s_to_remove = self.get_not_selected_icd10_list(key, exclusion_list, icd10_metainfo)
                     for each in icd10s_to_remove:
                         icd10_metainfo[each].remove = True
         return icd10_metainfo
 
-    def __get_exclusion_list_hccmap(self, exclusion_list: list, meta_info: dict):
+    def get_exclusion_list_hccmap(self, exclusion_list: list, meta_info: dict):
         for each_elem in exclusion_list:
             if meta_info.get(each_elem) is not None and len(meta_info.get(each_elem).hcc_map) != 0:
                 return True
@@ -35,7 +34,7 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
     def __get_avg_acm_icd10code_len(self, exclusion_list: list):
         return sum([len(element) for element in exclusion_list]) / len(exclusion_list)
 
-    def __get_decision_on_choice(self, icd10_metainfo: dict, key: str, exclusion_list: list):
+    def get_decision_on_choice(self, icd10_metainfo: dict, key: str, exclusion_list: list):
         if (math.fabs(
                 icd10_metainfo.get(key).score - self.__get_avg_acm_score(exclusion_list, icd10_metainfo)) > 0.15):
             if icd10_metainfo.get(key).score > self.__get_avg_acm_score(exclusion_list, icd10_metainfo):
@@ -53,24 +52,24 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
         else:
             return exclusion_list
 
-    def __get_not_selected_icd10_list(self, key: str, exclusion_list: list, icd10_metainfo: dict) -> list:
+    def get_not_selected_icd10_list(self, key: str, exclusion_list: list, icd10_metainfo: dict) -> list:
         if len(icd10_metainfo.get(key).hcc_map) != 0 and \
-                self.__get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is False:
-            return self.__get_decision_on_choice(icd10_metainfo, key, exclusion_list)
+                self.get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is False:
+            return self.get_decision_on_choice(icd10_metainfo, key, exclusion_list)
 
         if len(icd10_metainfo.get(key).hcc_map) != 0 and \
-                self.__get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is False:
+                self.get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is False:
             return [key]
 
         if len(icd10_metainfo.get(key).hcc_map) != 0 and \
-                self.__get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is True:
+                self.get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is True:
             return exclusion_list
 
         if len(icd10_metainfo.get(key).hcc_map) != 0 and \
-                self.__get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is True \
+                self.get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is True \
                 and len(exclusion_list) > 1 and sum(
             [1 if len(icd10_metainfo.get(each_elem).hcc_map) != 0 else 0 for each_elem in exclusion_list]) \
                 > 1:
             return exclusion_list
 
-        return self.__get_decision_on_choice(icd10_metainfo, key, exclusion_list)
+        return self.get_decision_on_choice(icd10_metainfo, key, exclusion_list)

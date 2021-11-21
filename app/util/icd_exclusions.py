@@ -4,8 +4,6 @@ import re
 
 class ICDExclusions:
     def __init__(self, exclusions_json=None):
-        #if exclusions_json is None:
-        #    raise ValueError("exclusion list is None")
         self.exclusion_dictionary = exclusions_json
 
     # get the common substring between two codes

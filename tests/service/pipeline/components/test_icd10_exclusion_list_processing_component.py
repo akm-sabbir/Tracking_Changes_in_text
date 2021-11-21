@@ -8,7 +8,7 @@ from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10Ann
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
-from app.service.impl.icd10_exclusion_service_impl import Icd10CodeExclusionServiceImpl
+from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto

@@ -3,10 +3,8 @@ from unittest.mock import patch, Mock
 
 import service
 
-from app.dto.request.hcc_request_dto import HCCRequestDto
-from app.service.impl.hcc_service_impl import HCCServiceImpl
 from app.util.icd_exclusions import ICDExclusions
-from app.service.impl.icd10_exclusion_service_impl import Icd10CodeExclusionServiceImpl
+from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
 from app.dto.pipeline.icd10_meta_info import icd10_meta_info
 from app.Settings import Settings
 
@@ -86,7 +84,21 @@ class TestHCCServiceImpl(TestCase):
         icd105.length = 5
         icd105.entity_score = 0.99
         icd105.remove = False
-        param = {"A0531": icd101, "A40421": icd102, "A853": icd103, "A04": icd104, "A7421": icd105}
+        icd106 = Mock(icd10_meta_info)
+        icd106.hcc_map = ""
+        icd106.score = 0.87
+        icd106.length = 5
+        icd106.entity_score = 0.99
+        icd106.remove = False
+        param = {"A0531": icd101, "A40421": icd102, "A853": icd103, "A04": icd104, "A7421": icd105, "A852": icd106}
         param = self.service.get_icd_10_code_exclusion_decision(param)
         assert param["A0531"].remove == True
         assert param["A40421"].remove == True
+        assert self.service.get_exclusion_list_hccmap(["A04"], param) is True
+        assert self.service.get_exclusion_list_hccmap(["A852"], param) is False
+        assert self.service.get_decision_on_choice(param, "A40421", ["A0531", "A852"])[0] == "A0531"
+        assert self.service.get_decision_on_choice(param, "A40421", ["A0531", "A852"])[1] == "A852"
+        assert self.service.get_decision_on_choice(param, "A0531", ["A852"])[0] == "A0531"
+        assert self.service.get_decision_on_choice(param, "A852", ["A0531"])[0] == "A0531"
+        assert len(self.service.get_decision_on_choice(param, "A853", ["A853", "A852"])) > 1
+        assert self.service.get_not_selected_icd10_list("A40421", ["A0531", "A852"], param)[0] == "A0531"
