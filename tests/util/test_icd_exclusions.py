@@ -25,6 +25,7 @@ class TestICDExclusions(unittest.TestCase):
         self.assertEqual(self.icd_exclusions.get_trailing_number('E00', 'E0'), 0, 'Should be 0')
         self.assertEqual(self.icd_exclusions.get_trailing_number('E01', 'E0'), 1, 'Should be 1')
         self.assertEqual(self.icd_exclusions.get_trailing_number('E052', 'E05'), 2, 'Should be 2')
+        self.assertEqual(self.icd_exclusions.get_trailing_number('E05', 'E05'), 999999, 'Should be 999999')
 
     def test_is_exlusion_in_range(self):
         both = []
