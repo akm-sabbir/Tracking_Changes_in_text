@@ -6,7 +6,7 @@ from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
-from app.service.impl.icd10_exclusion_service_impl import Icd10ExclusionServiceImpl
+from app.service.impl.icd10_exclusion_service_impl import Icd10CodeExclusionServiceImpl
 from app.util.dependency_injector import DependencyInjector
 from app.service.icd10_negation_service import ICD10NegationService
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
@@ -15,10 +15,10 @@ from app.service.pipeline.components.acm_icd10_annotation_component import ACMIC
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 
 
-class ExclusionHandlingComponent(BasePipelineComponent):
+class CodeExclusionHandlingComponent(BasePipelineComponent):
     DEPENDS_ON = [NegationHandlingComponent, NotePreprocessingComponent,
                   ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
-    __icd10_exclusion_handling_service: Icd10ExclusionServiceImpl = Icd10ExclusionServiceImpl()
+    __icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl()
 
     def __init__(self):
         super().__init__()
@@ -27,7 +27,7 @@ class ExclusionHandlingComponent(BasePipelineComponent):
         acm_result: List[ACMICD10Result] = annotation_results[ACMICD10AnnotationComponent]
         annotated_list: List[ICD10AnnotationResult] = acm_result[0].icd10_annotations
         icd10_meta_info: dict = annotation_results[ICD10ToHccAnnotationComponent][1]
-        icd10_meta_info = self.__icd10_exclusion_handling_service.get_icd_10_exclusion_service_(icd10_meta_info)
+        icd10_meta_info = self.__icd10_exclusion_handling_service.get_icd_10_code_exclusion_decision(icd10_meta_info)
         for annotation_entity in annotated_list:
             annotation_entity.suggested_codes: List[ICD10Annotation] \
                 = [icd10 for icd10 in annotation_entity.suggested_codes

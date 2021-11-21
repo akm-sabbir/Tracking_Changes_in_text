@@ -11,7 +11,7 @@ from app.service.icd10_pipeline_service import ICD10PipelineService
 from app.service.impl.dynamo_db_service import DynamoDbService
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
-from app.service.pipeline.components.icd10_exclusion_list_processing_component import ExclusionHandlingComponent
+from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
@@ -24,7 +24,7 @@ class \
     def __init__(self):
         self.__pipeline_components = [NegationHandlingComponent(), NotePreprocessingComponent(),
                                       ACMICD10AnnotationComponent(), ICD10ToHccAnnotationComponent(),
-                                      ExclusionHandlingComponent(),
+                                      CodeExclusionHandlingComponent(),
                                       ICD10AnnotationAlgoComponent()]
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)
         self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))

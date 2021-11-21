@@ -6,9 +6,9 @@ from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
-from app.service.pipeline.components.icd10_exclusion_list_processing_component import ExclusionHandlingComponent
+from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
-from app.service.impl.icd10_exclusion_service_impl import Icd10ExclusionServiceImpl
+from app.service.impl.icd10_exclusion_service_impl import Icd10CodeExclusionServiceImpl
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
@@ -24,7 +24,7 @@ class MockedIcd10ExclusionServiceImpl():
     def __init__(self,):
         pass
 
-    def get_icd_10_exclusion_service_(self, icd10_metainfo: dict):
+    def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict):
         icd101 = Mock(icd10_meta_info)
         icd101.hcc_map = "HCC85"
         icd101.score = 0.80
@@ -73,10 +73,10 @@ class TestExclusionHandlingComponent(TestCase):
                                   "A85": ["B262", "A872", "B258", "B004", "G933", "B020", "B100-", "B050", "A80-"]}
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
-    @patch.object(ExclusionHandlingComponent, "_ExclusionHandlingComponent__icd10_exclusion_handling_service",
+    @patch.object(CodeExclusionHandlingComponent, "_CodeExclusionHandlingComponent__icd10_exclusion_handling_service",
                   MockedIcd10ExclusionServiceImpl())
     def test__run__should_return_correct_response__given_correct_input(self, mock_boto3):
-        icd10_exclusion_list_processing: ExclusionHandlingComponent = ExclusionHandlingComponent()
+        icd10_exclusion_list_processing: CodeExclusionHandlingComponent = CodeExclusionHandlingComponent()
         icd10_annotation_filter_component = ICD10AnnotationAlgoComponent()
         icd10_to_hcc_annotation_component = ICD10ToHccAnnotationComponent()
         icd10_annotation_filter_component._ICD10AnnotationAlgoComponent__icd10_annotation_service_with_filters = \

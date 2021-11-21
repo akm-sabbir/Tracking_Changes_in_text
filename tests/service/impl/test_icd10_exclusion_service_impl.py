@@ -6,7 +6,7 @@ import service
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.service.impl.hcc_service_impl import HCCServiceImpl
 from app.util.icd_exclusions import ICDExclusions
-from app.service.impl.icd10_exclusion_service_impl import Icd10ExclusionServiceImpl
+from app.service.impl.icd10_exclusion_service_impl import Icd10CodeExclusionServiceImpl
 from app.dto.pipeline.icd10_meta_info import icd10_meta_info
 from app.Settings import Settings
 
@@ -42,7 +42,7 @@ class MockedHCCEngine():
 
 
 class TestHCCServiceImpl(TestCase):
-    service: Icd10ExclusionServiceImpl = Icd10ExclusionServiceImpl()
+    service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl()
     icd10_exclusion_dict: dict = {"A04": ["A05-", "A1832"], "A05": ["A404-", "A32-", "T61-T62", "A040-A044", "A02-"],
                                   "A06": ["A07-"], "A08": ["J09X3", "J102", "J112"], "A09": ["K529", "R197"],
                                   "A30": ["B92"],
@@ -87,6 +87,6 @@ class TestHCCServiceImpl(TestCase):
         icd105.entity_score = 0.99
         icd105.remove = False
         param = {"A0531": icd101, "A40421": icd102, "A853": icd103, "A04": icd104, "A7421": icd105}
-        param = self.service.get_icd_10_exclusion_service_(param)
+        param = self.service.get_icd_10_code_exclusion_decision(param)
         assert param["A0531"].remove == True
         assert param["A40421"].remove == True

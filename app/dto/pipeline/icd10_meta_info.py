@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class icd10_meta_info:
-    hcc_map: str = None
+    hcc_map: str = ''
     score: float = 0.0
     entity_score: float = 0.0
     length: int = 0

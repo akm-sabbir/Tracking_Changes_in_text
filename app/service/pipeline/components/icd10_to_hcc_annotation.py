@@ -33,7 +33,6 @@ class ICD10ToHccAnnotationComponent(BasePipelineComponent):
                 icd10_metadata_map[icd10.code.replace(".", "")] = icd10_meta_info()
                 icd10_meta_info.score = icd10.score
                 icd10_meta_info.length = len(icd10.code.replace(".", ""))
-                #icd10_meta_info.entity_score = annotation_entity.score
             all_icd10_annotations.extend(annotations)
         hcc_request = HCCRequestDto(icd_codes_list=all_icd10_annotations)
         hcc_annotation: HCCResponseDto = self.__hcc_service.get_hcc_risk_scores(hcc_request)
