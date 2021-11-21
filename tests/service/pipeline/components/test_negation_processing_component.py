@@ -35,7 +35,7 @@ class TestNegationProcesingComponent(TestCase):
         result = component.run({"text": test_data,
                                 "acm_cached_result": None})
         print("--- %s seconds ---" % (time.time() - start_time))
-        print(result[0])
+        #print(result)
         assert result[0].lower().find("no new") != -1
         #assert "no anxiety" in tokens
 

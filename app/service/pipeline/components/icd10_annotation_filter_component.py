@@ -10,11 +10,12 @@ from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAn
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.util.dependency_injector import DependencyInjector
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
+from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
 
 
 class ICD10AnnotationAlgoComponent(BasePipelineComponent):
     DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent,
-                        ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
+                        ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent]
 
     def __init__(self):
         super().__init__()
@@ -22,8 +23,8 @@ class ICD10AnnotationAlgoComponent(BasePipelineComponent):
             DependencyInjector.get_instance(ICD10AnnotatorServiceWithFilterImpl)
 
     def run(self, annotation_results: dict) -> List[ICD10AnnotationResult]:
-        acm_result: ACMICD10Result = annotation_results[ACMICD10AnnotationComponent][0]
-        icd10_annotation_result: List[ICD10AnnotationResult] = acm_result.icd10_annotations
+        acm_result: ACMICD10Result = annotation_results[CodeExclusionHandlingComponent]
+        icd10_annotation_result: List[ICD10AnnotationResult] = acm_result[0].icd10_annotations
         hcc_result: HCCResponseDto = annotation_results[ICD10ToHccAnnotationComponent][0]
         hcc_mapping: dict = hcc_result.hcc_maps
 
