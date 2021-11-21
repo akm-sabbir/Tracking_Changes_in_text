@@ -37,5 +37,5 @@ class ICD10ToHccAnnotationComponent(BasePipelineComponent):
         hcc_request = HCCRequestDto(icd_codes_list=all_icd10_annotations)
         hcc_annotation: HCCResponseDto = self.__hcc_service.get_hcc_risk_scores(hcc_request)
         for key, values in hcc_annotation.hcc_maps.items():
-            icd10_metadata_map[key].hcc_map = values
+            icd10_metadata_map[key].hcc_map = values.code
         return [hcc_annotation, icd10_metadata_map]
