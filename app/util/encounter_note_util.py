@@ -13,7 +13,7 @@ class EncounterNoteUtil:
     def break_note_into_paragraphs(note: str, limit: int) -> []:
         if len(note) <= limit:
             return [Paragraph(note, 0, len(note))]
-        sentences: List[Sentence] = EncounterNoteUtil.__break_note_into_sentences(note, limit)
+        sentences: List[Sentence] = EncounterNoteUtil.break_note_into_sentences(note, limit)
         paragraphs: List[Paragraph] = EncounterNoteUtil.__get_paragraphs(sentences, note, limit)
         return paragraphs
 
@@ -42,7 +42,7 @@ class EncounterNoteUtil:
         return paragraphs
 
     @staticmethod
-    def __break_note_into_sentences(note: str, limit: int) -> List[Sentence]:
+    def break_note_into_sentences(note: str, limit: int) -> List[Sentence]:
         nlp = English()
         nlp.add_pipe('sentencizer')
         doc = nlp(note)
