@@ -1,3 +1,4 @@
+import re
 from typing import List, Dict
 
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
@@ -24,6 +25,7 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
 
     def run(self, annotation_results: dict) -> List[ACMICD10Result]:
         if annotation_results['acm_cached_result'] is not None:
+            self.align_start_and_text(annotation_results['acm_cached_result'][0], annotation_results['text'])
             return annotation_results['acm_cached_result']
         paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent]
 
@@ -39,3 +41,21 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
         result = ACMICD10Result(annotation_results["id"], icd10_annotation_results, raw_acm_data)
         self.__db_service.save_item(result)
         return [result]
+
+    def align_start_and_text(self, acm_result: ACMICD10Result, original_text: str):
+
+        for annotation in acm_result.icd10_annotations:
+            text = annotation.medical_condition
+            word_list = re.sub(r"[^\w]", " ", text).split()
+            regex = r"[^\w]*?".join(word_list)
+            matches = [match for match in re.finditer(regex, original_text, re.IGNORECASE)]
+            min_dist = len(original_text)
+            match_index = 0
+            for index, match in enumerate(matches):
+                dist = abs(match.start() - annotation.begin_offset)
+                if dist < min_dist:
+                    min_dist = dist
+                    match_index = index
+            annotation.begin_offset = matches[match_index].start()
+            annotation.end_offset = matches[match_index].end()
+            annotation.medical_condition = matches[match_index].group()
