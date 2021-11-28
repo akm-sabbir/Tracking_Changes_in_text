@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from app.Settings import Settings
 from app.service.icd10_negation_service import ICD10NegationService
 from app.util.english_dictionary import EnglishDictionary
@@ -44,6 +42,6 @@ class Icd10NegationServiceImpl(ICD10NegationService):
                 and len(text) > 3:
             results = self.build_one_edit_distance(text[2:].lower(), index=0)
             results = ["no " + word for word in results] if len(results) != 0 else text.lower()
-            text = ",".join(results)
+            text = "".join(results)
 
         return text
