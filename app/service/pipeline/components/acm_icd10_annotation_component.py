@@ -39,6 +39,7 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
                 annotation.end_offset += paragraph.start_index
             icd10_annotation_results += annotations
         result = ACMICD10Result(annotation_results["id"], icd10_annotation_results, raw_acm_data)
+        self.align_start_and_text(result, annotation_results['text'])
         self.__db_service.save_item(result)
         return [result]
 
@@ -51,6 +52,8 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
             matches = [match for match in re.finditer(regex, original_text, re.IGNORECASE)]
             min_dist = len(original_text)
             match_index = 0
+            if len(matches) == 0:
+                continue
             for index, match in enumerate(matches):
                 dist = abs(match.start() - annotation.begin_offset)
                 if dist < min_dist:
