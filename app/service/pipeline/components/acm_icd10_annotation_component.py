@@ -46,18 +46,22 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
     def align_start_and_text(self, acm_result: ACMICD10Result, original_text: str):
 
         for annotation in acm_result.icd10_annotations:
-            text = annotation.medical_condition
-            word_list = re.sub(r"[^\w]", " ", text).split()
-            regex = r"[^\w]*?".join(word_list)
-            matches = [match for match in re.finditer(regex, original_text, re.IGNORECASE)]
-            min_dist = len(original_text)
+            annotation_text = annotation.medical_condition
+            word_list = re.sub(r"[^\w]", " ", annotation_text).split()
+            consecutive_words_match_regex = r"[^\w]*?".join(word_list)
+
+            """ if annotation_text is "high fever" then consecutive_words_match_regex is "high[^\w]*?fever", 
+            it matches words present annotation_text consecutively in original text """
+
+            matches = [match for match in re.finditer(consecutive_words_match_regex, original_text, re.IGNORECASE)]
+            min_distance = len(original_text)
             match_index = 0
             if len(matches) == 0:
                 continue
             for index, match in enumerate(matches):
-                dist = abs(match.start() - annotation.begin_offset)
-                if dist < min_dist:
-                    min_dist = dist
+                distance = abs(match.start() - annotation.begin_offset)
+                if distance < min_distance:
+                    min_distance = distance
                     match_index = index
             annotation.begin_offset = matches[match_index].start()
             annotation.end_offset = matches[match_index].end()
