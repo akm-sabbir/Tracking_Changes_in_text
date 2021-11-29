@@ -1,3 +1,4 @@
+import re
 from typing import List, Dict
 
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
@@ -24,6 +25,7 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
 
     def run(self, annotation_results: dict) -> List[ACMICD10Result]:
         if annotation_results['acm_cached_result'] is not None:
+            self.align_start_and_text(annotation_results['acm_cached_result'][0], annotation_results['text'])
             return annotation_results['acm_cached_result']
         paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent]
 
@@ -37,5 +39,30 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
                 annotation.end_offset += paragraph.start_index
             icd10_annotation_results += annotations
         result = ACMICD10Result(annotation_results["id"], icd10_annotation_results, raw_acm_data)
+        self.align_start_and_text(result, annotation_results['text'])
         self.__db_service.save_item(result)
         return [result]
+
+    def align_start_and_text(self, acm_result: ACMICD10Result, original_text: str):
+
+        for annotation in acm_result.icd10_annotations:
+            annotation_text = annotation.medical_condition
+            word_list = re.sub(r"[^\w]", " ", annotation_text).split()
+            consecutive_words_match_regex = r"[^\w]*?".join(word_list)
+
+            """ if annotation_text is "high fever" then consecutive_words_match_regex is "high[^\w]*?fever", 
+            it matches words present annotation_text consecutively in original text """
+
+            matches = [match for match in re.finditer(consecutive_words_match_regex, original_text, re.IGNORECASE)]
+            min_distance = len(original_text)
+            match_index = 0
+            if len(matches) == 0:
+                continue
+            for index, match in enumerate(matches):
+                distance = abs(match.start() - annotation.begin_offset)
+                if distance < min_distance:
+                    min_distance = distance
+                    match_index = index
+            annotation.begin_offset = matches[match_index].start()
+            annotation.end_offset = matches[match_index].end()
+            annotation.medical_condition = matches[match_index].group()
