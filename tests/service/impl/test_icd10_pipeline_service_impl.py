@@ -2,6 +2,7 @@ from unittest import TestCase
 from unittest.mock import Mock, patch
 
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
+from app.dto.core.patient_info import PatientInfo
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.dummy_component_one_result import DummyComponentOneResult
@@ -67,7 +68,7 @@ class TestICD10PipelineServiceImpl(TestCase):
         icd10_annotator_service._ICD10PipelineServiceImpl__db_service.get_item = mock_get_item
 
         icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_manager.run_pipeline = mock_run_pipeline
-        pipeline_params = ICD10PipelineParams("123", "text", 0.7, 0.7, 0.7, True)
+        pipeline_params = ICD10PipelineParams("123", "text", 0.7, 0.7, 0.7, True, PatientInfo(70, "M"))
 
         response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
         assert response.icd10_annotations[0] == icd10_annotation_result_1
@@ -139,7 +140,7 @@ class TestICD10PipelineServiceImpl(TestCase):
         icd10_annotator_service._ICD10PipelineServiceImpl__db_service.get_item = mock_get_item
 
         icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_manager.run_pipeline = mock_run_pipeline
-        pipeline_params = ICD10PipelineParams("123", "text", 0.7, 0.7, 0.7, False)
+        pipeline_params = ICD10PipelineParams("123", "text", 0.7, 0.7, 0.7, False, PatientInfo(70, "M"))
 
         response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
         assert response.icd10_annotations[0] == icd10_annotation_result_1
