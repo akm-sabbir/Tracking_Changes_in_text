@@ -5,6 +5,7 @@ from fastapi.params import Param
 
 from app.Settings import Settings
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
+from app.dto.core.patient_info import PatientInfo
 from app.dto.request.icd10_annotation_request import ICD10AnnotationRequest
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
@@ -26,8 +27,8 @@ async def annotate_icd_10(icd10_annotation_requests: List[ICD10AnnotationRequest
                                                   default=Settings.use_cache)) -> List[ICD10AnnotationResponse]:
     response: List[ICD10AnnotationResponse] = []
     for annotation_request in icd10_annotation_requests:
+        patient_info = PatientInfo(annotation_request.age, annotation_request.sex)
         pipeline_params = ICD10PipelineParams(annotation_request.id, annotation_request.text, dx_threshold,
-                                              icd10_threshold,
-                                              parent_threshold, use_cache)
+                                              icd10_threshold, parent_threshold, use_cache, patient_info)
         response.append(__icd10_service.run_icd10_pipeline(pipeline_params))
     return response
