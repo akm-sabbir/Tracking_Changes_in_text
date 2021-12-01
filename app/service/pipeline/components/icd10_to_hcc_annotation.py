@@ -2,16 +2,15 @@ from typing import List
 
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.pipeline.icd10_meta_info import icd10_meta_info
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
 from app.service.impl.hcc_service_impl import HCCServiceImpl
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
-from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
-from collections import namedtuple
-from app.dto.pipeline.icd10_meta_info import icd10_meta_info
+from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 
 
 class ICD10ToHccAnnotationComponent(BasePipelineComponent):
