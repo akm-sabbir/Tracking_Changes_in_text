@@ -133,3 +133,14 @@ class Test(TestCase):
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'id'
         assert error_message == 'id must be string and cannot be empty'
+
+    @patch("app.util.dependency_injector.DependencyInjector.get_instance")
+    def test_annotation_router__given_wrong_sex__input__should_raise_validation_error(self, mock_get_instance):
+        mock_get_instance.return_value = Mock()
+        from app.router import annotation_router
+        with self.assertRaises(ValidationError) as error:
+            annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text="text", sex="A", age=20)])
+        error_location = error.exception.errors()[0]['loc'][0]
+        error_message = error.exception.errors()[0]['msg']
+        assert error_location == 'sex'
+        assert error_message == 'sex must be M or F'
