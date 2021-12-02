@@ -1,6 +1,7 @@
 from unittest import TestCase
-from unittest.mock import Mock, patch
+from unittest.mock import patch
 
+from app.dto.core.patient_info import PatientInfo
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
@@ -11,7 +12,7 @@ class TestFilteredICD10ToHccAnnotationComponent(TestCase):
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
     def test__run__should_return_correct_response__given_correct_input(self, mock_boto3):
         icd10_to_hcc_annotation_component = FilteredICD10ToHccAnnotationComponent()
-        params = {ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data()}
+        params = {"patient_info": PatientInfo(70, "M"), ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data()}
         results = icd10_to_hcc_annotation_component.run(params)
 
         assert len(results[0].hcc_maps) == 2

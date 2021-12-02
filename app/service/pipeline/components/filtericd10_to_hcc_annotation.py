@@ -1,5 +1,6 @@
 from typing import List
 
+from app.dto.core.patient_info import PatientInfo
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
@@ -27,6 +28,7 @@ class FilteredICD10ToHccAnnotationComponent(BasePipelineComponent):
         for annotation_entity in annotated_list:
             annotations: List[str] = [icd10.code for icd10 in annotation_entity.suggested_codes]
             all_icd10_annotations.extend(annotations)
-        hcc_request = HCCRequestDto(icd_codes_list=all_icd10_annotations)
+        patient_info: PatientInfo = annotation_results["patient_info"]
+        hcc_request = HCCRequestDto(icd_codes_list=all_icd10_annotations, age=patient_info.age, sex=patient_info.sex)
         hcc_annotation: HCCResponseDto = self.__hcc_service.get_hcc_risk_scores(hcc_request)
         return [hcc_annotation]
