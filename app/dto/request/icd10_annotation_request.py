@@ -1,4 +1,5 @@
 import re
+from typing import Optional
 
 from pydantic import validator
 
@@ -8,8 +9,8 @@ from app.dto.base_dto import BaseDto
 class ICD10AnnotationRequest(BaseDto):
     id: str
     text: str
-    sex: str
-    age: float
+    sex: Optional[str] = "F"
+    age: Optional[float] = 70
 
     @validator('id')
     def id_must_be_string_and_nonempty(cls, id_value: str):
