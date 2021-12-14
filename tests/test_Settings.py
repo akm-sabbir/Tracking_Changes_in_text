@@ -1,5 +1,5 @@
 from unittest import TestCase
-from app.Settings import Settings
+from app.settings import Settings
 
 
 class test_Settings(TestCase):

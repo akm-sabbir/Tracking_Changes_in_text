@@ -3,7 +3,7 @@ from typing import List
 from fastapi import APIRouter
 from fastapi.params import Param
 
-from app.Settings import Settings
+from app.settings import Settings
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
 from app.dto.core.patient_info import PatientInfo
 from app.dto.request.icd10_annotation_request import ICD10AnnotationRequest

@@ -1,7 +1,7 @@
 from app.service.icd10_exclusion_service import ICD10ExclusionService
 from app.util.icd_exclusions import ICDExclusions
 import math
-from app.Settings import Settings
+from app.settings import Settings
 
 
 class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):

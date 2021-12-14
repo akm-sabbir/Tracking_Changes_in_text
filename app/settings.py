@@ -7,6 +7,7 @@ from nltk.corpus import words
 import json
 import codecs
 
+
 class Settings:
     app_name: str = "HCC API"
     dx_threshold: float
@@ -16,7 +17,9 @@ class Settings:
     eng_dict: Trie
     spacy_tokenizer: spacy.Any
     exclusion_list_path: str
-    exclusion_dict : dict
+    exclusion_dict: dict
+    positive_sentiments_path: str
+    positive_sentiments_set: set
 
     @staticmethod
     def get_settings_dx_threshold() -> float:
@@ -71,13 +74,27 @@ class Settings:
         Settings.exclusion_list_path = path_
 
     @staticmethod
+    def set_positive_sentiments_path(path_: str):
+        Settings.positive_sentiments_path = path_
+
+    @staticmethod
     def get_exclusion_dict():
         return Settings.exclusion_dict
+
+    @staticmethod
+    def get_sentiments_set():
+        return Settings.positive_sentiments_set
 
     @staticmethod
     def init_exclusion_dict():
         with codecs.open(Settings.exclusion_list_path, mode="r", encoding="utf-8", errors="ignore") as json_file:
             Settings.exclusion_dict = json.load(json_file)
+
+    @staticmethod
+    def init_positive_sentiments_set():
+        with codecs.open(Settings.positive_sentiments_path, mode="r", encoding="utf-8", errors="ignore") as json_file:
+            positive_sentiments_dict = json.load(json_file)
+            Settings.positive_sentiments_set = set(positive_sentiments_dict["positive_sentiments"])
 
     @staticmethod
     def start_initialize_dictionary():

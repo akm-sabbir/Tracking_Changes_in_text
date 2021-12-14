@@ -3,7 +3,7 @@ import collections
 from app.util.icd_exclusions import ICDExclusions
 
 from app.util.config_manager import ConfigManager
-from app.Settings import Settings
+from app.settings import Settings
 import os
 from app import app_base_path
 class TestICDExclusions(unittest.TestCase):

@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 
 from pydantic import ValidationError
 
-from app.Settings import Settings
+from app.settings import Settings
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
 from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
