@@ -24,7 +24,8 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
         self.__icd10_annotation_service: ICD10AnnotatorService = DependencyInjector.get_instance(
             AmazonICD10AnnotatorServiceImpl)
 
-        self.__icd10_positive_sentiment_exclusion_service: ICD10SentimentExclusionService = ICD10SentimentExclusionServiceImpl()
+        self.__icd10_positive_sentiment_exclusion_service: ICD10SentimentExclusionService = DependencyInjector.get_instance(
+            ICD10SentimentExclusionServiceImpl)
 
         self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))
 
@@ -43,7 +44,8 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
                 annotation.end_offset += paragraph.start_index
             icd10_annotation_results += annotations
 
-        filtered_icd10_annotations = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(icd10_annotation_results)
+        filtered_icd10_annotations = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
+            icd10_annotation_results)
 
         result = ACMICD10Result(annotation_results["id"], filtered_icd10_annotations, raw_acm_data)
         self.align_start_and_text(result, annotation_results['text'], annotation_results[NegationHandlingComponent][0])
@@ -51,26 +53,23 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
         return [result]
 
     def align_start_and_text(self, acm_result: ACMICD10Result, original_text: str, changed_text: str):
-        try:
-            for annotation in acm_result.icd10_annotations:
-                annotation_text = annotation.medical_condition
-                word_list = re.sub(r"[^\w]", " ", annotation_text).split()
-                consecutive_words_match_regex = r"[^\w]*?".join(word_list)
+        for annotation in acm_result.icd10_annotations:
+            annotation_text = annotation.medical_condition
+            word_list = re.sub(r"[^\w]", " ", annotation_text).split()
+            consecutive_words_match_regex = r"[^\w]*?".join(word_list)
 
-                """ if annotation_text is "high fever" then consecutive_words_match_regex is "high[^\w]*?fever", 
+            """ if annotation_text is "high fever" then consecutive_words_match_regex is "high[^\w]*?fever", 
                 it matches words present annotation_text consecutively in original text """
 
-                matches = [match for match in re.finditer(consecutive_words_match_regex, original_text, re.IGNORECASE)]
-                matches_changed = [match for match in
-                                   re.finditer(consecutive_words_match_regex, changed_text, re.IGNORECASE)]
-                match_index = 0
-                for idx, match in enumerate(matches_changed):
-                    if match.start() == annotation.begin_offset and match.end() == annotation.end_offset:
-                        match_index = idx
-                        break
+            matches = [match for match in re.finditer(consecutive_words_match_regex, original_text, re.IGNORECASE)]
+            matches_changed = [match for match in
+                               re.finditer(consecutive_words_match_regex, changed_text, re.IGNORECASE)]
+            match_index = 0
+            for idx, match in enumerate(matches_changed):
+                if match.start() == annotation.begin_offset and match.end() == annotation.end_offset:
+                    match_index = idx
+                    break
 
-                annotation.begin_offset = matches[match_index].start()
-                annotation.end_offset = matches[match_index].end()
-                annotation.medical_condition = matches[match_index].group()
-        except IndexError:
-            print("list out of range.")
+            annotation.begin_offset = matches[match_index].start()
+            annotation.end_offset = matches[match_index].end()
+            annotation.medical_condition = matches[match_index].group()
