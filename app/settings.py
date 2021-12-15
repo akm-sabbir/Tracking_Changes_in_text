@@ -18,8 +18,8 @@ class Settings:
     spacy_tokenizer: spacy.Any
     exclusion_list_path: str
     exclusion_dict: dict
-    positive_sentiments_path: str
-    positive_sentiments_set: set
+    positive_sentiments_path: str = ""
+    positive_sentiments_set: set = set()
 
     @staticmethod
     def get_settings_dx_threshold() -> float:

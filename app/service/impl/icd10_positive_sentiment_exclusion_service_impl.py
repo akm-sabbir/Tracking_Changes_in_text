@@ -17,7 +17,7 @@ class ICD10SentimentExclusionServiceImpl(ICD10SentimentExclusionService):
         text_tokens = icd10_annotation.medical_condition.split()
 
         for words in text_tokens:
-            if words in positive_sentiment_exclusion_set:
+            if words.lower() in positive_sentiment_exclusion_set:
                 return False
 
         return True

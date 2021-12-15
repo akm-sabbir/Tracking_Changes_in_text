@@ -7,7 +7,7 @@ from app.util.english_dictionary import EnglishDictionary
 from app.dto.core.trie_structure import Trie
 
 
-class Icd10NegationServiceImpl(TestCase):
+class TestIcd10NegationServiceImpl(TestCase):
     word = ["dizziness", "anxiety", "appropriate", "breathlessness"]
     eng_dict = EnglishDictionary()
     root = Trie()
