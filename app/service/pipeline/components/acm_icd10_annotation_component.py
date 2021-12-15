@@ -5,8 +5,10 @@ from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.icd10_annotator_service import ICD10AnnotatorService
+from app.service.icd10_positive_sentiment_exclusion_service import ICD10SentimentExclusionService
 from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
 from app.service.impl.dynamo_db_service import DynamoDbService
+from app.service.impl.icd10_positive_sentiment_exclusion_service_impl import ICD10SentimentExclusionServiceImpl
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
@@ -21,6 +23,10 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
         super().__init__()
         self.__icd10_annotation_service: ICD10AnnotatorService = DependencyInjector.get_instance(
             AmazonICD10AnnotatorServiceImpl)
+
+        self.__icd10_positive_sentiment_exclusion_service: ICD10SentimentExclusionService = DependencyInjector.get_instance(
+            ICD10SentimentExclusionServiceImpl)
+
         self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))
 
     def run(self, annotation_results: dict) -> List[ACMICD10Result]:
@@ -37,20 +43,23 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
                 annotation.begin_offset += paragraph.start_index
                 annotation.end_offset += paragraph.start_index
             icd10_annotation_results += annotations
-        result = ACMICD10Result(annotation_results["id"], icd10_annotation_results, raw_acm_data)
+
+        filtered_icd10_annotations = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
+            icd10_annotation_results)
+
+        result = ACMICD10Result(annotation_results["id"], filtered_icd10_annotations, raw_acm_data)
         self.align_start_and_text(result, annotation_results['text'], annotation_results[NegationHandlingComponent][0])
         self.__db_service.save_item(result)
         return [result]
 
     def align_start_and_text(self, acm_result: ACMICD10Result, original_text: str, changed_text: str):
-
         for annotation in acm_result.icd10_annotations:
             annotation_text = annotation.medical_condition
             word_list = re.sub(r"[^\w]", " ", annotation_text).split()
             consecutive_words_match_regex = r"[^\w]*?".join(word_list)
 
             """ if annotation_text is "high fever" then consecutive_words_match_regex is "high[^\w]*?fever", 
-            it matches words present annotation_text consecutively in original text """
+                it matches words present annotation_text consecutively in original text """
 
             matches = [match for match in re.finditer(consecutive_words_match_regex, original_text, re.IGNORECASE)]
             matches_changed = [match for match in

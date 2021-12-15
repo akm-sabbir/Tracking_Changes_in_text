@@ -6,7 +6,7 @@ import service
 from app.util.icd_exclusions import ICDExclusions
 from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
 from app.dto.pipeline.icd10_meta_info import icd10_meta_info
-from app.Settings import Settings
+from app.settings import Settings
 
 
 class MockedHCCEngine():

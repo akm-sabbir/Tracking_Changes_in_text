@@ -1,4 +1,4 @@
-from app.Settings import Settings
+from app.settings import Settings
 from app.service.icd10_negation_service import ICD10NegationService
 from app.util.english_dictionary import EnglishDictionary
 

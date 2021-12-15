@@ -11,11 +11,11 @@ from app.exception.exception_handler import ExceptionHandler
 from app.router import routers_base_path
 from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
-from app.Settings import Settings
-
+from app.settings import Settings
+from sentiment_exclusion_list import sentiment_exclusion_list_folder_path
 
 app = FastAPI()
-#allow cors
+# allow cors
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -46,12 +46,18 @@ for router_module in __router_modules:
 logging_folder = ConfigManager.get_specific_config(section="logging", key="folder")
 
 __exclusion_list_folder = ConfigManager.get_specific_config(section="exclusion", key="list_")
+__sentiment_exclusion_file_name = ConfigManager.get_specific_config(section="sentiment_exclusion", key="list_file_name")
 exclusion_list_ = os.path.join(os.path.join(os.path.dirname(app_base_path), __exclusion_list_folder), "exclusions.json")
+positive_sentiments_path_ = os.path.join(os.path.join(os.path.dirname(app_base_path),
+                                                      sentiment_exclusion_list_folder_path),
+                                         __sentiment_exclusion_file_name)
 Path(os.path.join(os.path.dirname(app_base_path), logging_folder)).mkdir(exist_ok=True)
 
 Settings.set_exclusion_dict(path_=exclusion_list_)
+Settings.set_positive_sentiments_path(path_=positive_sentiments_path_)
 
 Settings.start_initialize_dictionary()
+Settings.init_positive_sentiments_set()
 
 logging_config_file_path = os.path.join(os.path.dirname(app_base_path), 'logging.ini')
 logging.config.fileConfig(logging_config_file_path,

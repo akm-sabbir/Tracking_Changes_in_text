@@ -16,7 +16,7 @@ from app.dto.core.service.hcc_code import HCCCode
 from app import app_base_path
 from app.util.config_manager import ConfigManager
 import os
-from app.Settings import Settings
+from app.settings import Settings
 from app.dto.pipeline.icd10_meta_info import icd10_meta_info
 
 

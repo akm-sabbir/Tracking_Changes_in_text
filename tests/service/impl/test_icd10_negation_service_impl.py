@@ -1,13 +1,13 @@
 from unittest import TestCase
 
 from app.service.impl.icd10_negation_service_impl import Icd10NegationServiceImpl
-from app.Settings import Settings
+from app.settings import Settings
 from nltk.corpus import words
 from app.util.english_dictionary import EnglishDictionary
 from app.dto.core.trie_structure import Trie
 
 
-class Icd10NegationServiceImpl(TestCase):
+class TestIcd10NegationServiceImpl(TestCase):
     word = ["dizziness", "anxiety", "appropriate", "breathlessness"]
     eng_dict = EnglishDictionary()
     root = Trie()

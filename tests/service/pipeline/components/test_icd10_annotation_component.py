@@ -6,6 +6,7 @@ from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
+from app.service.impl.icd10_positive_sentiment_exclusion_service_impl import ICD10SentimentExclusionServiceImpl
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
@@ -19,6 +20,7 @@ class TestICD10AnnotationComponent(TestCase):
         paragraph1 = Paragraph("Tuberculosis some text", 0, 10)
         paragraph2 = Paragraph("Pneumonia some other text", 11, 20)
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
+        mock_icd10_positive_sentiment_exclusion_service = Mock(ICD10SentimentExclusionServiceImpl)
         icd10_annotation_component = ACMICD10AnnotationComponent()
 
         mock_save_item = Mock()
@@ -27,10 +29,14 @@ class TestICD10AnnotationComponent(TestCase):
         mock_db_service.save_item = mock_save_item
 
         icd10_annotation_component._ACMICD10AnnotationComponent__icd10_annotation_service = mock_icd10_service
+        icd10_annotation_component._ACMICD10AnnotationComponent__icd10_positive_sentiment_exclusion_service = mock_icd10_positive_sentiment_exclusion_service
         icd10_annotation_component._ACMICD10AnnotationComponent__db_service = mock_db_service
 
         mock_icd10_service.get_icd_10_codes = Mock()
         mock_icd10_service.get_icd_10_codes.side_effect = self.__get_dummy_icd10_data()
+
+        mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment = Mock()
+        mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment.return_value = self.__get_dummy_icd10_annotation_result()
 
         acm_result: ACMICD10Result = icd10_annotation_component.run(
             {"text": paragraph1.text + "\n\n" + paragraph2.text, NotePreprocessingComponent: [paragraph1, paragraph2],
@@ -132,6 +138,26 @@ class TestICD10AnnotationComponent(TestCase):
         assert icd10_result[1].suggested_codes[1].code == "J12.89"
         assert icd10_result[1].suggested_codes[1].description == "Other viral pneumonia"
         assert icd10_result[1].suggested_codes[1].score == 0.45
+
+    def __get_dummy_icd10_annotation_result(self):
+        icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
+        icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
+                                             score=0.54)
+        icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
+                                                          end_offset=24, is_negated=False,
+                                                          suggested_codes=[icd10_annotation_1, icd10_annotation_2],
+                                                          raw_acm_response={"data": "data"})
+
+        icd10_annotation_3 = ICD10Annotation(code="J12.0", description="Adenoviral pneumonia", score=0.89)
+        icd10_annotation_4 = ICD10Annotation(code="J12.89", description="Other viral pneumonia",
+                                             score=0.45)
+
+        icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=45, end_offset=54,
+                                                          is_negated=True,
+                                                          suggested_codes=[icd10_annotation_3, icd10_annotation_4],
+                                                          raw_acm_response={"data": "data"})
+
+        return [icd10_annotation_result_1, icd10_annotation_result_2]
 
     def __get_dummy_icd10_data(self):
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
