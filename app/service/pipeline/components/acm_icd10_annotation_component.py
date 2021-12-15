@@ -69,8 +69,10 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
                 if match.start() == annotation.begin_offset and match.end() == annotation.end_offset:
                     match_index = idx
                     break
+
             if match_index >= len(matches):
                 continue
+
             annotation.begin_offset = matches[match_index].start()
             annotation.end_offset = matches[match_index].end()
             annotation.medical_condition = matches[match_index].group()

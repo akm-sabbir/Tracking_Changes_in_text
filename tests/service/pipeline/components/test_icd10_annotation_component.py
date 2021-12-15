@@ -17,7 +17,7 @@ class TestICD10AnnotationComponent(TestCase):
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     def test__run__should_return_correct_response__given_correct_input(self):
-        paragraph1 = Paragraph("Tuberculosis some text", 0, 10)
+        paragraph1 = Paragraph("some text", 0, 10)
         paragraph2 = Paragraph("Pneumonia some other text", 11, 20)
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
         mock_icd10_positive_sentiment_exclusion_service = Mock(ICD10SentimentExclusionServiceImpl)
@@ -42,7 +42,7 @@ class TestICD10AnnotationComponent(TestCase):
             {"text": paragraph1.text + "\n\n" + paragraph2.text, NotePreprocessingComponent: [paragraph1, paragraph2],
              "acm_cached_result": None, "id": "123",
              NegationHandlingComponent: [paragraph1.text + "\n\n" + paragraph2.text]}, )[0]
-        calls = [call("Tuberculosis some text"), call("Pneumonia some other text")]
+        calls = [call("some text"), call("Pneumonia some other text")]
         mock_icd10_service.get_icd_10_codes.assert_has_calls(calls)
         assert mock_icd10_service.get_icd_10_codes.call_count == 2
 
@@ -53,8 +53,8 @@ class TestICD10AnnotationComponent(TestCase):
         assert acm_result.raw_acm_data[0] == {"raw_data": "data1"}
         assert acm_result.raw_acm_data[1] == {"raw_data": "data2"}
 
-        assert icd10_result[0].begin_offset == 0
-        assert icd10_result[0].end_offset == 12
+        assert icd10_result[0].begin_offset == 12
+        assert icd10_result[0].end_offset == 24
         assert icd10_result[0].medical_condition == "Tuberculosis"
 
         assert icd10_result[0].suggested_codes[0].code == "A15.0"
@@ -65,8 +65,8 @@ class TestICD10AnnotationComponent(TestCase):
         assert icd10_result[0].suggested_codes[1].description == "Respiratory tuberculosis unspecified"
         assert icd10_result[0].suggested_codes[1].score == 0.54
 
-        assert icd10_result[1].begin_offset == 24
-        assert icd10_result[1].end_offset == 33
+        assert icd10_result[1].begin_offset == 11
+        assert icd10_result[1].end_offset == 20
         assert icd10_result[1].medical_condition == "Pneumonia"
 
         assert icd10_result[1].suggested_codes[0].code == "J12.0"
