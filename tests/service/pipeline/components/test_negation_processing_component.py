@@ -32,8 +32,9 @@ class TestNegationProcesingComponent(TestCase):
                     "Hypertension. Outpatient readings support todays reading as the patient as an " \
                     "automatic blood pressure machine. " \
                     "Will add hydrochlorothiazide 25 mg q.d. and come back in 4 days."
+
         result = component.run({"text": test_data,
-                                "acm_cached_result": None})
+                                "acm_cached_result": None, "changed_words":{}})
         print("--- %s seconds ---" % (time.time() - start_time))
         #print(result)
         assert result[0].lower().find("no new") != -1
