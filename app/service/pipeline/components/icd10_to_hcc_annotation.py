@@ -11,6 +11,7 @@ from app.service.pipeline.components.acm_icd10_annotation_component import ACMIC
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
+from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
 
 
 class ICD10ToHccAnnotationComponent(BasePipelineComponent):
@@ -25,6 +26,7 @@ class ICD10ToHccAnnotationComponent(BasePipelineComponent):
         annotated_list: List[ICD10AnnotationResult] = acm_result[0].icd10_annotations
         all_icd10_annotations = []
         icd10_metadata_map = dict()
+        annotated_results = Icd10HccMeta()
         for annotation_entity in annotated_list:
             annotations: List[str] = list()
             for icd10 in annotation_entity.suggested_codes:
@@ -35,6 +37,8 @@ class ICD10ToHccAnnotationComponent(BasePipelineComponent):
             all_icd10_annotations.extend(annotations)
         hcc_request = HCCRequestDto(icd_codes_list=all_icd10_annotations)
         hcc_annotation: HCCResponseDto = self.__hcc_service.get_hcc_risk_scores(hcc_request)
+        annotated_results.hcc_annotation_response = hcc_annotation
         for key, values in hcc_annotation.hcc_maps.items():
             icd10_metadata_map[key].hcc_map = values.code
-        return [hcc_annotation, icd10_metadata_map]
+        annotated_results.hcc_meta_map_info = icd10_metadata_map
+        return [annotated_results]

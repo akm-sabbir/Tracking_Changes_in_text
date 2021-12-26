@@ -9,6 +9,7 @@ from app.service.pipeline.components.base_pipeline_component import BasePipeline
 from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.util.pipeline_util import PipelineUtil
+from app.dto.pipeline.negation_component_result import NegationResult
 
 
 class NegationHandlingComponent(BasePipelineComponent):
@@ -35,7 +36,7 @@ class NegationHandlingComponent(BasePipelineComponent):
 
         text_tokens = [" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
                        for each_token in text_tokens]
-        return ["".join(text_tokens).strip()]
+        return [NegationResult(text="".join(text_tokens).strip())]
 
     def _track_text_change(self, fixed_token: str, each_token: str, token: Token, annotation_results: Dict):
         fixed_words = re.sub(r"[^\w]", " ", fixed_token).split()
