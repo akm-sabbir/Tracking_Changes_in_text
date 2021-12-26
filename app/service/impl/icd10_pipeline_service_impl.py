@@ -48,7 +48,8 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                                                dx_threshold=params.dx_threshold,
                                                                icd10_threshold=params.icd10_threshold,
                                                                parent_threshold=params.parent_threshold,
-                                                               patient_info=params.patient_info)
+                                                               patient_info=params.patient_info,
+                                                               changed_words={})
         icd10_annotations: List[ICD10AnnotationResult] = pipeline_result[ICD10AnnotationAlgoComponent]
         hcc_maps: HCCResponseDto = pipeline_result[FilteredICD10ToHccAnnotationComponent][0]
         acm_annotation_result: ACMICD10Result = pipeline_result[ACMICD10AnnotationComponent][0]
