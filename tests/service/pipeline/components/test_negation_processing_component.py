@@ -7,6 +7,7 @@ from app.util.english_dictionary import EnglishDictionary
 from app.dto.core.trie_structure import Trie
 from spacy.lang.en import English
 import time
+from app.dto.pipeline.negation_component_result import NegationResult
 
 
 class TestNegationProcesingComponent(TestCase):
@@ -33,11 +34,11 @@ class TestNegationProcesingComponent(TestCase):
                     "automatic blood pressure machine. " \
                     "Will add hydrochlorothiazide 25 mg q.d. and come back in 4 days."
 
-        result = component.run({"text": test_data,
+        result: list[NegationResult] = component.run({"text": test_data,
                                 "acm_cached_result": None, "changed_words":{}})
         print("--- %s seconds ---" % (time.time() - start_time))
         #print(result)
-        assert result[0].lower().find("no new") != -1
+        assert result[0].text.lower().find("no new") != -1
         #assert "no anxiety" in tokens
 
 

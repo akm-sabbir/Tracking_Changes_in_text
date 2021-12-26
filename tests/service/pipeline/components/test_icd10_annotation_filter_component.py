@@ -11,6 +11,7 @@ from app.service.pipeline.components.acm_icd10_annotation_component import ACMIC
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
+from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
 
 
 class TestICD10AnnotationAlgoComponent(TestCase):
@@ -25,13 +26,13 @@ class TestICD10AnnotationAlgoComponent(TestCase):
         mock_hcc_code = Mock(HCCCode)
         mock_hcc_code.code = "HCC100"
         mock_hcc_code.score = 0.7
-
         mock_hcc_response.hcc_maps = {"A15.9": mock_hcc_code}
-
+        mock_icd10_hcc_meta_info = Mock(Icd10HccMeta)
+        mock_icd10_hcc_meta_info.hcc_annotation_response = mock_hcc_response
         params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold": 0.80,
                   ACMICD10AnnotationComponent: [ACMICD10Result("1213", icd10_list, [{}])],
                   CodeExclusionHandlingComponent: [ACMICD10Result("1213", icd10_list, [{}])],
-                  ICD10ToHccAnnotationComponent: [mock_hcc_response]}
+                  ICD10ToHccAnnotationComponent: [mock_icd10_hcc_meta_info]}
         results = icd10_annotation_filter_component.run(params)
 
         assert results[0].suggested_codes[0].code == "A15.0"

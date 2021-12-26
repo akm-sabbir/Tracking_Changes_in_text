@@ -4,6 +4,7 @@ from unittest.mock import Mock, patch
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
@@ -117,9 +118,12 @@ class TestExclusionHandlingComponent(TestCase):
         mock_hcc_code.code = "HCC100"
         mock_hcc_code.score = 0.7
         mock_hcc_response.hcc_maps = {"I5030": mock_hcc_code}
+        mock_icd10_hcc_meta_info = Mock(Icd10HccMeta)
+        mock_icd10_hcc_meta_info.hcc_annotation_response = mock_hcc_response
+        mock_icd10_hcc_meta_info.hcc_meta_map_info = icd10_hcc_meta_info
         params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold": 0.80,
                   ACMICD10AnnotationComponent: [ACMICD10Result("123", self.__get_dummy_icd10_data(), [{}])],
-                  ICD10ToHccAnnotationComponent: [mock_hcc_response, icd10_hcc_meta_info]
+                  ICD10ToHccAnnotationComponent: [mock_icd10_hcc_meta_info]
                   }
         results = icd10_exclusion_list_processing.run(params)
         assert len(results[0].icd10_annotations[1].suggested_codes) == 3
