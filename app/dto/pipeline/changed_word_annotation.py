@@ -1,7 +1,6 @@
 class ChangedWordAnnotation:
-    def __init__(self, changed_text, original_text, start, end):
-        self.changed_text = changed_text
-        self.original_text = original_text
-        self.start = start
-        self.end = end
-
+    def __init__(self, changed_text: str, original_text: str, start: int, end: int):
+        self.changed_text: str = changed_text
+        self.original_text: str = original_text
+        self.start: int = start
+        self.end: int = end
