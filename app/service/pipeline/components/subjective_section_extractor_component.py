@@ -15,8 +15,16 @@ class SubjectiveSectionExtractorComponent(BasePipelineComponent):
         subjective_section_matches = self.note_section_service.get_subjective_sections(
             annotation_results["text"])
 
-        subjective_sections = [SubjectiveSection(section.group(), section.start(), section.end()) for section in
-                               subjective_section_matches]
+        subjective_sections = []
+        current_section_relative_start = 0
+
+        for section in subjective_section_matches:
+            relative_start = current_section_relative_start
+            relative_end = current_section_relative_start + len(section.group())
+            current_section = SubjectiveSection(section.group(), section.start(), section.end(), relative_start,
+                                                relative_end)
+            current_section_relative_start = current_section.relative_end + len(self.section_separator)
+            subjective_sections.append(current_section)
 
         subjective_text = self.section_separator.join([section.text for section in subjective_sections])
 
