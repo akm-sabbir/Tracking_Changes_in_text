@@ -3,6 +3,7 @@ from unittest.mock import Mock, call, patch
 
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
+from app.dto.pipeline.changed_word_annotation import ChangedWordAnnotation
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
@@ -18,7 +19,7 @@ class TestICD10AnnotationComponent(TestCase):
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     def test__run__should_return_correct_response__given_correct_input(self):
         paragraph1 = Paragraph("some text", 0, 10)
-        paragraph2 = Paragraph("Pneumonia some other text", 11, 20)
+        paragraph2 = Paragraph("pneumonia some other text", 11, 20)
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
         mock_icd10_positive_sentiment_exclusion_service = Mock(ICD10SentimentExclusionServiceImpl)
         icd10_annotation_component = ACMICD10AnnotationComponent()
@@ -41,11 +42,13 @@ class TestICD10AnnotationComponent(TestCase):
         acm_result: ACMICD10Result = icd10_annotation_component.run(
             {"text": paragraph1.text + "\n\n" + paragraph2.text, NotePreprocessingComponent: [paragraph1, paragraph2],
              "acm_cached_result": None, "id": "123",
-             NegationHandlingComponent: [paragraph1.text + "\n\n" + paragraph2.text]}, )[0]
-        calls = [call("some text"), call("Pneumonia some other text")]
-        mock_icd10_service.get_icd_10_codes.assert_has_calls(calls)
-        assert mock_icd10_service.get_icd_10_codes.call_count == 2
+             NegationHandlingComponent: [paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia")],
+             "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)]}})[0]
+        calls = [call("some text"), call("pneumonia some other text")]
 
+        mock_icd10_service.get_icd_10_codes.assert_has_calls(calls)
+
+        assert mock_icd10_service.get_icd_10_codes.call_count == 2
         icd10_result = acm_result.icd10_annotations
 
         assert acm_result.id == "123"
@@ -67,7 +70,7 @@ class TestICD10AnnotationComponent(TestCase):
 
         assert icd10_result[1].begin_offset == 11
         assert icd10_result[1].end_offset == 20
-        assert icd10_result[1].medical_condition == "Pneumonia"
+        assert icd10_result[1].medical_condition == "pneumonia"
 
         assert icd10_result[1].suggested_codes[0].code == "J12.0"
         assert icd10_result[1].suggested_codes[0].description == "Adenoviral pneumonia"
@@ -152,7 +155,7 @@ class TestICD10AnnotationComponent(TestCase):
         icd10_annotation_4 = ICD10Annotation(code="J12.89", description="Other viral pneumonia",
                                              score=0.45)
 
-        icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=45, end_offset=54,
+        icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=11, end_offset=20,
                                                           is_negated=True,
                                                           suggested_codes=[icd10_annotation_3, icd10_annotation_4],
                                                           raw_acm_response={"data": "data"})
