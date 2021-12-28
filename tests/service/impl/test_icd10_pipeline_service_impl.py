@@ -17,8 +17,9 @@ from app.service.pipeline.components.filtericd10_to_hcc_annotation import Filter
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
-from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
+from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
+from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from tests.service.pipeline.components.dummy_component_one import DummyComponentOne
 from tests.service.pipeline.components.dummy_component_two import DummyComponentTwo
 
@@ -75,16 +76,13 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert response.id == "123"
         assert response.hcc_maps == mock_hcc_maps
         assert response.raw_acm_data == mock_acm_response.raw_acm_data
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[0],
-                          NegationHandlingComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[1],
-                          NotePreprocessingComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[2],
-                          ACMICD10AnnotationComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[3],
-                          ICD10ToHccAnnotationComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[4],
-                          CodeExclusionHandlingComponent)
+        component_serial = [SubjectiveSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+                            ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
+                            ICD10AnnotationAlgoComponent]
+
+        for idx, type in enumerate(component_serial):
+            assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[idx], type)
+
         mock_run_pipeline.assert_called_once()
         pipeline_args = mock_run_pipeline.call_args[1]
         assert pipeline_args["id"] == "123"
@@ -144,19 +142,15 @@ class TestICD10PipelineServiceImpl(TestCase):
 
         response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
         assert response.icd10_annotations[0] == icd10_annotation_result_1
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[0],
-                          NegationHandlingComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[1],
-                          NotePreprocessingComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[2],
-                          ACMICD10AnnotationComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[3],
-                          ICD10ToHccAnnotationComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[4],
-                          CodeExclusionHandlingComponent)
-        assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[5],
-                          ICD10AnnotationAlgoComponent)
-        mock_run_pipeline.assert_called_once()
+
+        component_serial = [SubjectiveSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+                            ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
+                            ICD10AnnotationAlgoComponent]
+
+        for idx, type in enumerate(component_serial):
+            assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[idx], type)
+
+            mock_run_pipeline.assert_called_once()
         pipeline_args = mock_run_pipeline.call_args[1]
         assert pipeline_args["id"] == "123"
         assert pipeline_args["text"] == "text"
