@@ -10,10 +10,12 @@ class MedantNoteSectionService:
     If Current Meds Prior to Visit is absent, match text up to the next two newlines
     """
 
-    subjective_section_regex = r"(?<=subjective\n).*?((?=current[^\w]*meds[^\w]*prior[^\w]*to[^\w]*visit)|(?=\n{2}))"
-    exam_section_regex = r"(?<=exam:\n).*?((?=medication[^\w]*review[^\w]completed)|(?=\n{2}))"
-    session_notes_regex = r"(?<=session[^\w]notes:\n).*?((?=progress[^\w]notes)|(?=\n{2}))"
-    progress_notes_regex = r"(?<=progress[^\w]notes:\n).*?((?=progress[^\w]notes:\n|time[^\w]out:)|(?=\n{2}))"
+    subjective_section_regex = r"(?<=subjective\n).*?(?=current[^\w]*meds[^\w]*prior[^\w]*to[^\w]*visit)|" \
+                               r"(?<=subjective\n).*?(?=\n{2})"
+    exam_section_regex = r"(?<=exam:).*?((?=medication[^\w]*review[^\w]completed))|(?<=exam:).*?(?=\n{2})"
+    session_notes_regex = r"(?<=session[^\w]notes:).*?(?=progress[^\w]notes)|(?<=session[^\w]notes:).*?(?=\n{2})"
+    progress_notes_regex = r"(?<=progress[^\w]notes:).*?(?=progress[^\w]notes:\n|time[^\w]out:)|" \
+                           r"(?<=progress[^\w]notes:).*?(?=\n{2})"
 
     def get_subjective_sections(self, note: str) -> List[Match]:
         subjective_section_patten = re.compile(self.subjective_section_regex, flags=re.DOTALL | re.IGNORECASE)
