@@ -39,12 +39,13 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
         icd10_annotation_results: List[ICD10AnnotationResult] = []
         raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
-            acm_data, annotations = self.__icd10_annotation_service.get_icd_10_codes(paragraph.text)
-            raw_acm_data.extend(acm_data)
-            for annotation in annotations:
-                annotation.begin_offset += paragraph.start_index
-                annotation.end_offset += paragraph.start_index
-            icd10_annotation_results += annotations
+            if not paragraph.text == "":
+                acm_data, annotations = self.__icd10_annotation_service.get_icd_10_codes(paragraph.text)
+                raw_acm_data.extend(acm_data)
+                for annotation in annotations:
+                    annotation.begin_offset += paragraph.start_index
+                    annotation.end_offset += paragraph.start_index
+                icd10_annotation_results += annotations
 
         filtered_icd10_annotations = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
             icd10_annotation_results)
