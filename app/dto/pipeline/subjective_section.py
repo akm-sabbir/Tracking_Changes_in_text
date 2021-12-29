@@ -12,7 +12,7 @@ class SubjectiveSection(BasePipelineComponentResult):
         self.relative_end = relative_end
 
 
-class SubjectiveText:
+class SubjectiveText(BasePipelineComponentResult):
     def __init__(self, text: str, subjective_sections: List[SubjectiveSection]):
         self.text = text
         self.subjective_sections = subjective_sections
