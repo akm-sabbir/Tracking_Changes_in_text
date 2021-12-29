@@ -28,4 +28,9 @@ class SubjectiveSectionExtractorComponent(BasePipelineComponent):
 
         subjective_text = self.section_separator.join([section.text for section in subjective_sections])
 
+        if subjective_text == "":
+            subjective_text = annotation_results["text"]
+            subjective_sections.append(SubjectiveSection(subjective_text, 0, len(subjective_text), 0,
+                                                         len(subjective_text)))
+
         return [SubjectiveText(subjective_text, subjective_sections)]

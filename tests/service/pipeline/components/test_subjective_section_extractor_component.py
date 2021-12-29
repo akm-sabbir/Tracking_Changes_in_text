@@ -46,3 +46,19 @@ class TestSubjectiveSectionExtractorComponent(TestCase):
         assert subjective_section.subjective_sections[1].end == 109
         assert subjective_section.subjective_sections[1].relative_start == 67
         assert subjective_section.subjective_sections[1].relative_end == 76
+
+    def test__run__should_return_correct_response__given_input_with_no_subjective_part(self):
+        extractor_component = SubjectiveSectionExtractorComponent()
+
+        mock_note_section_service = Mock(MedantNoteSectionService)
+        mock_note_section_service.get_subjective_sections = Mock()
+        mock_note_section_service.get_subjective_sections.return_value = []
+
+        subjective_section = extractor_component.run(annotation_results={"text": "some text"})[0]
+
+        assert subjective_section.subjective_sections[0].text == "some text"
+        assert subjective_section.subjective_sections[0].start == 0
+        assert subjective_section.subjective_sections[0].end == 9
+        assert subjective_section.subjective_sections[0].relative_start == 0
+        assert subjective_section.subjective_sections[0].relative_end == 9
+
