@@ -32,8 +32,7 @@ class TestSubjectiveSectionExtractorComponent(TestCase):
 
         subjective_section = extractor_component.run(annotation_results={"text": "some text"})[0]
 
-        assert subjective_section.text == "section 1\n\n----------------------------" \
-                                          "--------------------------\n\nsection 2"
+        assert subjective_section.text == "section 1section 2"
 
         assert subjective_section.subjective_sections[0].text == "section 1"
         assert subjective_section.subjective_sections[0].start == 20
@@ -44,8 +43,8 @@ class TestSubjectiveSectionExtractorComponent(TestCase):
         assert subjective_section.subjective_sections[1].text == "section 2"
         assert subjective_section.subjective_sections[1].start == 100
         assert subjective_section.subjective_sections[1].end == 109
-        assert subjective_section.subjective_sections[1].relative_start == 67
-        assert subjective_section.subjective_sections[1].relative_end == 76
+        assert subjective_section.subjective_sections[1].relative_start == 9
+        assert subjective_section.subjective_sections[1].relative_end == 18
 
     def test__run__should_return_correct_response__given_input_with_no_subjective_part(self):
         extractor_component = SubjectiveSectionExtractorComponent()
