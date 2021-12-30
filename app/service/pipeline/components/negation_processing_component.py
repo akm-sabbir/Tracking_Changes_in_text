@@ -1,5 +1,5 @@
 import re
-from typing import Dict
+from typing import Dict, List
 
 from spacy.tokens import Token
 
@@ -20,7 +20,7 @@ class NegationHandlingComponent(BasePipelineComponent):
         self.__icd10_negation_fixing_service: ICD10NegationService = DependencyInjector.get_instance(
             Icd10NegationServiceImpl)
 
-    def run(self, annotation_results: dict) -> list:
+    def run(self, annotation_results: dict) -> List[NegationResult]:
         if annotation_results['acm_cached_result'] is not None:
             return []
         tokenize = Settings.get_settings_tokenizer()
