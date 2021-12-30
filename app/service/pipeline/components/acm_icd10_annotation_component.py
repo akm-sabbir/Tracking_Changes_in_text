@@ -124,8 +124,8 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
             annotation = acm_result.icd10_annotations[annotation_index]
             current_section = sections[section_index]
             if annotation.begin_offset >= current_section.relative_start and annotation.end_offset <= current_section.relative_end:
-                annotation.begin_offset = annotation.begin_offset + current_section.start
-                annotation.end_offset = annotation.end_offset + current_section.start
+                annotation.begin_offset = annotation.begin_offset - current_section.relative_start + current_section.start
+                annotation.end_offset = annotation.end_offset - current_section.relative_start + current_section.start
                 annotation_index = annotation_index + 1
             else:
                 section_index = section_index + 1

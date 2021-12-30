@@ -9,7 +9,6 @@ from app.util.dependency_injector import DependencyInjector
 class SubjectiveSectionExtractorComponent(BasePipelineComponent):
     DEPENDS_ON = []
     note_section_service: MedantNoteSectionService = DependencyInjector.get_instance(MedantNoteSectionService)
-    section_separator = "\n\n------------------------------------------------------\n\n"
 
     def run(self, annotation_results: dict) -> List[SubjectiveText]:
         subjective_section_matches = self.note_section_service.get_subjective_sections(
@@ -23,10 +22,10 @@ class SubjectiveSectionExtractorComponent(BasePipelineComponent):
             relative_end = current_section_relative_start + len(section.group())
             current_section = SubjectiveSection(section.group(), section.start(), section.end(), relative_start,
                                                 relative_end)
-            current_section_relative_start = current_section.relative_end + len(self.section_separator)
+            current_section_relative_start = current_section.relative_end
             subjective_sections.append(current_section)
 
-        subjective_text = self.section_separator.join([section.text for section in subjective_sections])
+        subjective_text = "".join([section.text for section in subjective_sections])
 
         if subjective_text == "":
             subjective_text = annotation_results["text"]

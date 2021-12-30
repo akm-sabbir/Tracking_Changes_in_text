@@ -40,7 +40,7 @@ class TestICD10AnnotationComponent(TestCase):
 
         mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment = Mock()
         mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment.return_value = self.__get_dummy_icd10_annotation_result()
-        text = paragraph1.text + SubjectiveSectionExtractorComponent.section_separator + paragraph2.text
+        text = paragraph1.text + paragraph2.text
         section_1 = SubjectiveSection(paragraph1.text, 90, 100, 0, 30)
         section_2 = SubjectiveSection(paragraph2.text, 200, 209, 60, 100)
 
@@ -63,29 +63,32 @@ class TestICD10AnnotationComponent(TestCase):
         assert acm_result.raw_acm_data[0] == {"raw_data": "data1"}
         assert acm_result.raw_acm_data[1] == {"raw_data": "data2"}
 
-        assert icd10_result[0].begin_offset == 102
-        assert icd10_result[0].end_offset == 114
-        assert icd10_result[0].medical_condition == "Tuberculosis"
+        assert icd10_result[0].begin_offset == 99
+        assert icd10_result[0].end_offset == 108
+        assert icd10_result[0].medical_condition == "pneumonia"
 
-        assert icd10_result[0].suggested_codes[0].code == "A15.0"
-        assert icd10_result[0].suggested_codes[0].description == "Tuberculosis of lung"
-        assert icd10_result[0].suggested_codes[0].score == 0.7
+        assert icd10_result[0].suggested_codes[0].code == "J12.0"
+        assert icd10_result[0].suggested_codes[0].description == "Adenoviral pneumonia"
+        assert icd10_result[0].suggested_codes[0].score == 0.89
 
-        assert icd10_result[0].suggested_codes[1].code == "A15.9"
-        assert icd10_result[0].suggested_codes[1].description == "Respiratory tuberculosis unspecified"
-        assert icd10_result[0].suggested_codes[1].score == 0.54
+        assert icd10_result[0].suggested_codes[1].code == "J12.89"
+        assert icd10_result[0].suggested_codes[1].description == "Other viral pneumonia"
+        assert icd10_result[0].suggested_codes[1].score == 0.45
 
-        assert icd10_result[1].begin_offset == 267
-        assert icd10_result[1].end_offset == 276
-        assert icd10_result[1].medical_condition == "pneumonia"
+        assert icd10_result[1].begin_offset == 102
+        assert icd10_result[1].end_offset == 114
+        assert icd10_result[1].medical_condition == "Tuberculosis"
 
-        assert icd10_result[1].suggested_codes[0].code == "J12.0"
-        assert icd10_result[1].suggested_codes[0].description == "Adenoviral pneumonia"
-        assert icd10_result[1].suggested_codes[0].score == 0.89
+        assert icd10_result[1].suggested_codes[0].code == "A15.0"
+        assert icd10_result[1].suggested_codes[0].description == "Tuberculosis of lung"
+        assert icd10_result[1].suggested_codes[0].score == 0.7
 
-        assert icd10_result[1].suggested_codes[1].code == "J12.89"
-        assert icd10_result[1].suggested_codes[1].description == "Other viral pneumonia"
-        assert icd10_result[1].suggested_codes[1].score == 0.45
+        assert icd10_result[1].suggested_codes[1].code == "A15.9"
+        assert icd10_result[1].suggested_codes[1].description == "Respiratory tuberculosis unspecified"
+        assert icd10_result[1].suggested_codes[1].score == 0.54
+
+
+
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
