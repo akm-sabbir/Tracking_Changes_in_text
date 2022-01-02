@@ -40,7 +40,7 @@ class TestNegationProcesingComponent(TestCase):
                                 SubjectiveSectionExtractorComponent: [SubjectiveText(test_data, [])]})
         print("--- %s seconds ---" % (time.time() - start_time))
         #print(result)
-        assert result[0].lower().find("no new") != -1
+        assert result[0].text.lower().find("no new") != -1
         #assert "no anxiety" in tokens
 
 

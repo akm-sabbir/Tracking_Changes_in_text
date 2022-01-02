@@ -1,4 +1,7 @@
-class Paragraph:
+from app.dto.pipeline.base_pipeline_component_result import BasePipelineComponentResult
+
+
+class Paragraph(BasePipelineComponentResult):
 
     def __init__(self, text, start_index, end_index):
         self.text = text

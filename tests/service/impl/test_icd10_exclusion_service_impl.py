@@ -5,7 +5,7 @@ import service
 
 from app.util.icd_exclusions import ICDExclusions
 from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
-from app.dto.pipeline.icd10_meta_info import icd10_meta_info
+from app.dto.pipeline.icd10_meta_info import ICD10MetaInfo
 from app.settings import Settings
 
 
@@ -54,37 +54,37 @@ class TestHCCServiceImpl(TestCase):
 
     def test_icd10_exclusion_service_to_get_response(self):
         self.service.icd_exclusion_util.set_exclusion_dictionary(self.icd10_exclusion_dict)
-        icd101 = Mock(icd10_meta_info)
+        icd101 = Mock(ICD10MetaInfo)
         icd101.hcc_map = "HCC85"
         icd101.score = 0.80
         icd101.length = 5
         icd101.entity_score = 0.99
         icd101.remove = False
-        icd102 = Mock(icd10_meta_info)
+        icd102 = Mock(ICD10MetaInfo)
         icd102.hcc_map = "HCC85"
         icd102.score = 0.67
         icd102.length = 6
         icd102.entity_score = 0.99
         icd102.remove = False
-        icd103 = Mock(icd10_meta_info)
+        icd103 = Mock(ICD10MetaInfo)
         icd103.hcc_map = "HCC85"
         icd103.score = 0.71
         icd103.length = 4
         icd103.entity_score = 0.91
         icd103.remove = False
-        icd104 = Mock(icd10_meta_info)
+        icd104 = Mock(ICD10MetaInfo)
         icd104.hcc_map = "HCC85"
         icd104.score = 0.82
         icd104.length = 3
         icd104.entity_score = 0.99
         icd104.remove = False
-        icd105 = Mock(icd10_meta_info)
+        icd105 = Mock(ICD10MetaInfo)
         icd105.hcc_map = "HCC85"
         icd105.score = 0.87
         icd105.length = 5
         icd105.entity_score = 0.99
         icd105.remove = False
-        icd106 = Mock(icd10_meta_info)
+        icd106 = Mock(ICD10MetaInfo)
         icd106.hcc_map = ""
         icd106.score = 0.87
         icd106.length = 5

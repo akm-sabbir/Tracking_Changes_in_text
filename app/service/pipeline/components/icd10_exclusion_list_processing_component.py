@@ -26,7 +26,7 @@ class CodeExclusionHandlingComponent(BasePipelineComponent):
     def run(self, annotation_results: dict) -> List[ACMICD10Result]:
         acm_result: List[ACMICD10Result] = annotation_results[ACMICD10AnnotationComponent]
         annotated_list: List[ICD10AnnotationResult] = acm_result[0].icd10_annotations
-        icd10_meta_info: dict = annotation_results[ICD10ToHccAnnotationComponent][1]
+        icd10_meta_info: dict = annotation_results[ICD10ToHccAnnotationComponent][0].hcc_meta_map_info
         icd10_meta_info = self.__icd10_exclusion_handling_service.get_icd_10_code_exclusion_decision(icd10_meta_info)
         for annotation_entity in annotated_list:
             annotation_entity.suggested_codes: List[ICD10Annotation] \

@@ -52,7 +52,7 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
 
         result = ACMICD10Result(annotation_results["id"], filtered_icd10_annotations, raw_acm_data)
         self.align_start_and_text(result, annotation_results[SubjectiveSectionExtractorComponent][0].text,
-                                  annotation_results[NegationHandlingComponent][0],
+                                  annotation_results[NegationHandlingComponent][0].text,
                                   annotation_results['changed_words'])
 
         self.align_start_end_for_subjective_part(result, annotation_results[SubjectiveSectionExtractorComponent][0])

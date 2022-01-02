@@ -1,5 +1,5 @@
 import re
-from typing import Dict
+from typing import Dict, List
 
 from spacy.tokens import Token
 
@@ -10,6 +10,7 @@ from app.service.pipeline.components.subjective_section_extractor_component impo
 from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.util.pipeline_util import PipelineUtil
+from app.dto.pipeline.negation_component_result import NegationResult
 
 
 class NegationHandlingComponent(BasePipelineComponent):
@@ -20,7 +21,7 @@ class NegationHandlingComponent(BasePipelineComponent):
         self.__icd10_negation_fixing_service: ICD10NegationService = DependencyInjector.get_instance(
             Icd10NegationServiceImpl)
 
-    def run(self, annotation_results: dict) -> list:
+    def run(self, annotation_results: dict) -> List[NegationResult]:
         if annotation_results['acm_cached_result'] is not None:
             return []
         tokenize = Settings.get_settings_tokenizer()
@@ -36,7 +37,7 @@ class NegationHandlingComponent(BasePipelineComponent):
 
         text_tokens = [" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
                        for each_token in text_tokens]
-        return ["".join(text_tokens).strip()]
+        return [NegationResult(text="".join(text_tokens).strip())]
 
     def _track_text_change(self, fixed_token: str, each_token: str, token: Token, annotation_results: Dict):
         fixed_words = re.sub(r"[^\w]", " ", fixed_token).split()

@@ -1,10 +1,11 @@
-from dataclasses import dataclass
+from app.dto.pipeline.base_pipeline_component_result import BasePipelineComponentResult
 
 
-@dataclass
-class icd10_meta_info:
-    hcc_map: str = ''
-    score: float = 0.0
-    entity_score: float = 0.0
-    length: int = 0
-    remove: bool = False
+class ICD10MetaInfo(BasePipelineComponentResult):
+
+    def __init__(self, hcc_map='', score=0.0, entity_score=0.0, length=0, remove=False):
+        self.hcc_map: str = hcc_map
+        self.score: float = score
+        self.entity_score: float = entity_score
+        self.length: int = length
+        self.remove: bool = remove

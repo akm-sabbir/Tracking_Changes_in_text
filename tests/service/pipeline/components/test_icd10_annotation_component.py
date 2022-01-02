@@ -6,6 +6,7 @@ from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.pipeline.changed_word_annotation import ChangedWordAnnotation
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.pipeline.negation_component_result import NegationResult
 from app.dto.pipeline.subjective_section import SubjectiveText, SubjectiveSection
 from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
 from app.service.impl.icd10_positive_sentiment_exclusion_service_impl import ICD10SentimentExclusionServiceImpl
@@ -49,7 +50,7 @@ class TestICD10AnnotationComponent(TestCase):
         acm_result: ACMICD10Result = icd10_annotation_component.run(
             {SubjectiveSectionExtractorComponent: [subjective_text], NotePreprocessingComponent: [paragraph1, paragraph2],
              "acm_cached_result": None, "id": "123",
-             NegationHandlingComponent: [paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia")],
+             NegationHandlingComponent: [NegationResult(paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia"))],
              "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)]}})[0]
         calls = [call("some text"), call("pneumonia some other text")]
 
