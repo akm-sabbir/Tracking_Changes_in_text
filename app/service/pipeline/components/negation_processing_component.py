@@ -1,11 +1,12 @@
 import re
-from typing import Dict
+from typing import Dict, List
 
 from spacy.tokens import Token
 
 from app.service.icd10_negation_service import ICD10NegationService
 from app.service.impl.icd10_negation_service_impl import Icd10NegationServiceImpl
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
+from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.util.pipeline_util import PipelineUtil
@@ -13,18 +14,18 @@ from app.dto.pipeline.negation_component_result import NegationResult
 
 
 class NegationHandlingComponent(BasePipelineComponent):
-    DEPENDS_ON = []
+    DEPENDS_ON = [SubjectiveSectionExtractorComponent]
 
     def __init__(self):
         super().__init__()
         self.__icd10_negation_fixing_service: ICD10NegationService = DependencyInjector.get_instance(
             Icd10NegationServiceImpl)
 
-    def run(self, annotation_results: dict) -> list:
+    def run(self, annotation_results: dict) -> List[NegationResult]:
         if annotation_results['acm_cached_result'] is not None:
             return []
         tokenize = Settings.get_settings_tokenizer()
-        text = annotation_results['text']
+        text = annotation_results[SubjectiveSectionExtractorComponent][0].text
         tokens = tokenize(text.lower())
         text_tokens = [each.text for each in tokens]
         for index, token in enumerate(tokens):

@@ -1,13 +1,14 @@
+import time
 from unittest import TestCase
 
-from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
-from app.settings import Settings
-from nltk.corpus import words
-from app.util.english_dictionary import EnglishDictionary
-from app.dto.core.trie_structure import Trie
 from spacy.lang.en import English
-import time
-from app.dto.pipeline.negation_component_result import NegationResult
+
+from app.dto.core.trie_structure import Trie
+from app.dto.pipeline.subjective_section import SubjectiveText
+from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
+from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
+from app.settings import Settings
+from app.util.english_dictionary import EnglishDictionary
 
 
 class TestNegationProcesingComponent(TestCase):
@@ -34,8 +35,9 @@ class TestNegationProcesingComponent(TestCase):
                     "automatic blood pressure machine. " \
                     "Will add hydrochlorothiazide 25 mg q.d. and come back in 4 days."
 
-        result: list[NegationResult] = component.run({"text": test_data,
-                                "acm_cached_result": None, "changed_words":{}})
+        result = component.run({"text": test_data,
+                                "acm_cached_result": None, "changed_words": {},
+                                SubjectiveSectionExtractorComponent: [SubjectiveText(test_data, [])]})
         print("--- %s seconds ---" % (time.time() - start_time))
         #print(result)
         assert result[0].text.lower().find("no new") != -1
