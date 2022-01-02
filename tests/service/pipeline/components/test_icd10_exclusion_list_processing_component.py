@@ -18,7 +18,7 @@ from app import app_base_path
 from app.util.config_manager import ConfigManager
 import os
 from app.settings import Settings
-from app.dto.pipeline.icd10_meta_info import icd10_meta_info
+from app.dto.pipeline.icd10_meta_info import ICD10MetaInfo
 
 
 class MockedIcd10ExclusionServiceImpl():
@@ -26,31 +26,31 @@ class MockedIcd10ExclusionServiceImpl():
         pass
 
     def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict):
-        icd101 = Mock(icd10_meta_info)
+        icd101 = Mock(ICD10MetaInfo)
         icd101.hcc_map = "HCC85"
         icd101.score = 0.80
         icd101.length = 5
         icd101.entity_score = 0.99
         icd101.remove = True
-        icd102 = Mock(icd10_meta_info)
+        icd102 = Mock(ICD10MetaInfo)
         icd102.hcc_map = "HCC85"
         icd102.score = 0.67
         icd102.length = 6
         icd102.entity_score = 0.99
         icd102.remove = True
-        icd103 = Mock(icd10_meta_info)
+        icd103 = Mock(ICD10MetaInfo)
         icd103.hcc_map = "HCC85"
         icd103.score = 0.71
         icd103.length = 4
         icd103.entity_score = 0.91
         icd103.remove = False
-        icd104 = Mock(icd10_meta_info)
+        icd104 = Mock(ICD10MetaInfo)
         icd104.hcc_map = "HCC85"
         icd104.score = 0.82
         icd104.length = 3
         icd104.entity_score = 0.99
         icd104.remove = False
-        icd105 = Mock(icd10_meta_info)
+        icd105 = Mock(ICD10MetaInfo)
         icd105.hcc_map = "HCC85"
         icd105.score = 0.87
         icd105.length = 5
@@ -82,31 +82,31 @@ class TestExclusionHandlingComponent(TestCase):
         icd10_to_hcc_annotation_component = ICD10ToHccAnnotationComponent()
         icd10_annotation_filter_component._ICD10AnnotationAlgoComponent__icd10_annotation_service_with_filters = \
             Mock(ICD10AnnotatorServiceWithFilterImpl)
-        icd101 = Mock(icd10_meta_info)
+        icd101 = Mock(ICD10MetaInfo)
         icd101.hcc_map = "HCC85"
         icd101.score = 0.80
         icd101.length = 5
         icd101.entity_score = 0.99
         icd101.remove = False
-        icd102 = Mock(icd10_meta_info)
+        icd102 = Mock(ICD10MetaInfo)
         icd102.hcc_map = "HCC85"
         icd102.score = 0.67
         icd102.length = 6
         icd102.entity_score = 0.99
         icd102.remove = False
-        icd103 = Mock(icd10_meta_info)
+        icd103 = Mock(ICD10MetaInfo)
         icd103.hcc_map = "HCC85"
         icd103.score = 0.71
         icd103.length = 4
         icd103.entity_score = 0.91
         icd103.remove = False
-        icd104 = Mock(icd10_meta_info)
+        icd104 = Mock(ICD10MetaInfo)
         icd104.hcc_map = "HCC85"
         icd104.score = 0.82
         icd104.length = 3
         icd104.entity_score = 0.99
         icd104.remove = False
-        icd105 = Mock(icd10_meta_info)
+        icd105 = Mock(ICD10MetaInfo)
         icd105.hcc_map = "HCC85"
         icd105.score = 0.87
         icd105.length = 5

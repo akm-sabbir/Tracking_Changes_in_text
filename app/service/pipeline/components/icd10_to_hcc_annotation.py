@@ -2,7 +2,7 @@ from typing import List
 
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
-from app.dto.pipeline.icd10_meta_info import icd10_meta_info
+from app.dto.pipeline.icd10_meta_info import ICD10MetaInfo
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
@@ -31,7 +31,7 @@ class ICD10ToHccAnnotationComponent(BasePipelineComponent):
             annotations: List[str] = list()
             for icd10 in annotation_entity.suggested_codes:
                 annotations.append(icd10.code)
-                icd10_metadata_map[icd10.code.replace(".", "")] = icd10_meta_info(
+                icd10_metadata_map[icd10.code.replace(".", "")] = ICD10MetaInfo(
                     score=icd10.score, length=len(icd10.code.replace(".", "")))
             all_icd10_annotations.extend(annotations)
         hcc_request = HCCRequestDto(icd_codes_list=all_icd10_annotations)
