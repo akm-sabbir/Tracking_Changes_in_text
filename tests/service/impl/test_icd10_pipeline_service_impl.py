@@ -77,7 +77,8 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert response.id == "123"
         assert response.hcc_maps == mock_hcc_maps
         assert response.raw_acm_data == mock_acm_response.raw_acm_data
-        component_serial = [SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+        component_serial = [SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
+                            NegationHandlingComponent, NotePreprocessingComponent,
                             ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
 
