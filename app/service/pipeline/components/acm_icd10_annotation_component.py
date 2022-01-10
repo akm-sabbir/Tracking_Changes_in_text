@@ -13,9 +13,11 @@ from app.service.impl.icd10_positive_sentiment_exclusion_service_impl import ICD
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
+from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
+from app.util.icd_10_filter_util import ICD10FilterUtil
 
 
 class ACMICD10AnnotationComponent(BasePipelineComponent):
@@ -47,10 +49,14 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
                     annotation.end_offset += paragraph.start_index
                 icd10_annotation_results += annotations
 
-        filtered_icd10_annotations = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
+        filtered_icd10_annotations_from_sentiment = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
             icd10_annotation_results)
 
-        result = ACMICD10Result(annotation_results["id"], filtered_icd10_annotations, raw_acm_data)
+        filtered_icd10_annotations_from_excluded_sections = ICD10FilterUtil.get_filtered_annotations_based_on_excluded_sections(
+            filtered_icd10_annotations_from_sentiment, annotation_results[SectionExclusionServiceComponent]
+        )
+
+        result = ACMICD10Result(annotation_results["id"], filtered_icd10_annotations_from_excluded_sections, raw_acm_data)
         self.align_start_and_text(result, annotation_results[SubjectiveSectionExtractorComponent][0].text,
                                   annotation_results[NegationHandlingComponent][0].text,
                                   annotation_results['changed_words'])

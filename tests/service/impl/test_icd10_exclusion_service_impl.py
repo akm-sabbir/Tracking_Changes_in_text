@@ -1,12 +1,8 @@
 from unittest import TestCase
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 
-import service
-
-from app.util.icd_exclusions import ICDExclusions
 from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
 from app.dto.pipeline.icd10_meta_info import ICD10MetaInfo
-from app.settings import Settings
 
 
 class MockedHCCEngine():
