@@ -13,10 +13,13 @@ from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.acm_rxnorm_annotation_component import ACMRxNormAnnotationComponent
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
+from app.service.pipeline.components.medication_note_preprocessing_component import MedicationNotePreprocessingComponent
+from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
@@ -76,8 +79,9 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert response.id == "123"
         assert response.hcc_maps == mock_hcc_maps
         assert response.raw_acm_data == mock_acm_response.raw_acm_data
-        component_serial = [SubjectiveSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
+        component_serial = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+                            MedicationNotePreprocessingComponent, ACMICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                            ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
 
         for idx, type in enumerate(component_serial):
@@ -143,8 +147,9 @@ class TestICD10PipelineServiceImpl(TestCase):
         response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
         assert response.icd10_annotations[0] == icd10_annotation_result_1
 
-        component_serial = [SubjectiveSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
+        component_serial = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+                            MedicationNotePreprocessingComponent, ACMICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                            ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
 
         for idx, type in enumerate(component_serial):
