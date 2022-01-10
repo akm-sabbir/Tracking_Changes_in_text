@@ -4,7 +4,7 @@ from app.dto.pipeline.excluded_sections.family_history_excluded_section import F
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 
 
-class FilterICD10CodesServiceFromExcludedSections:
+class ICD10FilterUtil:
 
     @staticmethod
     def __is_icd_10_codes_not_in_excluded_sections(icd10_annotation: ICD10AnnotationResult,
@@ -22,5 +22,5 @@ class FilterICD10CodesServiceFromExcludedSections:
 
         return [icd10_annotation for icd10_annotation in icd10_annotation_results
                 if
-                FilterICD10CodesServiceFromExcludedSections.__is_icd_10_codes_not_in_excluded_sections(icd10_annotation,
-                                                                                                       family_history_excluded_sections)]
+                ICD10FilterUtil.__is_icd_10_codes_not_in_excluded_sections(icd10_annotation,
+                                                                           family_history_excluded_sections)]

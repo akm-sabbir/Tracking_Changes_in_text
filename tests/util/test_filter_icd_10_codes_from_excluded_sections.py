@@ -3,7 +3,7 @@ from unittest import TestCase
 from app.dto.pipeline.excluded_sections.family_history_excluded_section import FamilyHistorySection
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
-from app.util.filter_icd_10_codes_from_excluded_sections import FilterICD10CodesServiceFromExcludedSections
+from app.util.icd_10_filter_util import ICD10FilterUtil
 
 
 class TestFilterICD10CodesServiceFromExcludedSections(TestCase):
@@ -11,7 +11,7 @@ class TestFilterICD10CodesServiceFromExcludedSections(TestCase):
             self):
         dummy_icd10_annotation = self.__get_dummy_icd10_data()
 
-        filtered_icd10_annotations_from_excluded_sections = FilterICD10CodesServiceFromExcludedSections.get_filtered_annotations_based_on_excluded_sections(
+        filtered_icd10_annotations_from_excluded_sections = ICD10FilterUtil.get_filtered_annotations_based_on_excluded_sections(
             dummy_icd10_annotation, self.__get_family_history_section()
         )
 

@@ -17,7 +17,7 @@ from app.service.pipeline.components.section_exclusion_service_component import 
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
-from app.util.filter_icd_10_codes_from_excluded_sections import FilterICD10CodesServiceFromExcludedSections
+from app.util.icd_10_filter_util import ICD10FilterUtil
 
 
 class ACMICD10AnnotationComponent(BasePipelineComponent):
@@ -52,7 +52,7 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
         filtered_icd10_annotations_from_sentiment = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
             icd10_annotation_results)
 
-        filtered_icd10_annotations_from_excluded_sections = FilterICD10CodesServiceFromExcludedSections.get_filtered_annotations_based_on_excluded_sections(
+        filtered_icd10_annotations_from_excluded_sections = ICD10FilterUtil.get_filtered_annotations_based_on_excluded_sections(
             filtered_icd10_annotations_from_sentiment, annotation_results[SectionExclusionServiceComponent]
         )
 
