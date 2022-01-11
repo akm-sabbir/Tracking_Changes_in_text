@@ -18,6 +18,7 @@ from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAn
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
+from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.service.pipeline.pipeline_manager import PipelineManager
 from app.util.config_manager import ConfigManager
@@ -25,8 +26,8 @@ from app.util.config_manager import ConfigManager
 
 class ICD10PipelineServiceImpl(ICD10PipelineService):
     def __init__(self):
-        self.__pipeline_components = [SubjectiveSectionExtractorComponent(), MedicationSectionExtractorComponent(),
-                                      NegationHandlingComponent(),
+        self.__pipeline_components = [SectionExclusionServiceComponent(),
+                                      SubjectiveSectionExtractorComponent(), MedicationSectionExtractorComponent(), NegationHandlingComponent(),
                                       NotePreprocessingComponent(),
                                       ACMICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
                                       ICD10ToHccAnnotationComponent(),

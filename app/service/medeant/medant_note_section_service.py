@@ -2,8 +2,11 @@ import re
 from re import Match
 from typing import List
 
+from app.dto.pipeline.excluded_sections.family_history_excluded_section import FamilyHistorySection
+
 
 class MedantNoteSectionService:
+
     """ These regex finds text between two sections, or up to the next two newlines
     e.g. subjective_section_regex - finds text between Subjective and Current Meds Prior to Visit
     If Current Meds Prior to Visit is absent, match text up to the next two newlines
@@ -15,6 +18,7 @@ class MedantNoteSectionService:
     session_notes_regex = r"(?<=session[^\w]notes:).*?(?=progress[^\w]notes)|(?<=session[^\w]notes:).*?(?=\n{2})"
     progress_notes_regex = r"(?<=progress[^\w]notes:).*?(?=progress[^\w]notes:\n|time[^\w]out:)|" \
                            r"(?<=progress[^\w]notes:).*?(?=\n{2})"
+    __family_history_section_regex = r"(?<=fh:\n).*?(?=sh:|objective)|(?<=fh:\n).*?(?=\n{2})"
 
     CONSTANT_ENDINGS_PATTERN = [r'assessment', r'plan[^\w]other', r'lab[^\w]orders', r'correspond\'s',
                                 r'follow[^\w]up', r'treatment[^\w]plan', r'resident[^\w]informed', r'referral']
@@ -49,6 +53,12 @@ class MedantNoteSectionService:
             return session_notes_sections + progress_notes_sections
 
         return []
+
+    def get_family_history_sections(self, note: str) -> List[FamilyHistorySection]:
+        family_history_section_pattern = re.compile(self.__family_history_section_regex, flags=re.DOTALL | re.IGNORECASE)
+
+        return [FamilyHistorySection(section.start(), section.end()) for section in
+                family_history_section_pattern.finditer(note)]
 
     def get_medication_sections(self, note: str) -> List[Match]:
         current_meds_prior_to_visit_section_pattern = re.compile(self.current_meds_prior_to_visit_section_regex,

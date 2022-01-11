@@ -13,6 +13,7 @@ from app.service.impl.icd10_positive_sentiment_exclusion_service_impl import ICD
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
+from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 
 
@@ -48,9 +49,12 @@ class TestICD10AnnotationComponent(TestCase):
         subjective_text = SubjectiveText(text, [section_1, section_2])
 
         acm_result: ACMICD10Result = icd10_annotation_component.run(
-            {SubjectiveSectionExtractorComponent: [subjective_text], NotePreprocessingComponent: [paragraph1, paragraph2],
+            {SectionExclusionServiceComponent: [],  # need to modify
+             SubjectiveSectionExtractorComponent: [subjective_text],
+             NotePreprocessingComponent: [paragraph1, paragraph2],
              "acm_cached_result": None, "id": "123",
-             NegationHandlingComponent: [NegationResult(paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia"))],
+             NegationHandlingComponent: [
+                 NegationResult(paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia"))],
              "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)]}})[0]
         calls = [call("some text"), call("pneumonia some other text")]
 
@@ -87,9 +91,6 @@ class TestICD10AnnotationComponent(TestCase):
         assert icd10_result[1].suggested_codes[1].code == "A15.9"
         assert icd10_result[1].suggested_codes[1].description == "Respiratory tuberculosis unspecified"
         assert icd10_result[1].suggested_codes[1].score == 0.54
-
-
-
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())

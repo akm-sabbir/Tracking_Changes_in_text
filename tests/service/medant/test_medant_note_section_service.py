@@ -65,3 +65,42 @@ class TestMedantNoteSectionService(TestCase):
         sections = MedantNoteSectionService().get_subjective_sections(test_text_1)
 
         assert len(sections) == 0
+
+    def test__get_family_history_sections__should_return_correct_sections__given_note_with_family_history_section(self):
+        medant_note_service = MedantNoteSectionService()
+        test_text_1 = "FH:\n this is family history \n\n Something else: some other text \n\n Exam: this is exam " \
+                      "\n\n "
+        expected_section_text = " this is family history "
+
+        sections = medant_note_service.get_family_history_sections(test_text_1)
+
+        assert sections[0].start == 4
+        assert sections[0].end == 28
+        assert test_text_1[4:28] == expected_section_text
+
+        test_text_2 = "FH:\n this is family history \nSH:\n this is SH section \n Something else: some other text" \
+                      "\n\n "
+        sections = medant_note_service.get_family_history_sections(test_text_2)
+        expected_section_text2 = " this is family history \n"
+
+        assert sections[0].start == 4
+        assert sections[0].end == 29
+        assert test_text_2[4:29] == expected_section_text2
+
+        test_text_3 = "FH:\n this is family history \nObjective:\n this is SH section \n Something else: some other text" \
+                      "\n\n "
+        sections = medant_note_service.get_family_history_sections(test_text_3)
+        expected_section_text3 = " this is family history \n"
+
+        assert sections[0].start == 4
+        assert sections[0].end == 29
+        assert test_text_3[4:29] == expected_section_text3
+
+    def test__get_family_history_sections__should_return_empty__given_note_with_no_family_history_section(self):
+        medant_note_service = MedantNoteSectionService()
+        test_text_1 = "note:\n this is family history \n\n Something else: some other text \n\n Exam: this is exam " \
+                      "\n\n "
+
+        sections = medant_note_service.get_family_history_sections(test_text_1)
+
+        assert len(sections) == 0
