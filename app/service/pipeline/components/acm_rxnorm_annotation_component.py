@@ -31,7 +31,7 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
         if annotation_results['acm_cached_result'] is not None:
             return []
 
-        paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent]
+        paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent][1]
 
         rxnorm_annotation_results: List[RxNormAnnotationResult] = []
         raw_acm_data: List[Dict] = []
@@ -46,7 +46,7 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
 
         result = ACMRxNormResult(annotation_results["id"], rxnorm_annotation_results, raw_acm_data)
         self.align_start_and_text(result, annotation_results[MedicationSectionExtractorComponent][0].text,
-                                  annotation_results[NegationHandlingComponent][0].text,
+                                  annotation_results[NegationHandlingComponent][1].text,
                                   annotation_results['changed_words'])
 
         self.align_start_end_for_medication_part(result, annotation_results[MedicationSectionExtractorComponent][0], annotation_results)
@@ -100,7 +100,7 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
         if match_found and len(matches) > match_index:
             annotation.begin_offset = matches[match_index].start()
             annotation.end_offset = matches[match_index].end()
-            annotation.medical_condition = matches[match_index].group()
+            annotation.medication = matches[match_index].group()
             return True
         else:
             return False

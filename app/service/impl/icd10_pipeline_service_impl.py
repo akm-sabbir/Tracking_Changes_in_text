@@ -27,8 +27,8 @@ from app.util.config_manager import ConfigManager
 class ICD10PipelineServiceImpl(ICD10PipelineService):
     def __init__(self):
         self.__pipeline_components = [SectionExclusionServiceComponent(),
-                                      SubjectiveSectionExtractorComponent(), MedicationSectionExtractorComponent(), NegationHandlingComponent(),
-                                      NotePreprocessingComponent(),
+                                      SubjectiveSectionExtractorComponent(), MedicationSectionExtractorComponent(),
+                                      NegationHandlingComponent(), NotePreprocessingComponent(),
                                       ACMICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
                                       ICD10ToHccAnnotationComponent(),
                                       CodeExclusionHandlingComponent(),

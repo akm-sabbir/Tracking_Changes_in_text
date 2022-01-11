@@ -36,7 +36,7 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
     def run(self, annotation_results: dict) -> List[ACMICD10Result]:
         if annotation_results['acm_cached_result'] is not None:
             return annotation_results['acm_cached_result']
-        paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent]
+        paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent][0]
 
         icd10_annotation_results: List[ICD10AnnotationResult] = []
         raw_acm_data: List[Dict] = []

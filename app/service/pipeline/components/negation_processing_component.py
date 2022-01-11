@@ -1,11 +1,13 @@
 import re
 from typing import Dict, List
 
+import spacy
 from spacy.tokens import Token
 
 from app.service.icd10_negation_service import ICD10NegationService
 from app.service.impl.icd10_negation_service_impl import Icd10NegationServiceImpl
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
+from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
@@ -14,7 +16,7 @@ from app.dto.pipeline.negation_component_result import NegationResult
 
 
 class NegationHandlingComponent(BasePipelineComponent):
-    DEPENDS_ON = [SubjectiveSectionExtractorComponent]
+    DEPENDS_ON = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent]
 
     def __init__(self):
         super().__init__()
@@ -24,9 +26,27 @@ class NegationHandlingComponent(BasePipelineComponent):
     def run(self, annotation_results: dict) -> List[NegationResult]:
         if annotation_results['acm_cached_result'] is not None:
             return []
-        tokenize = Settings.get_settings_tokenizer()
-        text = annotation_results[SubjectiveSectionExtractorComponent][0].text
-        tokens = tokenize(text.lower())
+        tokenizer = Settings.get_settings_tokenizer()
+
+        subjective_section_text_tokens = self.__fix_negation_for_section(tokenizer,
+                                                                         annotation_results[
+                                                                            SubjectiveSectionExtractorComponent][
+                                                                            0].text,
+                                                                         annotation_results)
+
+        medication_section_text_tokens = self.__fix_negation_for_section(tokenizer,
+                                                                         annotation_results[
+                                                                            MedicationSectionExtractorComponent][
+                                                                            0].text,
+                                                                         annotation_results)
+        subjective_section_text = "".join(subjective_section_text_tokens).strip()
+        medication_section_text = "".join(medication_section_text_tokens).strip()
+
+        return [NegationResult(text=subjective_section_text),
+                NegationResult(text=medication_section_text)]
+
+    def __fix_negation_for_section(self, tokenizer: spacy.Any, text: str, annotation_results: dict):
+        tokens = tokenizer(text.lower())
         text_tokens = [each.text for each in tokens]
         for index, token in enumerate(tokens):
             each_token = token.text.lower()
@@ -35,9 +55,8 @@ class NegationHandlingComponent(BasePipelineComponent):
                 text_tokens[index] = fixed_token
                 self._track_text_change(fixed_token, each_token, token, annotation_results)
 
-        text_tokens = [" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
-                       for each_token in text_tokens]
-        return [NegationResult(text="".join(text_tokens).strip())]
+        return (" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
+                for each_token in text_tokens)
 
     def _track_text_change(self, fixed_token: str, each_token: str, token: Token, annotation_results: Dict):
         fixed_words = re.sub(r"[^\w]", " ", fixed_token).split()
