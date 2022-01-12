@@ -104,3 +104,44 @@ class TestMedantNoteSectionService(TestCase):
         sections = medant_note_service.get_family_history_sections(test_text_1)
 
         assert len(sections) == 0
+
+    def test__get_medication_sections__should_return_correct_sections__given_note_with_medication_sections(self):
+        medant_note_service = MedantNoteSectionService()
+        test_text_1 = "Current meds prior to visit:\n this is medication section \n\n " \
+                      "Allergies: some other text \n\n Medication reviewed: this is exam " \
+                      "\n\n "
+        expected_section_text = ":\n this is medication section \n\n "
+
+        sections = medant_note_service.get_medication_sections(test_text_1)
+
+        assert sections[0].start() == 27
+        assert sections[0].end() == 60
+        assert sections[0].group() == expected_section_text
+
+        test_text_2 = "Med New:\n this is medication section \ncorrespond\'s:\n " \
+                      "this is correspond section \n Something else: some other text" \
+                      "\n\n "
+        sections = medant_note_service.get_medication_sections(test_text_2)
+        expected_section_text2 = "\n this is medication section \n"
+
+        assert sections[0].start() == 8
+        assert sections[0].end() == 38
+        assert sections[0].group() == expected_section_text2
+
+        test_text_3 = "Med Current:\n this is medication section \nReferral:\n this is SH section \n Something else: some other text" \
+                      "\n\n "
+        sections = medant_note_service.get_medication_sections(test_text_3)
+        expected_section_text3 = "\n this is medication section \n"
+
+        assert sections[0].start() == 12
+        assert sections[0].end() == 42
+        assert sections[0].group() == expected_section_text3
+
+    def test__get_medication_sections__should_return_empty__given_note_with_no_medication_sections(self):
+        medant_note_service = MedantNoteSectionService()
+        test_text_1 = "note:\n this is medication section \n\n Something else: some other text \n\n Exam: this is exam " \
+                      "\n\n "
+
+        sections = medant_note_service.get_medication_sections(test_text_1)
+
+        assert len(sections) == 0

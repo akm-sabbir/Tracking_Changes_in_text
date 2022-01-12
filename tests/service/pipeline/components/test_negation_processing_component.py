@@ -4,7 +4,9 @@ from unittest import TestCase
 from spacy.lang.en import English
 
 from app.dto.core.trie_structure import Trie
+from app.dto.pipeline.medication_section import MedicationText
 from app.dto.pipeline.subjective_section import SubjectiveText
+from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.settings import Settings
@@ -34,14 +36,14 @@ class TestNegationProcesingComponent(TestCase):
                     "Hypertension. Outpatient readings support todays reading as the patient as an " \
                     "automatic blood pressure machine. " \
                     "Will add hydrochlorothiazide 25 mg q.d. and come back in 4 days."
+        test_data2 = "Meds : Vyvanse 50 mgs po at breakfast daily," \
+                     "Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs"
 
         result = component.run({"text": test_data,
                                 "acm_cached_result": None, "changed_words": {},
-                                SubjectiveSectionExtractorComponent: [SubjectiveText(test_data, [])]})
+                                SubjectiveSectionExtractorComponent: [SubjectiveText(test_data, [])],
+                                MedicationSectionExtractorComponent: [MedicationText(test_data2, [])],
+                                })
         print("--- %s seconds ---" % (time.time() - start_time))
-        #print(result)
+
         assert result[0].text.lower().find("no new") != -1
-        #assert "no anxiety" in tokens
-
-
-

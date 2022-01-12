@@ -1,5 +1,5 @@
 from unittest import TestCase
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, call
 
 from app.dto.core.pipeline.paragraph import Paragraph
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
@@ -15,13 +15,20 @@ class TestNotePreprocessingComponent(TestCase):
                                                                        mock_break_into_paragraphs: Mock):
         component = NotePreprocessingComponent()
         mock_get_config.return_value = "10"
-        mock_return_value = [Paragraph("some text", 0, 10), Paragraph("some other text", 11, 21)]
+        mock_return_value = [[Paragraph("some text", 0, 10), Paragraph("some other text", 11, 21)],
+                             [Paragraph("medication text", 22, 31), Paragraph("some other medication", 32, 41)]]
         mock_break_into_paragraphs.return_value = mock_return_value
-        result = component.run({"text": "some text.\n\nSome other text", 'acm_cached_result': None,
-                                NegationHandlingComponent: [NegationResult("some text.\n\nSome other text.")]})
-        assert result == mock_return_value
-        mock_break_into_paragraphs.assert_called_once_with("some text.\n\nSome other text.", 10)
-        mock_get_config.assert_called_once_with("acm", "char_limit")
+        result = component.run({"text": "some text.\n\nSome other text. medication text.\n\nSome other medication.",
+                                'acm_cached_result': None,
+                                NegationHandlingComponent: [NegationResult("some text.\n\nSome other text."),
+                                                            NegationResult("medication text.\n\nSome other medication.")]})
+        assert result[0] == mock_return_value
+        assert result[1] == mock_return_value
+
+        calls = [call("some text.\n\nSome other text.", 10), call("medication text.\n\nSome other medication.", 10)]
+
+        mock_break_into_paragraphs.assert_has_calls(calls)
+        mock_get_config.assert_called_with("acm", "char_limit")
 
     def test__run__should_return_empty__given_cache_present(self):
         component = NotePreprocessingComponent()

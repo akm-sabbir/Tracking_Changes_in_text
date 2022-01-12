@@ -10,7 +10,7 @@ from app.service.pipeline.components.subjective_section_extractor_component impo
 class AnnotationAlignmentUtil:
     @staticmethod
     def align_start_and_end_notes_from_annotations(medical_ontology_to_align_on_note: str, acm_result,
-                                                   annotation_results):
+                                                   annotation_results) -> None:
         if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
             AnnotationAlignmentUtil.__align_start_and_text(medical_ontology_to_align_on_note,
                                                            acm_result.rxnorm_annotations,
@@ -21,8 +21,7 @@ class AnnotationAlignmentUtil:
             AnnotationAlignmentUtil.__align_start_end_for_medical_part(acm_result.rxnorm_annotations,
                                                                        annotation_results[
                                                                            MedicationSectionExtractorComponent][
-                                                                           0].medication_sections,
-                                                                       annotation_results)
+                                                                           0].medication_sections)
 
         elif medical_ontology_to_align_on_note == MedicalOntology.ICD10_CM.value:
             AnnotationAlignmentUtil.__align_start_and_text(medical_ontology_to_align_on_note,
@@ -32,8 +31,7 @@ class AnnotationAlignmentUtil:
                                                            annotation_results[NegationHandlingComponent][0].text,
                                                            annotation_results['changed_words'])
             AnnotationAlignmentUtil.__align_start_end_for_medical_part(acm_result.icd10_annotations, annotation_results[
-                SubjectiveSectionExtractorComponent][0].subjective_sections,
-                                                                       annotation_results)
+                SubjectiveSectionExtractorComponent][0].subjective_sections)
 
     @staticmethod
     def __get_annotation_text(medical_ontology_to_align_on_note: str, annotation):
@@ -114,8 +112,7 @@ class AnnotationAlignmentUtil:
             return False
 
     @staticmethod
-    def __align_start_end_for_medical_part(acm_annotations: List,
-                                           medical_sections, annotation_results):
+    def __align_start_end_for_medical_part(acm_annotations: List, medical_sections):
         section_index = 0
         annotation_index = 0
         acm_annotations.sort(key=lambda x: x.begin_offset)

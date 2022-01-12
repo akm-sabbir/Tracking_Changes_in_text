@@ -1,11 +1,9 @@
-import re
 from typing import List, Dict
 
+from app.dto.core.medical_ontology import MedicalOntology
 from app.dto.core.pipeline.acm_rxnorm_response import ACMRxNormResult
 from app.dto.core.pipeline.paragraph import Paragraph
-from app.dto.pipeline.medication_section import MedicationText
 from app.dto.pipeline.rxnorm_annotation_result import RxNormAnnotationResult
-from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.rxnorm_annotator_service import RxNormAnnotatorService
 from app.service.impl.amazon_rxnorm_annotator_service import AmazonRxNormAnnotatorServiceImpl
@@ -26,7 +24,7 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
         self.__rxnorm_annotation_service: RxNormAnnotatorService = DependencyInjector.get_instance(
             AmazonRxNormAnnotatorServiceImpl)
 
-        self.__note_to_align: str = "RxNorm"
+        self.__note_to_align: str = MedicalOntology.RXNORM.value
 
         self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))
 

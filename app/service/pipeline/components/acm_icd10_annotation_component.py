@@ -1,10 +1,9 @@
-import re
 from typing import List, Dict
 
+from app.dto.core.medical_ontology import MedicalOntology
 from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
-from app.dto.pipeline.subjective_section import SubjectiveText
 from app.service.icd10_annotator_service import ICD10AnnotatorService
 from app.service.icd10_positive_sentiment_exclusion_service import ICD10SentimentExclusionService
 from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
@@ -14,7 +13,6 @@ from app.service.pipeline.components.base_pipeline_component import BasePipeline
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
-from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.util.annotations_alignment_util import AnnotationAlignmentUtil
 from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
@@ -29,7 +27,7 @@ class ACMICD10AnnotationComponent(BasePipelineComponent):
         self.__icd10_annotation_service: ICD10AnnotatorService = DependencyInjector.get_instance(
             AmazonICD10AnnotatorServiceImpl)
 
-        self.__note_to_align: str = "ICD10-CM"
+        self.__note_to_align: str = MedicalOntology.ICD10_CM.value
 
         self.__icd10_positive_sentiment_exclusion_service: ICD10SentimentExclusionService = DependencyInjector.get_instance(
             ICD10SentimentExclusionServiceImpl)
