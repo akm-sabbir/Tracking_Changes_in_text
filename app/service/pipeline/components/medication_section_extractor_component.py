@@ -33,7 +33,5 @@ class MedicationSectionExtractorComponent(BasePipelineComponent):
             medication_sections.append(MedicationSection(medication_text, 0, len(medication_text), 0,
                                                          len(medication_text)))
 
-        print(medication_text)
-
         return [MedicationText(medication_text, medication_sections)]
 
