@@ -2,6 +2,7 @@ import spacy
 from spacy.lang.en import English
 
 from app.util.english_dictionary import EnglishDictionary
+from app.util.smoker_util import SmokerUtility
 from app.dto.core.trie_structure import Trie
 from nltk.corpus import words
 import json
@@ -20,6 +21,7 @@ class Settings:
     exclusion_dict: dict
     positive_sentiments_path: str = ""
     positive_sentiments_set: set = set()
+    nlp_smoker_detector: spacy
 
     @staticmethod
     def get_settings_dx_threshold() -> float:
@@ -86,6 +88,14 @@ class Settings:
         return Settings.positive_sentiments_set
 
     @staticmethod
+    def set_nlp_smoker_detector(nlp: spacy):
+        Settings.nlp_smoker_detector = nlp
+
+    @staticmethod
+    def get_nlp_smoker_detector():
+        return Settings.nlp_smoker_detector
+
+    @staticmethod
     def init_exclusion_dict():
         with codecs.open(Settings.exclusion_list_path, mode="r", encoding="utf-8", errors="ignore") as json_file:
             Settings.exclusion_dict = json.load(json_file)
@@ -105,3 +115,7 @@ class Settings:
         Settings.set_settings_dictionary(root)
         Settings.set_settings_tokenizer(English())
         Settings.init_exclusion_dict()
+
+    @staticmethod
+    def start_initializing_smoker_detector():
+        Settings.set_nlp_smoker_detector(SmokerUtility.get_nlp_obs())
