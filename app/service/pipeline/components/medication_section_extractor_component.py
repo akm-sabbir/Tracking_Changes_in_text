@@ -1,6 +1,5 @@
 from typing import List
 
-from app.dto.pipeline.base_pipeline_component_result import BasePipelineComponentResult
 from app.dto.pipeline.medication_section import MedicationSection, MedicationText
 from app.service.medeant.medant_note_section_service import MedantNoteSectionService
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
