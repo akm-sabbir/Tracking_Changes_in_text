@@ -6,7 +6,6 @@ from app.dto.pipeline.excluded_sections.family_history_excluded_section import F
 
 
 class MedantNoteSectionService:
-
     """ These regex finds text between two sections, or up to the next two newlines
     e.g. subjective_section_regex - finds text between Subjective and Current Meds Prior to Visit
     If Current Meds Prior to Visit is absent, match text up to the next two newlines
@@ -55,7 +54,8 @@ class MedantNoteSectionService:
         return []
 
     def get_family_history_sections(self, note: str) -> List[FamilyHistorySection]:
-        family_history_section_pattern = re.compile(self.__family_history_section_regex, flags=re.DOTALL | re.IGNORECASE)
+        family_history_section_pattern = re.compile(self.__family_history_section_regex,
+                                                    flags=re.DOTALL | re.IGNORECASE)
 
         return [FamilyHistorySection(section.start(), section.end()) for section in
                 family_history_section_pattern.finditer(note)]
