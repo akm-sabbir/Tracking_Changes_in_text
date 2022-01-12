@@ -1,28 +1,24 @@
-from negspacy.termsets import termset
-from negspacy.negation import Negex
-from negspacy import negation
-import spacy
-nlp = spacy.load("en_core_sci_sm")
-ts = termset("en_clinical_sensitive")
-ts.add_patterns({"preceding_negations": ["quit"]})
-ruler = nlp.add_pipe("entity_ruler")
-patterns = [{"label": "GPE", "pattern": "Smoke"},
-            {"label": "GPE", "pattern": "Smoker"},
-            {"label": "GPE", "pattern": [{"LOWER": "smoke"}]},
-            {"label": "GPE", "pattern": [{"LOWER": "smoking"}]},
-            {"label": "GPE", "pattern": [{"LOWER": "smokes"}]},
-            {"label": "GPE", "pattern": "Smokes"},
-            {"label": "GPE", "pattern": [{"LOWER": "tobacco"}]},
-            {"label": "GPE", "pattern": "Tobacco"}
+from typing import List
 
-            ]
-ruler.add_patterns(patterns)
-nlp.add_pipe("negex", config={"chunk_prefix": ["never", "no", "stopped", "stops", "stop"]
-    }
-    )
+from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
+from app.service.impl.icd10_smoking_pattern_decision_impl import ICD10SmokingPatternDecisionImpl
+from app.util.dependency_injector import DependencyInjector
+import logging
+from app.dto.pipeline.smoker_condition import PatientSmokingCondition
 
-doc = nlp("""patient stopped taking tobacco. patient stopped smoking. patient never smoke. patient quit smoking. 
-patient does not smoke. no smoking.""")
 
-for word in doc.doc.ents:
-    print(word, word._.negex)
+class PatientSmokingConditionDetectionComponent(BasePipelineComponent):
+    __logger = logging.getLogger(__name__)
+    DEPENDS_ON = []
+
+    def __init__(self):
+        super().__init__()
+        self.__icd10_smoking_pattern_detect_service: ICD10SmokingPatternDecisionImpl = DependencyInjector.get_instance(
+            ICD10SmokingPatternDecisionImpl)
+
+    def run(self, annotation_results: dict) -> List[PatientSmokingCondition]:
+        if annotation_results["text"] is None:
+            self.__logger.error("text field is empty unable to proceed")
+            raise ValueError()
+        is_smoker = self.__icd10_smoking_pattern_detect_service.get_smoking_pattern_decision(annotation_results["text"])
+        return [PatientSmokingCondition(smoker=is_smoker)]

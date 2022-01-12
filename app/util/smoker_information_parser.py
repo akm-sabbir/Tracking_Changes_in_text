@@ -1,9 +1,10 @@
+import codecs
 import os
 from collections import Counter
 
 
 class SmokerInfoParser():
-    path_name = "/home/akm.sabbir/ML_Projects/mongodb_data/Medant-Gold-Dataset/notes"
+
     bag_of_words = set(["patient", "currently", "smoke?", "smoking:"])
     counter = Counter()
 
@@ -23,5 +24,9 @@ class SmokerInfoParser():
                 if elem in self.bag_of_words:
                     self.counter[elem] += 1
             if len(self.counter.keys()) == 4:
-                return each_line.lower()
+                sentences = each_line.lower().split("?")
+                if len(sentences) > 1:
+                    if sentences[1].strip().find("smoking:") == 0:
+                        sentences[1] = sentences[1][9:]
+                    return sentences[1]
         return None
