@@ -13,4 +13,3 @@ munch==2.5.0
 nltk==3.6.2
 negspacy==1.0.1
 scispacy==0.4.0
-en-core-sci-sm
