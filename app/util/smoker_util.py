@@ -26,6 +26,6 @@ class SmokerUtility:
                                   "neg_termset": ts.get_patterns()})
 
     @staticmethod
-    def get_nlp_obs() -> spacy:
+    def get_nlp_obs() -> spacy.Language:
         return SmokerUtility.nlp
 

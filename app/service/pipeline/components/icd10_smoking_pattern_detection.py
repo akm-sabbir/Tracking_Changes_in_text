@@ -5,6 +5,7 @@ from app.service.impl.icd10_smoking_pattern_decision_impl import ICD10SmokingPat
 from app.util.dependency_injector import DependencyInjector
 import logging
 from app.dto.pipeline.smoker_condition import PatientSmokingCondition
+from app.settings import Settings
 
 
 class PatientSmokingConditionDetectionComponent(BasePipelineComponent):
@@ -13,8 +14,9 @@ class PatientSmokingConditionDetectionComponent(BasePipelineComponent):
 
     def __init__(self):
         super().__init__()
-        self.__icd10_smoking_pattern_detect_service: ICD10SmokingPatternDecisionImpl = DependencyInjector.get_instance(
-            ICD10SmokingPatternDecisionImpl)
+        self.__icd10_smoking_pattern_detect_service: ICD10SmokingPatternDecisionImpl = ICD10SmokingPatternDecisionImpl(
+            nlp=Settings.get_nlp_smoker_detector()
+        )
 
     def run(self, annotation_results: dict) -> List[PatientSmokingCondition]:
         if annotation_results["text"] is None:

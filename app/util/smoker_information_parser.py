@@ -5,7 +5,7 @@ from collections import Counter
 
 class SmokerInfoParser():
 
-    bag_of_words = set(["patient", "currently", "smoke?", "smoking:"])
+    bag_of_words = set(["patient", "currently", "smoke?"])
     counter = Counter()
 
     def get_parsed_info(self, text="Was the patient queried about smoking behavior? Yes No \n"
@@ -23,10 +23,10 @@ class SmokerInfoParser():
             for elem in each_line.lower().split():
                 if elem in self.bag_of_words:
                     self.counter[elem] += 1
-            if len(self.counter.keys()) == 4:
+            if len(self.counter.keys()) == len(self.bag_of_words):
                 sentences = each_line.lower().split("?")
                 if len(sentences) > 1:
                     if sentences[1].strip().find("smoking:") == 0:
                         sentences[1] = sentences[1][9:]
-                    return sentences[1]
+                    return sentences[1].strip()
         return None

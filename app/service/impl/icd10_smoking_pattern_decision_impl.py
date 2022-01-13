@@ -1,23 +1,23 @@
+import spacy
+
 from app.service.icd10_smoking_pattern_service import ICD10SmokingPatternDetection
-from app.util.smoker_util import SmokerUtility
 from app.util.smoker_information_parser import SmokerInfoParser
-from app.settings import Settings
 import os
 import codecs
 
 
 class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
-    smoker_utility: SmokerUtility = SmokerUtility()
     smoker_parser: SmokerInfoParser = SmokerInfoParser()
     path_name = "/home/akm.sabbir/ML_Projects/mongodb_data/Medant-Gold-Dataset/notes"
     bag_of_words = set(["smokers", "smoker", "smoke", "smoking", "smoked", "tobacco", "tobaco"])
+    nlp_algo: spacy.Language
 
-    def __init__(self):
+    def __init__(self, nlp=None):
+        self.nlp_algo = nlp
         return
 
     def get_smoking_pattern_decision(self, text: str) -> bool:
-        nlp = Settings.get_nlp_smoker_detector()
-        doc = nlp(text.lower())
+        doc = self.nlp_algo(text.lower())
         smoker = False
         for word in doc.ents:
             if str(word) in self.bag_of_words:

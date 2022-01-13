@@ -88,7 +88,7 @@ class Settings:
         return Settings.positive_sentiments_set
 
     @staticmethod
-    def set_nlp_smoker_detector(nlp: spacy):
+    def set_nlp_smoker_detector(nlp: spacy.Language):
         Settings.nlp_smoker_detector = nlp
 
     @staticmethod

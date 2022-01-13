@@ -58,6 +58,7 @@ Settings.set_positive_sentiments_path(path_=positive_sentiments_path_)
 
 Settings.start_initialize_dictionary()
 Settings.init_positive_sentiments_set()
+Settings.start_initializing_smoker_detector()
 
 logging_config_file_path = os.path.join(os.path.dirname(app_base_path), 'logging.ini')
 logging.config.fileConfig(logging_config_file_path,
