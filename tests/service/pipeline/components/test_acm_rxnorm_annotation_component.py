@@ -16,6 +16,7 @@ from app.service.pipeline.components.note_preprocessing_component import NotePre
 
 class TestACMRxNormAnnotationComponent(TestCase):
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.amazon_rxnorm_annotator_service.boto3", Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     @patch("app.util.annotations_alignment_util.AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations")
@@ -61,6 +62,8 @@ class TestACMRxNormAnnotationComponent(TestCase):
         mock_rxnorm_service.get_rxnorm_codes.assert_has_calls(calls)
         mock_align_start_and_end_notes_from_annotations.assert_called()
 
+        mock_db_service.save_item.assert_called_once()
+
         assert mock_rxnorm_service.get_rxnorm_codes.call_count == 2
         rxnorm_result = self.__get_aligned_dummy_rxnorm_annotation_result()
 
@@ -94,6 +97,7 @@ class TestACMRxNormAnnotationComponent(TestCase):
         assert rxnorm_result[1].suggested_codes[1].score == 0.45
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.amazon_rxnorm_annotator_service.boto3", Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     def test__run__should_return_correct_response__given_correct_input_and_cached_data(self):
@@ -134,6 +138,7 @@ class TestACMRxNormAnnotationComponent(TestCase):
             })
 
         mock_rxnorm_service.get_rxnorm_codes.assert_not_called()
+        mock_db_service.save_item.assert_not_called()
 
         assert len(acm_result) == 0
 

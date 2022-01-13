@@ -7,7 +7,7 @@ from app.service.impl.amazon_rxnorm_annotator_service import AmazonRxNormAnnotat
 
 class TestAmazonRxNormAnnotatorService(TestCase):
     @patch('boto3.client')
-    def test__get_icd_10_codes__should_return_correct_value__given_correct_text(self, mock_boto3_client: Mock):
+    def test__get_rxnorm_codes__should_return_correct_value__given_correct_text(self, mock_boto3_client: Mock):
         mock_client = Mock()
         mock_boto3_client.return_value = mock_client
         mock_client.infer_rx_norm = Mock()
@@ -48,7 +48,7 @@ class TestAmazonRxNormAnnotatorService(TestCase):
         assert acm_response == self.__get_dummy_rxnorm_response()["Entities"]
 
     @patch('boto3.client')
-    def test__get_icd_10_codes__should_raise_service_exception__given_internal_exception_raise(self,
+    def test__get_rxnorm_codes__should_raise_service_exception__given_internal_exception_raise(self,
                                                                                                mock_boto3_client: Mock):
         mock_client = Mock()
         mock_boto3_client.return_value = mock_client
@@ -58,6 +58,9 @@ class TestAmazonRxNormAnnotatorService(TestCase):
         with self.assertRaises(ServiceException) as error:
             AmazonRxNormAnnotatorServiceImpl().get_rxnorm_codes("text")
         assert error.exception.message == "Error getting RxNorm annotation from ACM"
+
+        mock_boto3_client.assert_called_once()
+        mock_client.infer_rx_norm.assert_called_once()
 
     def __get_dummy_rxnorm_response(self):
         return {"Entities": [

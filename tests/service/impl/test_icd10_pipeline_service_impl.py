@@ -30,6 +30,7 @@ from tests.service.pipeline.components.dummy_component_two import DummyComponent
 class TestICD10PipelineServiceImpl(TestCase):
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.amazon_rxnorm_annotator_service.boto3", Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
     def test__annotate_icd_10__should_return_correct_response__given_correct_input(self,
@@ -99,6 +100,7 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert pipeline_acm_cache_arg.icd10_annotations == []
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.amazon_rxnorm_annotator_service.boto3", Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
     def test__annotate_icd_10__should_return_correct_response__given_correct_input_and_no_cache(self,
