@@ -1,5 +1,3 @@
-import codecs
-import os
 from collections import Counter
 import logging
 
