@@ -19,6 +19,7 @@ from app.service.pipeline.components.icd10_exclusion_list_processing_component i
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
+from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from tests.service.pipeline.components.dummy_component_one import DummyComponentOne
 from tests.service.pipeline.components.dummy_component_two import DummyComponentTwo
@@ -76,7 +77,8 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert response.id == "123"
         assert response.hcc_maps == mock_hcc_maps
         assert response.raw_acm_data == mock_acm_response.raw_acm_data
-        component_serial = [SubjectiveSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+        component_serial = [SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
+                            NegationHandlingComponent, NotePreprocessingComponent,
                             ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
 
@@ -143,7 +145,7 @@ class TestICD10PipelineServiceImpl(TestCase):
         response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
         assert response.icd10_annotations[0] == icd10_annotation_result_1
 
-        component_serial = [SubjectiveSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+        component_serial = [SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
                             ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
 
