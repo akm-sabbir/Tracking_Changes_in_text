@@ -37,7 +37,7 @@ Settings.set_settings_parent_threshold(p_threshold=float(__parent_threshold))
 __caching_usage = ConfigManager.get_specific_config(section="caching_facility", key="use_cache")
 Settings.set_settings_use_cache(caching=bool(__caching_usage.lower() == "true"))
 # add routers
-
+Settings.start_initializing_smoker_detector()
 __router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base_path)
 for router_module in __router_modules:
     app.include_router(router_module.router, prefix=router_module.prefix)
@@ -55,10 +55,8 @@ Path(os.path.join(os.path.dirname(app_base_path), logging_folder)).mkdir(exist_o
 
 Settings.set_exclusion_dict(path_=exclusion_list_)
 Settings.set_positive_sentiments_path(path_=positive_sentiments_path_)
-
 Settings.start_initialize_dictionary()
 Settings.init_positive_sentiments_set()
-Settings.start_initializing_smoker_detector()
 
 logging_config_file_path = os.path.join(os.path.dirname(app_base_path), 'logging.ini')
 logging.config.fileConfig(logging_config_file_path,
