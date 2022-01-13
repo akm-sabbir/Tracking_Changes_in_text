@@ -10,7 +10,7 @@ class TestICD10SmokingPatternDecisionImpl(TestCase):
     def test_get_smoking_pattern_decision_should_return_true_if_no_smoker(self) -> None:
         Settings.start_initializing_smoker_detector()
         self.icd10SmokingPatternDetect = ICD10SmokingPatternDecisionImpl(Settings.get_nlp_smoker_detector())
-        results = self.icd10SmokingPatternDetect.get_smoking_pattern_decision("as the patient queried about smoking "
-                                                                         "behavior? Yes No\n"
-        "Does the patient currently smoke? Smoking: Patient has never smoked - (1/21/2020).\n")
+        text = "as the patient queried about smoking behavior? Yes No\n" \
+               "Does the patient currently smoke? Smoking: Patient has never smoked - (1/21/2020).\n"
+        results = self.icd10SmokingPatternDetect.get_smoking_pattern_decision(text)
         assert results is True

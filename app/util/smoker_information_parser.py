@@ -27,4 +27,5 @@ class SmokerInfoParser():
                     if sentences[1].strip().find("smoking:") == 0:
                         sentences[1] = sentences[1][9:]
                     return sentences[1].strip()
+            self.__counter.clear()
         return None

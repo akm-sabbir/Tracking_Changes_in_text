@@ -16,20 +16,22 @@ class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
         self.nlp_algo = nlp
 
     def get_smoking_pattern_decision(self, text: str) -> bool:
-        doc = self.nlp_algo(text.lower())
-        smoker = False
-        for word in doc.ents:
-            if str(word) in self.bag_of_words:
-                smoker = True if word._.negex is True else False
-                break
-        return smoker
+        line = self.smoker_parser.get_parsed_info(text=text)
+        if line != None:
+            doc = self.nlp_algo(line.lower())
+            smoker = False
+            for word in doc.ents:
+                if str(word) in self.bag_of_words:
+                    smoker = True if word._.negex is True else False
+                    break
+            return smoker
+        return False
 
     def get_data_from_file(self):
-        file_names= os.listdir(self.path_name)
+        file_names = os.listdir(self.path_name)
         for each_name in file_names:
             with codecs.open(os.path.join(self.path_name, each_name)) as data_reader:
                 text = data_reader.read()
                 line = self.smoker_parser.get_parsed_info(text=text)
                 if line is not None:
                     print(self.get_smoking_pattern_decision(line))
-
