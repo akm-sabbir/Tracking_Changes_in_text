@@ -14,7 +14,6 @@ class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
 
     def __init__(self, nlp=None):
         self.nlp_algo = nlp
-        return
 
     def get_smoking_pattern_decision(self, text: str) -> bool:
         doc = self.nlp_algo(text.lower())
