@@ -8,6 +8,7 @@ from app.dto.pipeline.changed_word_annotation import ChangedWordAnnotation
 from app.dto.pipeline.negation_component_result import NegationResult
 from app.dto.pipeline.rxnorm_annotation import RxNormAnnotation
 from app.dto.pipeline.rxnorm_annotation_result import RxNormAnnotationResult
+from app.dto.pipeline.rxnorm_attribute_annotation import RxNormAttributeAnnotation
 from app.service.impl.amazon_rxnorm_annotator_service import AmazonRxNormAnnotatorServiceImpl
 from app.service.pipeline.components.acm_rxnorm_annotation_component import ACMRxNormAnnotationComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
@@ -81,7 +82,8 @@ class TestACMRxNormAnnotationComponent(TestCase):
         assert rxnorm_result[0].suggested_codes[0].score == 0.7
 
         assert rxnorm_result[0].suggested_codes[1].code == "884187"
-        assert rxnorm_result[0].suggested_codes[1].description == "Clonidine Hydrochloride 0.2 MG Oral Tablet [Catapres]"
+        assert rxnorm_result[0].suggested_codes[
+                   1].description == "Clonidine Hydrochloride 0.2 MG Oral Tablet [Catapres]"
         assert rxnorm_result[0].suggested_codes[1].score == 0.54
 
         assert rxnorm_result[1].begin_offset == 102
@@ -89,11 +91,13 @@ class TestACMRxNormAnnotationComponent(TestCase):
         assert rxnorm_result[1].medication == "Flurosemide"
 
         assert rxnorm_result[1].suggested_codes[0].code == "3456"
-        assert rxnorm_result[1].suggested_codes[0].description == "lisdexamfetamine dimesylate 50 MG Oral Capsule [Vyvanse]"
+        assert rxnorm_result[1].suggested_codes[
+                   0].description == "lisdexamfetamine dimesylate 50 MG Oral Capsule [Vyvanse]"
         assert rxnorm_result[1].suggested_codes[0].score == 0.89
 
         assert rxnorm_result[1].suggested_codes[1].code == "348953"
-        assert rxnorm_result[1].suggested_codes[1].description == "lisdexamfetamine dimesylate 50 MG Chewable Tablet [Vyvanse]"
+        assert rxnorm_result[1].suggested_codes[
+                   1].description == "lisdexamfetamine dimesylate 50 MG Chewable Tablet [Vyvanse]"
         assert rxnorm_result[1].suggested_codes[1].score == 0.45
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
@@ -148,7 +152,17 @@ class TestACMRxNormAnnotationComponent(TestCase):
         rxnorm_annotation_2 = RxNormAnnotation(code="884187",
                                                description="Clonidine Hydrochloride 0.2 MG Oral Tablet [Catapres]",
                                                score=0.54)
-        rxnorm_annotation_result_1 = RxNormAnnotationResult(medication="Clonidine", begin_offset=12,
+        rxnorm_annotation_result_1 = RxNormAnnotationResult(medication="Clonidine", rxnorm_type="GENERIC_NAME",
+                                                            attributes=[RxNormAttributeAnnotation(
+                                                                score=0.82,
+                                                                attribute_type="ROUTE_OR_MODE",
+                                                                relationship_score=0.99,
+                                                                id=1,
+                                                                begin_offset=24,
+                                                                end_offset=31,
+                                                                text="topical"
+                                                            )],
+                                                            begin_offset=12,
                                                             end_offset=24, is_negated=False,
                                                             suggested_codes=[rxnorm_annotation_1, rxnorm_annotation_2],
                                                             raw_acm_response={"data": "data"})
@@ -161,6 +175,16 @@ class TestACMRxNormAnnotationComponent(TestCase):
                                                score=0.45)
 
         rxnorm_annotation_result_2 = RxNormAnnotationResult(medication="Flurosemide", begin_offset=11,
+                                                            rxnorm_type="BRAND_NAME",
+                                                            attributes=[RxNormAttributeAnnotation(
+                                                                attribute_type="ROUTE_OR_MODE",
+                                                                score=0.82,
+                                                                relationship_score=0.99,
+                                                                id=3,
+                                                                begin_offset=24,
+                                                                end_offset=31,
+                                                                text="topical"
+                                                            )],
                                                             end_offset=20,
                                                             is_negated=False,
                                                             suggested_codes=[rxnorm_annotation_3, rxnorm_annotation_4],
@@ -178,7 +202,16 @@ class TestACMRxNormAnnotationComponent(TestCase):
         rxnorm_annotation_2 = RxNormAnnotation(code="884187",
                                                description="Clonidine Hydrochloride 0.2 MG Oral Tablet [Catapres]",
                                                score=0.54)
-        rxnorm_annotation_result_1 = RxNormAnnotationResult(medication="Clonidine", begin_offset=101,
+        rxnorm_annotation_result_1 = RxNormAnnotationResult(medication="Clonidine", rxnorm_type="GENERIC_NAME",
+                                                            attributes=[RxNormAttributeAnnotation(
+                                                                attribute_type="STRENGTH",
+                                                                score=0.99,
+                                                                relationship_score=0.99,
+                                                                id=3,
+                                                                begin_offset=43,
+                                                                end_offset=48,
+                                                                text="1.1 %"
+                                                            )], begin_offset=101,
                                                             end_offset=110, is_negated=False,
                                                             suggested_codes=[rxnorm_annotation_1, rxnorm_annotation_2],
                                                             raw_acm_response={"data": "data"})
@@ -191,6 +224,16 @@ class TestACMRxNormAnnotationComponent(TestCase):
                                                score=0.45)
 
         rxnorm_annotation_result_2 = RxNormAnnotationResult(medication="Flurosemide", begin_offset=102,
+                                                            rxnorm_type="BRAND_NAME",
+                                                            attributes=[RxNormAttributeAnnotation(
+                                                                attribute_type="ROUTE_OR_MODE",
+                                                                score=0.82,
+                                                                relationship_score=0.99,
+                                                                id=1,
+                                                                begin_offset=24,
+                                                                end_offset=31,
+                                                                text="topical"
+                                                            )],
                                                             end_offset=114,
                                                             is_negated=False,
                                                             suggested_codes=[rxnorm_annotation_3, rxnorm_annotation_4],

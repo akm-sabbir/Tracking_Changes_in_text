@@ -9,6 +9,7 @@ from app.dto.pipeline.medication_section import MedicationText, MedicationSectio
 from app.dto.pipeline.negation_component_result import NegationResult
 from app.dto.pipeline.rxnorm_annotation import RxNormAnnotation
 from app.dto.pipeline.rxnorm_annotation_result import RxNormAnnotationResult
+from app.dto.pipeline.rxnorm_attribute_annotation import RxNormAttributeAnnotation
 from app.dto.pipeline.subjective_section import SubjectiveSection, SubjectiveText
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
@@ -116,7 +117,17 @@ class TestAnnotationsAlignmentUtil(TestCase):
         rxnorm_annotation_2 = RxNormAnnotation(code="884187",
                                                description="Clonidine Hydrochloride 0.2 MG Oral Tablet [Catapres]",
                                                score=0.54)
-        rxnorm_annotation_result_1 = RxNormAnnotationResult(medication="Clonidine", begin_offset=12,
+        rxnorm_annotation_result_1 = RxNormAnnotationResult(medication="Clonidine", rxnorm_type="GENERIC_NAME",
+                                                            attributes=[RxNormAttributeAnnotation(
+                                                                score=0.82,
+                                                                attribute_type="ROUTE_OR_MODE",
+                                                                relationship_score=0.99,
+                                                                id=1,
+                                                                begin_offset=24,
+                                                                end_offset=31,
+                                                                text="topical"
+                                                            )],
+                                                            begin_offset=12,
                                                             end_offset=24, is_negated=False,
                                                             suggested_codes=[rxnorm_annotation_1, rxnorm_annotation_2],
                                                             raw_acm_response={"data": "data"})
@@ -129,6 +140,16 @@ class TestAnnotationsAlignmentUtil(TestCase):
                                                score=0.45)
 
         rxnorm_annotation_result_2 = RxNormAnnotationResult(medication="Flurosemide", begin_offset=11,
+                                                            rxnorm_type="BRAND_NAME",
+                                                            attributes=[RxNormAttributeAnnotation(
+                                                                attribute_type="ROUTE_OR_MODE",
+                                                                score=0.82,
+                                                                relationship_score=0.99,
+                                                                id=3,
+                                                                begin_offset=24,
+                                                                end_offset=31,
+                                                                text="topical"
+                                                            )],
                                                             end_offset=20,
                                                             is_negated=False,
                                                             suggested_codes=[rxnorm_annotation_3, rxnorm_annotation_4],

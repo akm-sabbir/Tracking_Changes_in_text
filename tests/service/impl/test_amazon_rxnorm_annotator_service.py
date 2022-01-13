@@ -66,9 +66,32 @@ class TestAmazonRxNormAnnotatorService(TestCase):
         return {"Entities": [
             {
                 "Text": "abcd",
+                "Type": "GENERIC_NAME",
                 "BeginOffset": 1,
                 "EndOffset": 3,
                 "Score": 0.8,
+                "Attributes": [
+                    {
+                        "Type": "ROUTE_OR_MODE",
+                        "Score": 0.82,
+                        "RelationshipScore": 0.99,
+                        "Id": 1,
+                        "BeginOffset": 24,
+                        "EndOffset": 31,
+                        "Text": "topical",
+                        "Traits": []
+                    },
+                    {
+                        "Type": "STRENGTH",
+                        "Score": 0.99,
+                        "RelationshipScore": 0.99,
+                        "Id": 3,
+                        "BeginOffset": 43,
+                        "EndOffset": 48,
+                        "Text": "1.1 %",
+                        "Traits": []
+                    }
+                ],
                 "RxNormConcepts": [
                     {
                         "Code": "A00.1",
@@ -89,9 +112,32 @@ class TestAmazonRxNormAnnotatorService(TestCase):
             },
             {
                 "Text": "efgh",
+                "Type": "BRAND_NAME",
                 "BeginOffset": 5,
                 "EndOffset": 9,
                 "Score": 0.9,
+                "Attributes": [
+                    {
+                        "Type": "FORM",
+                        "Score": 0.9408299326896667,
+                        "RelationshipScore": 0.9997219443321228,
+                        "Id": 4,
+                        "BeginOffset": 49,
+                        "EndOffset": 60,
+                        "Text": "topical gel",
+                        "Traits": []
+                    },
+                    {
+                        "Type": "DOSAGE",
+                        "Score": 0.9950674772262573,
+                        "RelationshipScore": 0.9999516010284424,
+                        "Id": 5,
+                        "BeginOffset": 63,
+                        "EndOffset": 76,
+                        "Text": "1 application",
+                        "Traits": []
+                    }
+                ],
                 "RxNormConcepts": [
                     {
                         "Code": "B00.12",
