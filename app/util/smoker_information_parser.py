@@ -10,8 +10,8 @@ class SmokerInfoParser():
     __counter = Counter()
     __logger = logging.getLogger(__name__)
 
-    def get_parsed_info(self, text=None):
-        if text is None:
+    def get_parsed_info(self, text):
+        if text is None or len(text) == 0:
             self.__logger.error("data is empty and null unable to process")
             raise ValueError("data is empty and null unable to process")
 
