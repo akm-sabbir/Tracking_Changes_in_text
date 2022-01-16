@@ -13,6 +13,13 @@ class NotePreprocessingComponent(BasePipelineComponent):
     def run(self, annotation_results: dict) -> List[Paragraph]:
         if annotation_results['acm_cached_result'] is not None:
             return []
-        text: NegationResult = annotation_results[NegationHandlingComponent][0]
-        return EncounterNoteUtil.break_note_into_paragraphs(text.text,
-                                                            int(ConfigManager.get_specific_config("acm", "char_limit")))
+        subjective_section_text: NegationResult = annotation_results[NegationHandlingComponent][0]
+        medication_section_text: NegationResult = annotation_results[NegationHandlingComponent][1]
+
+        return [EncounterNoteUtil.break_note_into_paragraphs(subjective_section_text.text,
+                                                             int(ConfigManager.get_specific_config("acm",
+                                                                                                   "char_limit"))),
+                EncounterNoteUtil.break_note_into_paragraphs(medication_section_text.text,
+                                                             int(ConfigManager.get_specific_config("acm",
+                                                                                                   "char_limit")))
+                ]

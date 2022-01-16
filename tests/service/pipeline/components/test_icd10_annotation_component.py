@@ -24,6 +24,10 @@ class TestICD10AnnotationComponent(TestCase):
     def test__run__should_return_correct_response__given_correct_input(self):
         paragraph1 = Paragraph("some text", 0, 10)
         paragraph2 = Paragraph("pneumonia some other text", 11, 20)
+
+        paragraph3 = Paragraph("medication text", 21, 30)
+        paragraph4 = Paragraph("flurosemide some other text", 31, 40)
+
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
         mock_icd10_positive_sentiment_exclusion_service = Mock(ICD10SentimentExclusionServiceImpl)
         icd10_annotation_component = ACMICD10AnnotationComponent()
@@ -51,11 +55,14 @@ class TestICD10AnnotationComponent(TestCase):
         acm_result: ACMICD10Result = icd10_annotation_component.run(
             {SectionExclusionServiceComponent: [],  # need to modify
              SubjectiveSectionExtractorComponent: [subjective_text],
-             NotePreprocessingComponent: [paragraph1, paragraph2],
+             NotePreprocessingComponent: [[paragraph1, paragraph2], [paragraph3, paragraph4]],
              "acm_cached_result": None, "id": "123",
              NegationHandlingComponent: [
-                 NegationResult(paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia"))],
-             "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)]}})[0]
+                 NegationResult(paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia")),
+                 NegationResult(paragraph3.text + "\n\n" + paragraph4.text.replace("flurosemide", "Flurosemide")),
+             ],
+             "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)],
+                               "Flurosemide": [ChangedWordAnnotation("flurosemide", "Flurosemide", 31, 40)]}})[0]
         calls = [call("some text"), call("pneumonia some other text")]
 
         mock_icd10_service.get_icd_10_codes.assert_has_calls(calls)
@@ -98,6 +105,10 @@ class TestICD10AnnotationComponent(TestCase):
     def test__run__should_return_correct_response__given_correct_input_and_cached_data(self):
         paragraph1 = Paragraph("Tuberculosis some text", 0, 10)
         paragraph2 = Paragraph("Pneumonia some other text", 11, 20)
+
+        paragraph3 = Paragraph("medication text", 21, 30)
+        paragraph4 = Paragraph("flurosemide some other text", 31, 40)
+
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
         icd10_annotation_component = ACMICD10AnnotationComponent()
 
@@ -116,11 +127,15 @@ class TestICD10AnnotationComponent(TestCase):
         raw_acm_data = [item[0][0] for item in dummy_data]
         dummy_result = ACMICD10Result("123", annotations, raw_acm_data)
         acm_result: ACMICD10Result = icd10_annotation_component.run(
-            {NegationHandlingComponent: [
-                paragraph1.text.replace("Tuberculosis", "tuberculosis") + "\n\n" + paragraph2.text],
+            {
+                NegationHandlingComponent: [
+                    paragraph1.text.replace("Tuberculosis", "tuberculosis") + "\n\n" + paragraph2.text,
+                    paragraph3.text.replace("flurosemide", "Flurosemide") + "\n\n" + paragraph4.text
+                ],
                 "text": paragraph1.text + "\n\n" + paragraph2.text,
-                NotePreprocessingComponent: [paragraph1, paragraph2],
-                "acm_cached_result": [dummy_result], "id": "123"})[0]
+                NotePreprocessingComponent: [[paragraph1, paragraph2], [paragraph3, paragraph4]],
+                "acm_cached_result": [dummy_result], "id": "123"
+            })[0]
 
         mock_icd10_service.get_icd_10_codes.assert_not_called()
 
