@@ -1,11 +1,13 @@
 from typing import List
 
+import spacy
+
 
 class Negation:
     negex: bool
 
     def __init__(self, negex: bool):
-        self.negex=negex
+        self.negex = negex
 
 
 class Doc:
@@ -19,8 +21,14 @@ class Doc:
         return self.word
 
 
-class DummySciSpacyModel(object):
+class Language:
+    ents: Doc = []
 
+    def __init__(self):
+        pass
+
+
+class DummySciSpacyModel(object):
     ents: List[Doc] = []
 
     def return_mock_docs(self):
@@ -34,3 +42,6 @@ class DummySciSpacyModel(object):
         for each in words:
             self.ents.append(Doc(each, Negation(True)))
         return self
+
+    def get_language(self):
+        return Language()
