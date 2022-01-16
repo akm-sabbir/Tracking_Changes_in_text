@@ -22,11 +22,13 @@ from app.service.pipeline.components.subjective_section_extractor_component impo
 from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
 from app.service.pipeline.pipeline_manager import PipelineManager
 from app.util.config_manager import ConfigManager
+from app.settings import Settings
 
 
 class ICD10PipelineServiceImpl(ICD10PipelineService):
     def __init__(self):
-        self.__pipeline_components = [PatientSmokingConditionDetectionComponent(), SectionExclusionServiceComponent(),
+        self.__pipeline_components = [PatientSmokingConditionDetectionComponent(Settings.get_nlp_smoker_detector()),
+                                      SectionExclusionServiceComponent(),
                                       SubjectiveSectionExtractorComponent(), NegationHandlingComponent(),
                                       NotePreprocessingComponent(),
                                       ACMICD10AnnotationComponent(), ICD10ToHccAnnotationComponent(),

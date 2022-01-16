@@ -11,10 +11,10 @@ class PatientSmokingConditionDetectionComponent(BasePipelineComponent):
     __logger = logging.getLogger(__name__)
     DEPENDS_ON = []
 
-    def __init__(self):
+    def __init__(self, nlp=None):
         super().__init__()
         self.__icd10_smoking_pattern_detect_service: ICD10SmokingPatternDecisionImpl = ICD10SmokingPatternDecisionImpl(
-            nlp=Settings.get_nlp_smoker_detector()
+            nlp=nlp
         )
 
     def run(self, annotation_results: dict) -> List[PatientSmokingCondition]:

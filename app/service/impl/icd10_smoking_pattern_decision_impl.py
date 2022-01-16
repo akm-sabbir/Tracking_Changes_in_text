@@ -22,6 +22,7 @@ class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
             smoker = False
             for word in doc.ents:
                 if str(word) in self.bag_of_words:
+
                     smoker = True if word._.negex is True else False
                     break
             return smoker
