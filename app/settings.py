@@ -118,4 +118,4 @@ class Settings:
 
     @staticmethod
     def start_initializing_smoker_detector():
-        Settings.set_nlp_smoker_detector(SmokerUtility.get_nlp_obs())
+        Settings.set_nlp_smoker_detector(SmokerUtility().get_nlp_obs())
