@@ -10,3 +10,4 @@ class ICD10AnnotationResponse(BaseDto):
     icd10_annotations: List[ICD10AnnotationResult]
     raw_acm_data: List[Dict]
     hcc_maps: HCCResponseDto
+    is_smoker: bool

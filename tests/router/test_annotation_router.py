@@ -56,7 +56,8 @@ class Test(TestCase):
         mock_hcc_maps = Mock(HCCResponseDto)
         mock_hcc_maps.hcc_maps = {"A123": HCCCode(code="HCC108", score=0.5)}
         mock_icd10_service.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
-            id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps)
+            id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps,
+        is_smoker=False)
         mock_get_instance.return_value = mock_icd10_service
         from app.router import annotation_router
         response = self.__loop.run_until_complete(

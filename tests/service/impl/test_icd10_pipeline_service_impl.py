@@ -23,8 +23,11 @@ from app.service.pipeline.components.negation_processing_component import Negati
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
+from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
 from tests.service.pipeline.components.dummy_component_one import DummyComponentOne
 from tests.service.pipeline.components.dummy_component_two import DummyComponentTwo
+from app.settings import Settings
+from app.dto.pipeline.smoker_condition import PatientSmokingCondition
 
 
 class TestICD10PipelineServiceImpl(TestCase):
@@ -43,7 +46,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                                                           end_offset=24, is_negated=False,
                                                           suggested_codes=[icd10_annotation_1, icd10_annotation_2],
                                                           raw_acm_response={"data": "data1"})
-
+        Settings.nlp_smoker_detector = Mock()
         icd10_annotator_service: ICD10PipelineServiceImpl = ICD10PipelineServiceImpl()
 
         mock_run_pipeline = Mock()
@@ -57,12 +60,13 @@ class TestICD10PipelineServiceImpl(TestCase):
 
         mock_acm_response = Mock(ACMICD10Result)
         mock_acm_response.raw_acm_data = [{"acm_data": "data"}]
-
+        mock_smoking_detection_response = PatientSmokingCondition()
         mock_run_pipeline.return_value = {DummyComponentOne: [DummyComponentOneResult("a")],
                                           DummyComponentTwo: [DummyComponentTwoResult("b")],
                                           ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data(),
                                           FilteredICD10ToHccAnnotationComponent: [mock_hcc_maps],
-                                          ACMICD10AnnotationComponent: [mock_acm_response]
+                                          ACMICD10AnnotationComponent: [mock_acm_response],
+                                          PatientSmokingConditionDetectionComponent: [mock_smoking_detection_response]
                                           }
 
         icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_manager = Mock()
@@ -80,8 +84,12 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert response.id == "123"
         assert response.hcc_maps == mock_hcc_maps
         assert response.raw_acm_data == mock_acm_response.raw_acm_data
-        component_serial = [SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMICD10AnnotationComponent,ACMRxNormAnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
+
+        component_serial = [PatientSmokingConditionDetectionComponent,
+                            SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
+                            MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+                            ACMICD10AnnotationComponent,ACMRxNormAnnotationComponent,
+                            ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
 
         for idx, type in enumerate(component_serial):
@@ -126,13 +134,15 @@ class TestICD10PipelineServiceImpl(TestCase):
 
         mock_acm_response = Mock(ACMICD10Result)
         mock_acm_response.raw_acm_data = [{"acm_data": "data"}]
+        mock_smoking_detection_response = PatientSmokingCondition()
 
         mock_run_pipeline = Mock()
         mock_run_pipeline.return_value = {DummyComponentOne: [DummyComponentOneResult("a")],
                                           DummyComponentTwo: [DummyComponentTwoResult("b")],
                                           ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data(),
                                           FilteredICD10ToHccAnnotationComponent: [mock_hcc_maps],
-                                          ACMICD10AnnotationComponent: [mock_acm_response]
+                                          ACMICD10AnnotationComponent: [mock_acm_response],
+                                          PatientSmokingConditionDetectionComponent: [mock_smoking_detection_response]
                                           }
 
         icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_manager = Mock()
@@ -148,8 +158,11 @@ class TestICD10PipelineServiceImpl(TestCase):
         response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
         assert response.icd10_annotations[0] == icd10_annotation_result_1
 
-        component_serial = [SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMICD10AnnotationComponent,ACMRxNormAnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
+        component_serial = [PatientSmokingConditionDetectionComponent,
+                            SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
+                            MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
+                            ACMICD10AnnotationComponent, ACMRxNormAnnotationComponent, ICD10ToHccAnnotationComponent,
+                            CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
 
         for idx, type in enumerate(component_serial):
