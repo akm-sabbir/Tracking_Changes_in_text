@@ -46,8 +46,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                                                           end_offset=24, is_negated=False,
                                                           suggested_codes=[icd10_annotation_1, icd10_annotation_2],
                                                           raw_acm_response={"data": "data1"})
-
-        Settings.start_initializing_smoker_detector()
+        Settings.nlp_smoker_detector = Mock()
         icd10_annotator_service: ICD10PipelineServiceImpl = ICD10PipelineServiceImpl()
 
         mock_run_pipeline = Mock()
