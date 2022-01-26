@@ -48,6 +48,4 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
         result = ACMRxNormResult(annotation_results["id"], rxnorm_annotation_results, raw_acm_data)
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
                                                                            annotation_results)
-
-        self.__db_service.save_item(result)
         return [result]

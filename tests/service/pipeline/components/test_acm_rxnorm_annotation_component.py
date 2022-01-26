@@ -63,8 +63,6 @@ class TestACMRxNormAnnotationComponent(TestCase):
         mock_rxnorm_service.get_rxnorm_codes.assert_has_calls(calls)
         mock_align_start_and_end_notes_from_annotations.assert_called()
 
-        mock_db_service.save_item.assert_called_once()
-
         assert mock_rxnorm_service.get_rxnorm_codes.call_count == 2
         rxnorm_result = self.__get_aligned_dummy_rxnorm_annotation_result()
 
