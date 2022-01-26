@@ -26,8 +26,6 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
 
         self.__note_to_align: str = MedicalOntology.RXNORM.value
 
-        self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))
-
     def run(self, annotation_results: dict) -> List[ACMRxNormResult]:
         if annotation_results['acm_cached_result'] is not None:
             return []
