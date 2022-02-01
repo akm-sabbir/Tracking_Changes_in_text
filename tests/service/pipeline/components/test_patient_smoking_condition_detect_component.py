@@ -35,3 +35,6 @@ class Icd10SmokingPatternDetectionTest(TestCase):
                 "Does the patient currently smoke? . (Hx)"
         _smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text4})
         assert _smoker[0].isSmoker == 0
+        not_smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text})
+        print(not_smoker[0].isSmoker)
+        assert not_smoker[0].isSmoker is False
