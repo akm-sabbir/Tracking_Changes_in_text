@@ -5,4 +5,4 @@ class PatientSmokingCondition(BasePipelineComponentResult):
     notSmoker: bool
 
     def __init__(self, smoker=False):
-        self.notSmoker = smoker
+        self.isSmoker = smoker

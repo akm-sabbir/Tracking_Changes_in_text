@@ -2,6 +2,7 @@ from unittest import TestCase
 from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
 from app.dto.pipeline.smoker_condition import PatientSmokingCondition
 from tests.service.impl.dummy_smoking_pattern_decision_model import Negation,DummySciSpacyModel,Doc
+from app.util.smoker_util import SmokerUtility
 
 
 class Icd10SmokingPatternDetectionTest(TestCase):
@@ -9,10 +10,28 @@ class Icd10SmokingPatternDetectionTest(TestCase):
     smoking_pattern_detect_comp: PatientSmokingConditionDetectionComponent
 
     def test_run_should_return_bool(self):
-        dummy_model = DummySciSpacyModel()
-        self.smoking_pattern_detect_comp = PatientSmokingConditionDetectionComponent(dummy_model.nlp_process)
+        dummy_model = SmokerUtility()#DummySciSpacyModel()
+        self.smoking_pattern_detect_comp = PatientSmokingConditionDetectionComponent(dummy_model.get_nlp_obs())
+
         text = "as the patient queried about smoking behavior? Yes No\n" \
                "Does the patient currently smoke? Smoking: Patient has never smoked - (1/21/2020).\n"
-        not_smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text})
-        print(not_smoker[0].notSmoker)
-        assert not_smoker[0].notSmoker is True
+        _smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text})
+        assert _smoker[0].isSmoker == -1
+        text1 = "Was the patient queried about smoking behavior? Yes No\n" \
+               "Does the patient currently smoke? Smoking: Light tobacco smoker (10 or fewer cigarettes/day) -"
+        _smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text1})
+        assert _smoker[0].isSmoker == 1
+        text3 = "Current Meds Prior to Visit: Amitriptyline HCL 10 mg 1 by mouth every night at bedtime, " \
+                "Amoxicillin 500 mg 1 cap by\n mouth three times a day, Folic Acid 1 mg 1 by mouth every day, " \
+                "Metoprolol \n Succinate ER 25 mg 1 by mouth every day, Thiamine HCL 100 mg 1 by mouth every day"
+        _smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text3})
+        assert _smoker[0].isSmoker == 0
+        _smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text3})
+        text4 = "Was the patient queried about smoking behavior? Yes No\n"\
+                "Does the patient currently smoke? . (Smoking Hx)"
+        _smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text4})
+        assert _smoker[0].isSmoker == 1
+        text4 = "Was the patient queried about smoking behavior? Yes No\n" \
+                "Does the patient currently smoke? . (Hx)"
+        _smoker: [PatientSmokingCondition] = self.smoking_pattern_detect_comp.run({"text": text4})
+        assert _smoker[0].isSmoker == 0

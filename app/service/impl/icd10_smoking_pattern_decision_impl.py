@@ -24,11 +24,11 @@ class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
         text = text.replace("/", " ")
         line = self.smoker_parser.get_parsed_info(text=text)
         if line != None:
-            doc = self.nlp_algo(line.lower())
-            smoker = False
+            doc = self.nlp_algo(line.lower().strip())
+            smoker = 0
             for word in doc.ents:
                 if str(word) in self.bag_of_words:
-                    smoker = False if word._.negex is True else True
+                    smoker = -1 if word._.negex is True else 1
                     break
             return smoker
-        return False
+        return 0
