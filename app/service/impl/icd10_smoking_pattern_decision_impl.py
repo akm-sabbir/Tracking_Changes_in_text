@@ -18,7 +18,7 @@ class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
     def __init__(self, nlp=None):
         self.nlp_algo = nlp
 
-    def get_smoking_pattern_decision(self, text: str) -> bool:
+    def get_smoking_pattern_decision(self, text: str) -> int:
         text = text.replace("(", " ")
         text = text.replace(")", " ")
         text = text.replace("/", " ")
@@ -27,6 +27,7 @@ class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
             doc = self.nlp_algo(line.lower().strip())
             smoker = 0
             for word in doc.ents:
+                print(str(word) + " " + str(word._.negex))
                 if str(word) in self.bag_of_words:
                     smoker = -1 if word._.negex is True else 1
                     break
