@@ -23,7 +23,7 @@ class Icd10SmokingPatternDetectionTest(TestCase):
         smoking_pattern_detect_comp = PatientSmokingConditionDetectionComponent(dummy_model_2.nlp_process)
         text1 = "Was the patient queried about smoking behavior? Yes No\n" \
                "Does the patient currently smoke? Smoking: Light tobacco smoker (10 or fewer cigarettes/day) -"
-        dic_ = {"text":text1}
+        dic_ = {"text" : text1}
         _smoker: [PatientSmokingCondition] = smoking_pattern_detect_comp.run(dic_)
         assert _smoker[0].isSmoker == 1
 
