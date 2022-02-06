@@ -31,7 +31,10 @@ class Icd10NegationServiceImpl(ICD10NegationService):
 
     def build_one_edit_distance(self, word, index=0):
         one_edit_words = set()
-        form_strings = self.dict.current_elem[word[index]].word
+        if self.dict.current_elem.__contains__(word[index]) is True:
+            form_strings = self.dict.current_elem[word[index]].word
+        else:
+            return []
         one_edit_words = self.dfs_search(self.dict.current_elem[word[index]], word,
                                          index + 1, one_edit_words, form_strings, 0)
         return list(one_edit_words)
