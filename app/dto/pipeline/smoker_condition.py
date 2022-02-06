@@ -2,7 +2,7 @@ from app.dto.pipeline.base_pipeline_component_result import BasePipelineComponen
 
 
 class PatientSmokingCondition(BasePipelineComponentResult):
-    isSmoker: bool
+    isSmoker: int
 
-    def __init__(self, smoker=False):
+    def __init__(self, smoker=-1):
         self.isSmoker = smoker
