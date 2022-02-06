@@ -71,5 +71,5 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
             icd10_annotations=icd10_annotations,
             raw_acm_data=acm_annotation_result.raw_acm_data,
             hcc_maps=hcc_maps,
-            is_smoker=smoking_condition.notSmoker
+            is_smoker=smoking_condition.isSmoker
         )
