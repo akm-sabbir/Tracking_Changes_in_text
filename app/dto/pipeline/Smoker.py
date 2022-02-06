@@ -2,6 +2,6 @@ from enum import Enum
 
 
 class Smoker(Enum):
-    SMOKER = 1
-    DONT_KNOW = 0
-    NOT_SMOKER = -1
+    SMOKER = "Smoker"
+    DONT_KNOW = "Unknown"
+    NOT_SMOKER = "Non-smoker"

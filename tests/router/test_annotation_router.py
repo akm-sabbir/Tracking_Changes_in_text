@@ -5,6 +5,7 @@ from unittest.mock import Mock, patch
 
 from pydantic import ValidationError
 
+from app.dto.pipeline.Smoker import Smoker
 from app.settings import Settings
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
 from app.dto.core.service.hcc_code import HCCCode
@@ -57,7 +58,7 @@ class Test(TestCase):
         mock_hcc_maps.hcc_maps = {"A123": HCCCode(code="HCC108", score=0.5)}
         mock_icd10_service.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
             id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps,
-        is_smoker=False)
+        is_smoker=Smoker.NOT_SMOKER)
         mock_get_instance.return_value = mock_icd10_service
         from app.router import annotation_router
         response = self.__loop.run_until_complete(
