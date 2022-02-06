@@ -2,6 +2,7 @@ import spacy
 
 from app.service.icd10_smoking_pattern_service import ICD10SmokingPatternDetection
 from app.util.smoker_information_parser import SmokerInfoParser
+from app.dto.pipeline.Smoker import Smoker
 
 
 class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
@@ -18,18 +19,17 @@ class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
     def __init__(self, nlp=None):
         self.nlp_algo = nlp
 
-    def get_smoking_pattern_decision(self, text: str) -> int:
+    def get_smoking_pattern_decision(self, text: str) -> Smoker:
         text = text.replace("(", " ")
         text = text.replace(")", " ")
         text = text.replace("/", " ")
         line = self.smoker_parser.get_parsed_info(text=text)
         if line != None:
             doc = self.nlp_algo(line.lower().strip())
-            smoker = 0
+            smoker = Smoker.DONT_KNOW
             for word in doc.ents:
-                print(str(word) + " " + str(word._.negex))
                 if str(word) in self.bag_of_words:
-                    smoker = -1 if word._.negex is True else 1
+                    smoker = Smoker.NOT_SMOKER if word._.negex is True else Smoker.SMOKER
                     break
             return smoker
-        return 0
+        return Smoker.DONT_KNOW

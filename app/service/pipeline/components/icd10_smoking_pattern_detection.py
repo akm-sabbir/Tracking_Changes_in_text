@@ -4,7 +4,6 @@ from app.service.pipeline.components.base_pipeline_component import BasePipeline
 from app.service.impl.icd10_smoking_pattern_decision_impl import ICD10SmokingPatternDecisionImpl
 import logging
 from app.dto.pipeline.smoker_condition import PatientSmokingCondition
-from app.settings import Settings
 
 
 class PatientSmokingConditionDetectionComponent(BasePipelineComponent):

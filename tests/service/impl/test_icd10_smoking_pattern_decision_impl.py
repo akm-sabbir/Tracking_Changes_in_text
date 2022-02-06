@@ -3,7 +3,7 @@ from unittest.mock import patch, Mock
 from app.service.impl.icd10_smoking_pattern_decision_impl import ICD10SmokingPatternDecisionImpl
 from app.settings import Settings
 from tests.service.impl.dummy_smoking_pattern_decision_model import DummySciSpacyModel
-
+from app.dto.pipeline.Smoker import Smoker
 
 class TestICD10SmokingPatternDecisionImpl(TestCase):
     icd10SmokingPatternDetect: ICD10SmokingPatternDecisionImpl
@@ -15,4 +15,4 @@ class TestICD10SmokingPatternDecisionImpl(TestCase):
         text = "as the patient queried about smoking behavior? Yes No\n" \
                "Does the patient currently smoke? Smoking: Patient has never smoked - (1/21/2020).\n"
         results = self.icd10SmokingPatternDetect.get_smoking_pattern_decision(text)
-        assert results == -1
+        assert results == Smoker.NOT_SMOKER
