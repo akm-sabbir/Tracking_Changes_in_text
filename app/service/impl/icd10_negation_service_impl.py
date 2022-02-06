@@ -47,6 +47,6 @@ class Icd10NegationServiceImpl(ICD10NegationService):
                 and len(text) > 3:
             results = self.build_one_edit_distance(text[2:].lower(), index=0)
             results = ["no " + word for word in results] if len(results) != 0 else [text.lower()]
-            text = results[0]
+            text = ", ".join(results)
 
         return text
