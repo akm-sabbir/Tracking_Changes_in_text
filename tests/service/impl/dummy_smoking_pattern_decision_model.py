@@ -22,14 +22,15 @@ class Doc:
 
 
 class Language:
-    ents: Doc = []
+    ents: List[Doc]
 
-    def __init__(self):
-        pass
+    def __init__(self, doc):
+        self.ents = doc
 
 
 class DummySciSpacyModel(object):
-    ents: List[Doc] = []
+
+    polarity: bool = False
 
     def return_mock_docs(self):
         return self.ents
@@ -38,10 +39,14 @@ class DummySciSpacyModel(object):
         self.ents.append(doc)
 
     def nlp_process(self, text):
+        ents: List[Doc] = []
         words = text.split(' ')
         for each in words:
-            self.ents.append(Doc(each, Negation(True)))
-        return self
+            ents.append(Doc(each, Negation(self.polarity)))
+        return Language(doc=ents)
+
+    def set_doc_entity_polarity(self, polarity=False):
+        self.polarity = polarity
 
     def get_language(self):
-        return Language()
+        return Language(Doc("", -1))
