@@ -47,5 +47,13 @@ class TestIcd10NegationServiceImpl(TestCase):
         print(result_sets)
         assert result_sets == "no groot, no groom" or result_sets == "no groom, no groot"
 
+    def test_get_icd_10_negation_fixed_codes_should_return_multiple_suggestions(self):
+        test_set = ["nodizzyness", "nogrook"]
+        result_sets = self.__fixing_dictionary_object.get_icd_10_text_negation_fixed(test_set[0])
+        assert result_sets == "no dizziness"
+        result_sets = self.__fixing_dictionary_object.get_icd_10_text_negation_fixed(test_set[1])
+        print(result_sets)
+        assert result_sets == "no groot, no groom" or result_sets == "no groom, no groot"
+
     def __get_dummy_icd10_response(self):
         return
