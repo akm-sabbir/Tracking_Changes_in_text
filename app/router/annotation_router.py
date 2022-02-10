@@ -1,3 +1,4 @@
+import asyncio
 from typing import List
 
 from fastapi import APIRouter
@@ -26,9 +27,13 @@ async def annotate_icd_10(icd10_annotation_requests: List[ICD10AnnotationRequest
                           use_cache: bool = Param(alias="useCache",
                                                   default=Settings.use_cache)) -> List[ICD10AnnotationResponse]:
     response: List[ICD10AnnotationResponse] = []
+    tasks = []
     for annotation_request in icd10_annotation_requests:
         patient_info = PatientInfo(annotation_request.age, annotation_request.sex)
         pipeline_params = ICD10PipelineParams(annotation_request.id, annotation_request.text, dx_threshold,
                                               icd10_threshold, parent_threshold, use_cache, patient_info)
-        response.append(__icd10_service.run_icd10_pipeline(pipeline_params))
+        tasks.append(__icd10_service.run_icd10_pipeline(pipeline_params))
+
+    response = await asyncio.gather(*tasks)
+
     return response
