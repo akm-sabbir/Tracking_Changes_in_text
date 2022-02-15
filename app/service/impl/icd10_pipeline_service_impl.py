@@ -72,7 +72,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                     patient_info=params.patient_info,
                                     changed_words={})
 
-        pipeline_result = await asyncio.get_event_loop().run_in_executor(None, run_pipeline_func)
+        pipeline_result = await asyncio.get_running_loop().run_in_executor(None, run_pipeline_func)
 
         icd10_annotations: List[ICD10AnnotationResult] = pipeline_result[ICD10AnnotationAlgoComponent]
         hcc_maps: HCCResponseDto = pipeline_result[FilteredICD10ToHccAnnotationComponent][0]

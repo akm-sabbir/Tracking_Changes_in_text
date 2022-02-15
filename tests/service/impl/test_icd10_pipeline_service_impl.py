@@ -1,3 +1,5 @@
+import asyncio
+from asyncio import AbstractEventLoop
 from unittest import TestCase
 from unittest.mock import Mock, patch
 
@@ -31,6 +33,15 @@ from app.dto.pipeline.smoker_condition import PatientSmokingCondition
 
 
 class TestICD10PipelineServiceImpl(TestCase):
+    __loop: AbstractEventLoop
+
+    @classmethod
+    def setUpClass(cls):
+        cls.__loop = asyncio.new_event_loop()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.__loop.close()
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
     @patch("app.service.impl.amazon_rxnorm_annotator_service.boto3", Mock())
@@ -79,7 +90,8 @@ class TestICD10PipelineServiceImpl(TestCase):
         icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_manager.run_pipeline = mock_run_pipeline
         pipeline_params = ICD10PipelineParams("123", "text", 0.7, 0.7, 0.7, True, PatientInfo(70, "M"))
 
-        response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
+        response: ICD10AnnotationResponse = self.__loop.run_until_complete(
+            icd10_annotator_service.run_icd10_pipeline(pipeline_params))
         assert response.icd10_annotations[0] == icd10_annotation_result_1
         assert response.id == "123"
         assert response.hcc_maps == mock_hcc_maps
@@ -155,7 +167,8 @@ class TestICD10PipelineServiceImpl(TestCase):
         icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_manager.run_pipeline = mock_run_pipeline
         pipeline_params = ICD10PipelineParams("123", "text", 0.7, 0.7, 0.7, False, PatientInfo(70, "M"))
 
-        response: ICD10AnnotationResponse = icd10_annotator_service.run_icd10_pipeline(pipeline_params)
+        response: ICD10AnnotationResponse = self.__loop.run_until_complete(
+            icd10_annotator_service.run_icd10_pipeline(pipeline_params))
         assert response.icd10_annotations[0] == icd10_annotation_result_1
 
         component_serial = [PatientSmokingConditionDetectionComponent,
