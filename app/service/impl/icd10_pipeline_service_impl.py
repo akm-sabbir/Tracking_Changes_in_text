@@ -56,13 +56,6 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
             ]
         else:
             acm_cached_result = None
-        # pipeline_result = self.__pipeline_manager.run_pipeline(id=params.note_id, text=params.text,
-        #                                                        acm_cached_result=acm_cached_result,
-        #                                                        dx_threshold=params.dx_threshold,
-        #                                                        icd10_threshold=params.icd10_threshold,
-        #                                                        parent_threshold=params.parent_threshold,
-        #                                                        patient_info=params.patient_info,
-        #                                                        changed_words={})
 
         run_pipeline_func = partial(self.__pipeline_manager.run_pipeline, id=params.note_id, text=params.text,
                                     acm_cached_result=acm_cached_result,
