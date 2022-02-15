@@ -1,7 +1,8 @@
 import asyncio
 from asyncio import AbstractEventLoop
 from unittest import TestCase
-from unittest.mock import Mock, patch, AsyncMock
+from unittest.mock import Mock, patch
+from asyncmock import AsyncMock
 
 from pydantic import ValidationError
 
@@ -29,7 +30,7 @@ class Test(TestCase):
         cls.__loop.close()
 
     @patch("app.util.dependency_injector.DependencyInjector.get_instance")
-    def test__annotation_router__given_correct_input__should_return_correct_response(self, mock_get_instance: AsyncMock):
+    def test__annotation_router__given_correct_input__should_return_correct_response(self, mock_get_instance: Mock):
         Settings.dx_threshold = 0.7
         Settings.parent_threshold = 0.7
         Settings.icd10_threshold = 0.7
@@ -61,7 +62,7 @@ class Test(TestCase):
             id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps,
             is_smoker=Smoker.NOT_SMOKER)
 
-        async_mock_pipeline_impl = AsyncMock()
+        async_mock_pipeline_impl = AsyncMock(spec=ICD10PipelineServiceImpl)
         async_mock_pipeline_impl.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
             id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps,
             is_smoker=Smoker.NOT_SMOKER)
