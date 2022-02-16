@@ -1,4 +1,6 @@
+import asyncio
 from typing import List
+from functools import partial
 
 from munch import munchify
 
@@ -42,7 +44,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)
         self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))
 
-    def run_icd10_pipeline(self, params: ICD10PipelineParams) -> ICD10AnnotationResponse:
+    async def run_icd10_pipeline(self, params: ICD10PipelineParams) -> ICD10AnnotationResponse:
         if params.use_cache:
             acm_cached_response = self.__db_service.get_item(params.note_id)
         else:
@@ -54,13 +56,17 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
             ]
         else:
             acm_cached_result = None
-        pipeline_result = self.__pipeline_manager.run_pipeline(id=params.note_id, text=params.text,
-                                                               acm_cached_result=acm_cached_result,
-                                                               dx_threshold=params.dx_threshold,
-                                                               icd10_threshold=params.icd10_threshold,
-                                                               parent_threshold=params.parent_threshold,
-                                                               patient_info=params.patient_info,
-                                                               changed_words={})
+
+        run_pipeline_func = partial(self.__pipeline_manager.run_pipeline, id=params.note_id, text=params.text,
+                                    acm_cached_result=acm_cached_result,
+                                    dx_threshold=params.dx_threshold,
+                                    icd10_threshold=params.icd10_threshold,
+                                    parent_threshold=params.parent_threshold,
+                                    patient_info=params.patient_info,
+                                    changed_words={})
+
+        pipeline_result = await asyncio.get_running_loop().run_in_executor(None, run_pipeline_func)
+
         icd10_annotations: List[ICD10AnnotationResult] = pipeline_result[ICD10AnnotationAlgoComponent]
         hcc_maps: HCCResponseDto = pipeline_result[FilteredICD10ToHccAnnotationComponent][0]
         acm_annotation_result: ACMICD10Result = pipeline_result[ACMICD10AnnotationComponent][0]

@@ -2,10 +2,12 @@ import asyncio
 from asyncio import AbstractEventLoop
 from unittest import TestCase
 from unittest.mock import Mock, patch
+from asyncmock import AsyncMock
 
 from pydantic import ValidationError
 
 from app.dto.pipeline.Smoker import Smoker
+from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
 from app.settings import Settings
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
 from app.dto.core.service.hcc_code import HCCCode
@@ -58,15 +60,23 @@ class Test(TestCase):
         mock_hcc_maps.hcc_maps = {"A123": HCCCode(code="HCC108", score=0.5)}
         mock_icd10_service.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
             id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps,
-        is_smoker=Smoker.NOT_SMOKER)
-        mock_get_instance.return_value = mock_icd10_service
+            is_smoker=Smoker.NOT_SMOKER)
+
+        async_mock_pipeline_impl = AsyncMock(spec=ICD10PipelineServiceImpl)
+        async_mock_pipeline_impl.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
+            id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps,
+            is_smoker=Smoker.NOT_SMOKER)
+
+        mock_get_instance.return_value = async_mock_pipeline_impl
+
         from app.router import annotation_router
         response = self.__loop.run_until_complete(
             annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text="text", sex="M", age=70)],
-                                              dx_threshold=0.7,
-                                              icd10_threshold=0.7, parent_threshold=0.7, use_cache=True))
+                                              dx_threshold=0.7, icd10_threshold=0.7,
+                                              parent_threshold=0.7, use_cache=True)
+        )
         assert response[0].icd10_annotations == mock_icd10_results
-        call_args: ICD10PipelineParams = mock_icd10_service.run_icd10_pipeline.call_args[0][0]
+        call_args: ICD10PipelineParams = async_mock_pipeline_impl.run_icd10_pipeline.call_args[0][0]
         assert call_args.note_id == "123"
         assert call_args.text == "text"
         assert call_args.dx_threshold == 0.7
