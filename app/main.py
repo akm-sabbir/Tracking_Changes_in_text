@@ -47,7 +47,8 @@ logging_folder = ConfigManager.get_specific_config(section="logging", key="folde
 
 __exclusion_list_folder = ConfigManager.get_specific_config(section="exclusion", key="list_")
 __sentiment_exclusion_file_name = ConfigManager.get_specific_config(section="sentiment_exclusion", key="list_file_name")
-exclusion_list_ = os.path.join(os.path.join(os.path.dirname(app_base_path), __exclusion_list_folder), "exclusions.json")
+exclusion_list_ = os.path.join(os.path.join(os.path.dirname(app_base_path), __exclusion_list_folder),
+                               "exclusions_updated.json")
 positive_sentiments_path_ = os.path.join(os.path.join(os.path.dirname(app_base_path),
                                                       sentiment_exclusion_list_folder_path),
                                          __sentiment_exclusion_file_name)

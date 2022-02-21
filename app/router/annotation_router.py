@@ -31,4 +31,5 @@ async def annotate_icd_10(icd10_annotation_requests: List[ICD10AnnotationRequest
         pipeline_params = ICD10PipelineParams(annotation_request.id, annotation_request.text, dx_threshold,
                                               icd10_threshold, parent_threshold, use_cache, patient_info)
         response.append(__icd10_service.run_icd10_pipeline(pipeline_params))
+
     return response

@@ -42,7 +42,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)
         self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))
 
-    def run_icd10_pipeline(self, params: ICD10PipelineParams) -> ICD10AnnotationResponse:
+    async def run_icd10_pipeline(self, params: ICD10PipelineParams) -> ICD10AnnotationResponse:
         if params.use_cache:
             acm_cached_response = self.__db_service.get_item(params.note_id)
         else:
