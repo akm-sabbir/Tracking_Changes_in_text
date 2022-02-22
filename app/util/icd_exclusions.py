@@ -113,10 +113,6 @@ class ICDExclusions:
 
         return source_code
 
-    def get_exclusion_decision(self, source_code: str, target_code_to_check: str) -> bool:
-        exclusion_list = self.exclusion_dictionary.get(target_code_to_check)
-        return
-
     def get_excluded_list(self, source_code, codes_to_check_against):
 
         # trim source code to first three characters
