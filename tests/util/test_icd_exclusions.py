@@ -1,12 +1,12 @@
 import unittest
 import collections
-from icd10_exclusion_member_detection import ICDExclusions
+from app.util.icd_exclusions import ICDExclusions
 
 
 class TestICDExclusions(unittest.TestCase):
 
     def setUp(self):
-        self.icd_exclusions = ICDExclusions('exclusions_updated.json')
+        self.icd_exclusions = ICDExclusions()
 
     def test_get_common_substring(self):
         self.assertEqual(self.icd_exclusions.get_common_substring('E00', 'E05'),'E0', 'Should be E0')
@@ -42,7 +42,7 @@ class TestICDExclusions(unittest.TestCase):
         code = 'A05'
         codes = ['E00', 'E01', 'F89', 'A041', 'A0475', 'A3201', 'A3202']
         actual_excluded_codes = ['A041', 'A0475', 'A3201', 'A3202']
-        self.icd_exclusions.load_from_json()
+        self.icd_exclusions.exclusion_dictionary = {"A05":["A02-", "T61-T62", "A040-A044", "A047-", "A32-"]}
         extracted_excluded_codes = self.icd_exclusions.get_excluded_list(code, codes)
         self.assertTrue(collections.Counter(actual_excluded_codes) == collections.Counter(extracted_excluded_codes),
                         'Should be equal')

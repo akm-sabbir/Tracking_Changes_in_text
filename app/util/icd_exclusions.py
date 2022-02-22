@@ -4,8 +4,8 @@ import os
 
 
 class ICDExclusions:
-    def __init__(self, exclusions_json):
-        self.exclusions_json = exclusions_json
+    def __init__(self, exclusions_json_dict=None):
+        self.exclusion_dictionary = exclusions_json_dict
         self.icd10_regex = "[A-TV-Z][0-9][0-9AB]\.?[0-9A-TV-Z]{0,4}"
         self.regex = re.compile(self.icd10_regex)
         self.regex_words = re.compile("^[a-zA-Z]*$")
@@ -132,7 +132,7 @@ class ICDExclusions:
                     excluded.append(code)
                     break
         return excluded
-
+'''
 if __name__ == "__main__":
     icd_exclusions = ICDExclusions(exclusions_json='exclusions_updated.json')
     icd_exclusions.load_from_json()
@@ -141,4 +141,4 @@ if __name__ == "__main__":
     exclusions.append('E00')
     exclusions.append('E30-')
     print(icd_exclusions.is_excluded_updated(exclusions[1], 'E301'))
-    #icd_exclusions.extract_codes()
+    #icd_exclusions.extract_codes()'''
