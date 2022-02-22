@@ -132,13 +132,3 @@ class ICDExclusions:
                     excluded.append(code)
                     break
         return excluded
-'''
-if __name__ == "__main__":
-    icd_exclusions = ICDExclusions(exclusions_json='exclusions_updated.json')
-    icd_exclusions.load_from_json()
-    exclusions = []
-    #exclusions.append('E00-E02-')
-    exclusions.append('E00')
-    exclusions.append('E30-')
-    print(icd_exclusions.is_excluded_updated(exclusions[1], 'E301'))
-    #icd_exclusions.extract_codes()'''
