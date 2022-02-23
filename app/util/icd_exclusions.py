@@ -26,7 +26,6 @@ class ICDExclusions:
             if len(re.findall(self.regex_words, each_data)) == 0:
                 if 1 <= len(re.findall(self.regex, each_data)) <= 2:
                     yield each_data
-        return
 
     def extract_codes(self):
 
