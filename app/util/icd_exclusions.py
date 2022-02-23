@@ -80,7 +80,6 @@ class ICDExclusions:
 
     # check against three kinds of exclusion representation
     def is_excluded(self, exclusions, target):
-
         # iterate over the list
         # find three classes
         # and check with target
@@ -110,13 +109,11 @@ class ICDExclusions:
 
     def preprocess_code(self, source_code: str):
         source_code = source_code.replace(".", "")
-
         return source_code
 
     def get_excluded_list(self, source_code, codes_to_check_against):
 
         # trim source code to first three characters
-
         excluded = []
         source_code = source_code.replace(".", "")
         if len(codes_to_check_against) == 0:
