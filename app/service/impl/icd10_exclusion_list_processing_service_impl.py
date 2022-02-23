@@ -56,7 +56,7 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
 
     def get_not_selected_icd10_list(self, key: str, exclusion_list: list, icd10_metainfo: dict) -> list:
         if len(icd10_metainfo.get(key).hcc_map) != 0 and \
-                self.get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is False:
+                self.get_exclusion_list_hccmap(exclusion_list, icd10_metainfo) is True:
             return self.get_decision_on_choice(icd10_metainfo, key, exclusion_list)
 
         if len(icd10_metainfo.get(key).hcc_map) != 0 and \
