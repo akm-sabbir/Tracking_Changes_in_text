@@ -3,9 +3,11 @@ from unittest.mock import Mock
 
 from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
 from app.dto.pipeline.icd10_meta_info import ICD10MetaInfo
+from app.util.icd_exclusions import ICDExclusions
 
 
 class MockedHCCEngine():
+
     def __init__(self, version: str):
         self.version = version
 
@@ -36,7 +38,7 @@ class MockedHCCEngine():
 
 
 class TestHCCServiceImpl(TestCase):
-    service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl()
+    service: Icd10CodeExclusionServiceImpl
     icd10_exclusion_dict: dict = {"A04": ["A05-", "A1832"], "A05": ["A404-", "A32-", "T61-T62", "A040-A044", "A02-"],
                                   "A06": ["A07-"], "A08": ["J09X3", "J102", "J112"], "A09": ["K529", "R197"],
                                   "A30": ["B92"],
@@ -49,7 +51,10 @@ class TestHCCServiceImpl(TestCase):
                                   "A85": ["B262", "A872", "B258", "B004", "G933", "B020", "B100-", "B050", "A80-"]}
 
     def test_icd10_exclusion_service_to_get_response(self):
-        self.service.icd_exclusion_util.set_exclusion_dictionary(self.icd10_exclusion_dict)
+
+        exclusion_util = ICDExclusions(exclusions_json_dict=self.icd10_exclusion_dict)
+        self.service = Icd10CodeExclusionServiceImpl(exclusion_util)
+        #self.service.icd_exclusion_util.set_exclusion_dictionary(self.icd10_exclusion_dict)
         icd101 = Mock(ICD10MetaInfo)
         icd101.hcc_map = "HCC85"
         icd101.score = 0.80

@@ -5,7 +5,10 @@ from app.settings import Settings
 
 
 class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
-    icd_exclusion_util: ICDExclusions = ICDExclusions(exclusions_json_dict=Settings.get_exclusion_dict())
+    icd_exclusion_util: ICDExclusions
+
+    def __init__(self, icd_exclusion_utility=None):
+        self.icd_exclusion_util = icd_exclusion_utility
 
     def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict) -> dict:
         if self.icd_exclusion_util.exclusion_dictionary is None:

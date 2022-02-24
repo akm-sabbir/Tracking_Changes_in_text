@@ -119,6 +119,8 @@ class ICDExclusions:
         if len(codes_to_check_against) == 0:
             return excluded
         exclusions = self.exclusion_dictionary.get(source_code)
+        if exclusions is None:
+            return []
         for code in codes_to_check_against:
             for each_exclusion_code in exclusions:
                 if self.is_excluded_updated(each_exclusion_code, code.replace(".", "")) is True:

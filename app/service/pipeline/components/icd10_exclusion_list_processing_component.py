@@ -7,18 +7,21 @@ from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
+from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.service.icd10_negation_service import ICD10NegationService
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
+from app.util.icd_exclusions import ICDExclusions
 
 
 class CodeExclusionHandlingComponent(BasePipelineComponent):
     DEPENDS_ON = [NegationHandlingComponent, NotePreprocessingComponent,
                   ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
-    __icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl()
+    __icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl(
+        ICDExclusions(exclusions_json_dict=Settings.get_exclusion_dict()))
 
     def __init__(self):
         super().__init__()
