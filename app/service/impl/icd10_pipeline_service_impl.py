@@ -30,6 +30,7 @@ from app.settings import Settings
 
 
 class ICD10PipelineServiceImpl(ICD10PipelineService):
+
     def __init__(self):
         self.__pipeline_components = [PatientSmokingConditionDetectionComponent(Settings.get_nlp_smoker_detector()),
                                       SectionExclusionServiceComponent(),

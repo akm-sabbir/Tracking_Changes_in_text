@@ -51,10 +51,8 @@ class TestHCCServiceImpl(TestCase):
                                   "A85": ["B262", "A872", "B258", "B004", "G933", "B020", "B100-", "B050", "A80-"]}
 
     def test_icd10_exclusion_service_to_get_response(self):
-
         exclusion_util = ICDExclusions(exclusions_json_dict=self.icd10_exclusion_dict)
         self.service = Icd10CodeExclusionServiceImpl(exclusion_util)
-        #self.service.icd_exclusion_util.set_exclusion_dictionary(self.icd10_exclusion_dict)
         icd101 = Mock(ICD10MetaInfo)
         icd101.hcc_map = "HCC85"
         icd101.score = 0.80

@@ -65,7 +65,8 @@ class HCCServiceImpl(HCCService):
                                                                           disease_interactions_score: dict):
         elig = hccpy_response["parameters"]["elig"]
         for key in hccpy_response["details"].keys():
-            if HCCRegexPatternUtil.get_age_sex_score_key_pattern(elig).match(key) or HCCRegexPatternUtil.get_orec_score_key_pattern(elig).match(
+            if HCCRegexPatternUtil.get_age_sex_score_key_pattern(elig).match(key) or \
+                    HCCRegexPatternUtil.get_orec_score_key_pattern(elig).match(
                     key):
                 demographics_score[key] = hccpy_response["details"][key]
             else:
