@@ -21,11 +21,7 @@ class CodeExclusionHandlingComponent(BasePipelineComponent):
     DEPENDS_ON = [NegationHandlingComponent, NotePreprocessingComponent,
                   ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
     __icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl(
-<<<<<<< HEAD
         ICDExclusions(exclusions_json_dict=Settings.get_exclusion_dict()))
-=======
-        ICDExclusions(exclusions_json=Settings.get_exclusion_dict()))
->>>>>>> bugfix/PA-1007-missing-acm-annnotations-updating-exclusion-service-algorithm
 
     def __init__(self):
         super().__init__()
