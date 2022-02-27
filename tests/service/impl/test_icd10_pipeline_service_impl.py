@@ -100,10 +100,10 @@ class TestICD10PipelineServiceImpl(TestCase):
         component_serial = [PatientSmokingConditionDetectionComponent,
                             SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
                             MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMICD10AnnotationComponent,ACMRxNormAnnotationComponent,
-                            ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
+                            ACMICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                            ICD10ToHccAnnotationComponent,
                             ICD10AnnotationAlgoComponent]
-
+        '''#10 compoent is CodeExclusionHandlingComponent'''
         for idx, type in enumerate(component_serial):
             assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[idx], type)
 
@@ -175,9 +175,8 @@ class TestICD10PipelineServiceImpl(TestCase):
                             SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
                             MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
                             ACMICD10AnnotationComponent, ACMRxNormAnnotationComponent, ICD10ToHccAnnotationComponent,
-                            CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
-
+        '''#10 component is CodeExclusionHandlingComponent, '''
         for idx, type in enumerate(component_serial):
             assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[idx], type)
 
