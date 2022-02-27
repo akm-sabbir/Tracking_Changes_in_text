@@ -102,6 +102,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                             MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
                             ACMICD10AnnotationComponent, ACMRxNormAnnotationComponent,
                             ICD10ToHccAnnotationComponent,
+                            CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
         '''#10 compoent is CodeExclusionHandlingComponent'''
         for idx, type in enumerate(component_serial):
@@ -175,6 +176,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                             SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
                             MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
                             ACMICD10AnnotationComponent, ACMRxNormAnnotationComponent, ICD10ToHccAnnotationComponent,
+                            CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
         '''#10 component is CodeExclusionHandlingComponent, '''
         for idx, type in enumerate(component_serial):

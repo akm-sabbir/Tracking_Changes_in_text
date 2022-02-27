@@ -37,6 +37,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                       NegationHandlingComponent(), NotePreprocessingComponent(),
                                       ACMICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
                                       ICD10ToHccAnnotationComponent(),
+                                      CodeExclusionHandlingComponent(),
                                       ICD10AnnotationAlgoComponent(),
                                       FilteredICD10ToHccAnnotationComponent()]
         '''#10 component CodeExclusionHandlingComponent(),'''
