@@ -45,8 +45,7 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
             return [key]
         if len(key) < self.__get_avg_acm_icd10code_len(exclusion_list):
             return exclusion_list
-        if len(exclusion_list) > 1:
-            return exclusion_list
+
         score_ = sum([icd10_metainfo.get(exclusion_list[each_ind]).score
                       for each_ind in range(len(exclusion_list))])/len(exclusion_list)
         if icd10_metainfo.get(key).score > score_:

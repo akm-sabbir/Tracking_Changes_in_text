@@ -16,7 +16,6 @@ from app.service.pipeline.components.icd10_exclusion_list_processing_component i
 class ICD10AnnotationAlgoComponent(BasePipelineComponent):
     DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent,
                         ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent]
-    '''CodeExclusionHandlingComponent]'''
 
     def __init__(self):
         super().__init__()

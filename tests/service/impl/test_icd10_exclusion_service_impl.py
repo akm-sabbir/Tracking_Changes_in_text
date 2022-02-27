@@ -106,6 +106,9 @@ class TestHCCServiceImpl(TestCase):
         assert self.service.get_decision_on_choice(param, "A40421", ["A0531", "A852"])[1] == "A852"
         assert self.service.get_decision_on_choice(param, "A0531", ["A852"])[0] == "A0531"
         assert self.service.get_decision_on_choice(param, "A852", ["A0531"])[0] == "A0531"
+        assert self.service.get_decision_on_choice(param, "A04", ["A32"])[0] == "A04"
         assert len(self.service.get_decision_on_choice(param, "A853", ["A853", "A852"])) > 1
         assert self.service.get_not_selected_icd10_list("A40421", ["A0531", "A852"], param)[0] == "A0531"
         assert self.service.get_not_selected_icd10_list("A40421", ["A0531", "A32"], param)[0] == "A40421"
+        assert self.service.get_not_selected_icd10_list("A40421", ["A0531", "A04"], param)[0] == "A0531"
+        assert self.service.get_not_selected_icd10_list("A40421", ["A852", "A32"], param)[0] == "A40421"
