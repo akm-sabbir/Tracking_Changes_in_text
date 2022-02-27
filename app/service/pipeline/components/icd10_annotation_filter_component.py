@@ -24,9 +24,6 @@ class ICD10AnnotationAlgoComponent(BasePipelineComponent):
             DependencyInjector.get_instance(ICD10AnnotatorServiceWithFilterImpl)
 
     def run(self, annotation_results: dict) -> List[ICD10AnnotationResult]:
-        '''
-        acm_result: ACMICD10Result = annotation_results[CodeExclusionHandlingComponent]
-        '''
         acm_result: ACMICD10Result = annotation_results[ACMICD10AnnotationComponent]
         icd10_annotation_result: List[ICD10AnnotationResult] = acm_result[0].icd10_annotations
         hcc_result: HCCResponseDto = annotation_results[ICD10ToHccAnnotationComponent][0].hcc_annotation_response

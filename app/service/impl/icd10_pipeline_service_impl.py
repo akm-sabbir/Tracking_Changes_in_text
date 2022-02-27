@@ -40,7 +40,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                       CodeExclusionHandlingComponent(),
                                       ICD10AnnotationAlgoComponent(),
                                       FilteredICD10ToHccAnnotationComponent()]
-        '''#10 component CodeExclusionHandlingComponent(),'''
+
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)
         self.__db_service = DynamoDbService(ConfigManager.get_specific_config("aws", "annotation_table_name"))
 
