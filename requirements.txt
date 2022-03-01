@@ -17,4 +17,4 @@ negspacy==1.0.1
 scispacy==0.4.0
 asyncmock==0.4.2
 https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.4.0/en_core_sci_sm-0.4.0.tar.gz
-pymetamap==0.2
+git+https://github.com/AnthonyMRios/pymetamap.git#egg=pymetamap
