@@ -37,8 +37,11 @@ class PymetamapICD10AnnotatorService(ICD10AnnotatorService):
                 unique_concepts[key].suggested_codes.extend(icd10_annotations)
                 continue
 
-            position_info_pattern = r"(?<=\[)*(([0-9]+/[0-9]+),?)+(?=])*"
+            position_info_pattern = r"\[?(([0-9]+/[0-9]+),?)+]?"
             pos_info = re.search(position_info_pattern, concept.pos_info).group()
+
+            pos_info = pos_info.replace("[", "")
+            pos_info = pos_info.replace("]", "")
 
             position_pattern = r"[0-9]+/[0-9]+"
             positions = list(re.finditer(position_pattern, pos_info))
