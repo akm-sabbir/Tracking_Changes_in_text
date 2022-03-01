@@ -32,23 +32,29 @@ class PymetamapICD10AnnotatorService(ICD10AnnotatorService):
                                                  description=icd10_data.concept,
                                                  score=concept.score)]
 
-            key = concept.pos_info
-            if key in unique_concepts:
-                unique_concepts[key].suggested_codes.extend(icd10_annotations)
+            # position info is separated by ; . We take the first position info only
+            position_string = concept.pos_info.split(";")[0]
+            if position_string in unique_concepts:
+                unique_concepts[position_string].suggested_codes.extend(icd10_annotations)
                 continue
 
+            # position info can be 12/3 or 12/5,11/7 or [12/3],# [12/5,11/7]. Here, for 12/3 , 12 - index, 3 - length
             position_info_pattern = r"\[?(([0-9]+/[0-9]+),?)+]?"
-            pos_info = re.search(position_info_pattern, concept.pos_info).group()
+            pos_info = re.search(position_info_pattern, position_string).group()
 
+            # remove brackets
             pos_info = pos_info.replace("[", "")
             pos_info = pos_info.replace("]", "")
 
+            # find only positional info (12/3, 11/5)
             position_pattern = r"[0-9]+/[0-9]+"
             positions = list(re.finditer(position_pattern, pos_info))
 
+            # first positional info is the start index
             start_position_info = positions[0].group()
             start_position = int(start_position_info.split("/")[0]) - 1
 
+            # the last info is the end index
             end_position_info = positions[-1].group()
             end_position = int(end_position_info.split("/")[0]) + int(end_position_info.split("/")[1]) - 1
 
@@ -58,5 +64,5 @@ class PymetamapICD10AnnotatorService(ICD10AnnotatorService):
                                                             begin_offset=start_position, end_offset=end_position,
                                                             is_negated=False, suggested_codes=icd10_annotations)
 
-            unique_concepts[key] = icd10_annotation_result
+            unique_concepts[position_string] = icd10_annotation_result
         return list(unique_concepts.values())

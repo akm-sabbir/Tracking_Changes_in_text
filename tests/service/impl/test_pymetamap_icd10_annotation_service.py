@@ -21,7 +21,7 @@ class TestPymetamapICD10AnnotationService(TestCase):
         metamap_mock.extract_concepts = Mock()
         concept1 = Mock(ConceptMMI)
         concept1.cui = "123"
-        concept1.pos_info = "1/4"
+        concept1.pos_info = "1/4;2/6"
         concept1.score = 5.13
 
         concept2 = Mock(ConceptMMI)
