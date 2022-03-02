@@ -2,7 +2,7 @@ import os
 import re
 from typing import List, Dict
 
-from pymetamap import MetaMap, ConceptMMI
+from pymetamap import MetaMap, ConceptMMI, ConceptAA
 
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
@@ -18,13 +18,16 @@ class PymetamapICD10AnnotatorService(ICD10AnnotatorService):
         self.icd10_mapper_service: CUItoICD10ServiceImpl = DependencyInjector.get_instance(CUItoICD10ServiceImpl)
 
     def get_icd_10_codes(self, text: str) -> List:
-        concepts, error = self.mapper_service.extract_concepts([text], restrict_to_sources=["ICD10CM"])
+        concepts, error = self.mapper_service.extract_concepts([text.replace("\n", " ")],
+                                                               restrict_to_sources=["ICD10CM"])
         return self._map_to_annotation_result_dto(text, concepts)
 
     def _map_to_annotation_result_dto(self, text: str, concepts: List[ConceptMMI]) -> List[ICD10AnnotationResult]:
         unique_concepts: Dict[str, ICD10AnnotationResult] = {}
         for concept in concepts:
 
+            if not isinstance(concept, ConceptMMI):
+                continue
             icd10_data = self.icd10_mapper_service.get_umls_data_from_cui(concept.cui)
             if icd10_data.icd10 == "":
                 continue
