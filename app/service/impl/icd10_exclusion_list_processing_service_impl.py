@@ -78,6 +78,16 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
         else:
             return "right"
 
+    def get_icd10_code_exclusion_decision_based_graph(self, icd10_metainfo: dict) -> dict:
+        list_of_nodes = self.form_exclusion_graph(icd10_metainfo)
+        dict_of_codes = self.built_graph_index(list_of_nodes)
+        list_of_nodes = self.iterate_graph_nodes_and_exclude(list_of_nodes, dict_of_codes,
+                                        icd10_metainfo)
+        for each_node in list_of_nodes:
+            if each_node.vote < 0:
+                icd10_metainfo[each_node.code].remove = True
+        return icd10_metainfo
+
     def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict) -> dict:
         if self.icd_exclusion_util.exclusion_dictionary is None:
             self.icd_exclusion_util.set_exclusion_dictionary(Settings.get_exclusion_dict())
