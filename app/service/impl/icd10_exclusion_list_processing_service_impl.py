@@ -2,10 +2,44 @@ from app.service.icd10_exclusion_service import ICD10ExclusionService
 from app.util.icd_exclusions import ICDExclusions
 import math
 from app.settings import Settings
+from app.dto.core.service.exclusion_graph import ExclusionGraph
+from collections import defaultdict
 
 
 class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
     icd_exclusion_util: ICDExclusions = ICDExclusions()
+
+    def form_exclusion_graph(self, icd10_metainfo: dict):
+        icd10_lists = icd10_metainfo.keys()
+        list_of_nodes = []
+        for key, value in icd10_metainfo.items():
+            exclusion_list = self.icd_exclusion_util.get_excluded_list(key, icd10_lists)
+            node = ExclusionGraph()
+            node.code = key
+            for each_elem in exclusion_list:
+                node.neighbors.append(each_elem)
+                node.degree += 1
+            list_of_nodes.append(node)
+        list_of_nodes = sorted(list_of_nodes, key=lambda x: x.degree, reverse=True)
+        return list_of_nodes
+
+    def built_graph_index(self, list_of_nodes: list[ExclusionGraph]):
+        dict_of_codes = defaultdict(str)
+        for index, value in enumerate(list_of_nodes):
+            dict_of_codes[value.code] = index
+
+        return dict_of_codes
+
+    def iterate_graph_nodes_and_exclude(self, list_of_nodes: list[ExclusionGraph], dict_of_codes: dict[str],
+                                        icd10_metainfo: dict):
+        for each_node in list_of_nodes:
+            if len(each_node.neighbors) != 0:
+                self.get_no_selection_icd10_vote(each_node.code, each_node.neighbors, icd10_metainfo)
+
+        return
+
+    def get_no_selection_icd10_vote(self, key_code: str, neighbors : list[str], icd10_metainfo: dict):
+        return
 
     def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict) -> dict:
         if self.icd_exclusion_util.exclusion_dictionary is None:
