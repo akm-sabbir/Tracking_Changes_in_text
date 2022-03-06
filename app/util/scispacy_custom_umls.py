@@ -1,27 +1,16 @@
-from scispacy.candidate_generation import DEFAULT_PATHS, DEFAULT_KNOWLEDGE_BASES
-from scispacy.candidate_generation import (
-    LinkerPaths
-)
-from scispacy.linking_utils import KnowledgeBase
-from scispacy.linking import *
+import os
 
-CustomLinkerPaths_2021AB = LinkerPaths(
-    ann_index="learning_outputs2/nmslib_index.bin",
-    tfidf_vectorizer="learning_outputs2/tfidf_vectorizer.joblib",
-    tfidf_vectors="learning_outputs2/tfidf_vectors_sparse.npz",
-    concept_aliases_list="learning_outputs2/concept_aliases.json",
-)
+from scispacy.linking_utils import KnowledgeBase
+
+from app.util.config_manager import ConfigManager
+from data import data_base_path
+from data.scispacy_cache_for_itx import umls2021ab_json_path
 
 
 class UMLS2021KnowledgeBase(KnowledgeBase):
-    def __init__(
-            self,
-            file_path: str = "umls2021AB.jsonl",
-    ):
-        super().__init__(file_path)
-
-
-# Admittedly this is a bit of a hack, because we are mutating a global object.
-# However, it's just a kind of registry, so maybe it's ok.
-DEFAULT_PATHS["umls2021"] = CustomLinkerPaths_2021AB
-DEFAULT_KNOWLEDGE_BASES["umls2021"] = UMLS2021KnowledgeBase
+    def __init__(self):
+        _umls_jsonl_file = ConfigManager.get_specific_config(section="scispacy_umls2021_ab", key="umls2021_ab")
+        _file_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                               umls2021ab_json_path),
+                                  _umls_jsonl_file)
+        super().__init__(_file_path)

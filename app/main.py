@@ -12,6 +12,9 @@ from app.router import routers_base_path
 from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
 from app.settings import Settings
+from data import data_base_path
+from data.scispacy_cache_for_itx import umls2021ab_json_path
+from data.scispacy_cache_for_itx.custom_datasets import scispacy_custom_dataset_path
 from sentiment_exclusion_list import sentiment_exclusion_list_folder_path
 
 app = FastAPI()
@@ -42,6 +45,30 @@ __router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base
 for router_module in __router_modules:
     app.include_router(router_module.router, prefix=router_module.prefix)
 
+# scispacy custom dataset path
+ann_index_bin = ConfigManager.get_specific_config(section="scispacy_ann_index", key="ann_index")
+ann_index_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                           scispacy_custom_dataset_path),
+                              ann_index_bin)
+
+tfidf_vectorizer_file = ConfigManager.get_specific_config(section="scispacy_tfidf_vectorizer", key="tfidf_vectorizer")
+tfidf_vectorizer_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                                  scispacy_custom_dataset_path),
+                                     tfidf_vectorizer_file)
+
+tfidf_vectors_file = ConfigManager.get_specific_config(section="scispacy_tfidf_vectors", key="tfidf_vectors")
+tfidf_vectors_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                               scispacy_custom_dataset_path),
+                                  tfidf_vectors_file)
+
+concept_aliases_file = ConfigManager.get_specific_config(section="scispacy_concept_aliases_list",
+                                                         key="concept_aliases_list")
+concept_aliases_list_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                                      scispacy_custom_dataset_path),
+                                         concept_aliases_file)
+
+Settings.set_scispacy_custom_knowledgebase_path(ann_index_path, tfidf_vectorizer_path, tfidf_vectors_path,
+                                                concept_aliases_list_path)
 # initiate logging
 logging_folder = ConfigManager.get_specific_config(section="logging", key="folder")
 
