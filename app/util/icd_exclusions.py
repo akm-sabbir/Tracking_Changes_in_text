@@ -85,7 +85,7 @@ class ICDExclusions:
         for item in exclusions:
             stubs = item.split('-')
             if (len(stubs) <= 1):
-                return (stubs == target)
+                return (stubs[0] == target)
             elif not stubs[1]:
                 return self.is_exlusion_after_range(stubs[0], target)
             else:
