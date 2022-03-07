@@ -100,8 +100,9 @@ class TestICD10PipelineServiceImpl(TestCase):
         component_serial = [PatientSmokingConditionDetectionComponent,
                             SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
                             MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMICD10AnnotationComponent,ACMRxNormAnnotationComponent,
-                            ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent,
+                            ACMICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                            ICD10ToHccAnnotationComponent,
+                            CodeExclusionHandlingComponent,
                             ICD10AnnotationAlgoComponent]
 
         for idx, type in enumerate(component_serial):

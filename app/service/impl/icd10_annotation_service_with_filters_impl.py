@@ -40,7 +40,8 @@ class ICD10AnnotatorServiceWithFilterImpl(ICD10AnnotatorServiceWithFilters):
         icd_10_entities = self.apply_is_negated(icd_10_entities=icd_10_entities)
         icd_10_entities = self.apply_icd10_threshold(icd_10_entities=icd_10_entities,
                                                      icd_thresh=icd10_threshold,
-                                                     operate=operator.gt)
+                                                     operate=operator.gt,
+                                                     hcc_map=hcc_map)
 
         icd_10_entities = self.apply_parent_icd_10_threshold(icd_10_entities=icd_10_entities,
                                                              parent_thresh=parent_threshold,
