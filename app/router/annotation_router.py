@@ -31,10 +31,8 @@ async def annotate_icd_10(icd10_annotation_requests: List[ICD10AnnotationRequest
         patient_info = PatientInfo(annotation_request.age, annotation_request.sex)
         pipeline_params = ICD10PipelineParams(annotation_request.id, annotation_request.text, dx_threshold,
                                               icd10_threshold, parent_threshold, use_cache, patient_info)
-
         tasks.append(asyncio.create_task(__icd10_service.run_icd10_pipeline(pipeline_params)))
 
     response: List[ICD10AnnotationResponse] = [item for item in await asyncio.gather(*tasks)]
-
 
     return response

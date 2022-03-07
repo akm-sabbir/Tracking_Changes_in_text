@@ -45,13 +45,6 @@ class TestICDExclusions(unittest.TestCase):
         self.assertTrue(self.icd_exclusions.is_excluded_updated("A340-A349-", "A3492"))
         self.assertTrue(self.icd_exclusions.is_excluded_updated("A340-A349-", "A349"))
 
-    def test_extract_codes(self):
-        with patch.object(ICDExclusions, 'extract_codes', return_value=None) as mock_method:
-            thing = ICDExclusions()
-            self.assertTrue(thing.extract_codes() is None)
-        self.icd_exclusions.extract_codes = MagicMock(return_value=None)
-        self.assertTrue(self.icd_exclusions.extract_codes() is None)
-
     def test_preprocess_code(self):
         self.assertTrue(self.icd_exclusions.preprocess_code("A34.30") == "A3430")
 
