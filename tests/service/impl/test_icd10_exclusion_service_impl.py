@@ -97,7 +97,8 @@ class TestHCCServiceImpl(TestCase):
         icd107.remove = False
         param = {"A0531": icd101, "A40421": icd102, "A853": icd103, "A04": icd104, "A7421": icd105, "A852": icd106,
                  "A32": icd107}
-        param = self.service.get_icd_10_code_exclusion_decision(param)
+        #param = self.service.get_icd_10_code_exclusion_decision(param)
+        param = self.service.get_icd10_code_exclusion_decision_based_graph(param)
         assert param["A0531"].remove == True
         assert param["A40421"].remove == True
         assert self.service.get_exclusion_list_hccmap(["A04"], param) is True
