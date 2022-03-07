@@ -38,11 +38,14 @@ class MockedHCCEngine():
 
 
 class TestHCCServiceImpl(TestCase):
+
     service: Icd10CodeExclusionServiceImpl
     icd10_exclusion_dict: dict = {"A04": ["A05-", "A1832"], "A05": ["A404-", "A32-", "T61-T62", "A040-A044", "A02-"],
-                                  "A06": ["A07-"], "A08": ["J09X3", "J102", "J112"], "A09": ["K529", "R197"],
+                           "A06": ["A07-"], "A08": ["J09X3", "J102", "J112"], "A09": ["K529", "R197"],
                                   "A30": ["B92"],
-                                  "A32": ["P372"], "A35": ["A34", "A33"], "A40": ["P360-P361", "O85", "A4181"],
+                                  "A32": ["P372"],
+                                  "A35": ["A34", "A33"],
+                                  "A40": ["P360-P361", "O85", "A4181"],
                                   "A41": ["A40-", "O85", "R7881", "P36-"], "A42": ["B471"], "A46": ["O8689"],
                                   "A48": ["B471"],
                                   "A49": ["A699", "A749", "B95-B96", "A799", "A399"], "A56": ["P391", "P231"],
@@ -89,7 +92,14 @@ class TestHCCServiceImpl(TestCase):
         icd106.length = 5
         icd106.entity_score = 0.99
         icd106.remove = False
-        param = {"A0531": icd101, "A40421": icd102, "A853": icd103, "A04": icd104, "A7421": icd105, "A852": icd106}
+        icd107 = Mock(ICD10MetaInfo)
+        icd107.hcc_map = ""
+        icd107.score = 0.81
+        icd107.length = 3
+        icd107.entity_score = 0.99
+        icd107.remove = False
+        param = {"A0531": icd101, "A40421": icd102, "A853": icd103, "A04": icd104, "A7421": icd105, "A852": icd106,
+                 "A32": icd107}
         param = self.service.get_icd_10_code_exclusion_decision(param)
         assert param["A0531"].remove == True
         assert param["A40421"].remove == True
@@ -99,5 +109,9 @@ class TestHCCServiceImpl(TestCase):
         assert self.service.get_decision_on_choice(param, "A40421", ["A0531", "A852"])[1] == "A852"
         assert self.service.get_decision_on_choice(param, "A0531", ["A852"])[0] == "A0531"
         assert self.service.get_decision_on_choice(param, "A852", ["A0531"])[0] == "A0531"
+        assert self.service.get_decision_on_choice(param, "A04", ["A32"])[0] == "A04"
         assert len(self.service.get_decision_on_choice(param, "A853", ["A853", "A852"])) > 1
         assert self.service.get_not_selected_icd10_list("A40421", ["A0531", "A852"], param)[0] == "A0531"
+        assert self.service.get_not_selected_icd10_list("A40421", ["A0531", "A32"], param)[0] == "A40421"
+        assert self.service.get_not_selected_icd10_list("A40421", ["A0531", "A04"], param)[0] == "A0531"
+        assert self.service.get_not_selected_icd10_list("A40421", ["A852", "A32"], param)[0] == "A40421"
