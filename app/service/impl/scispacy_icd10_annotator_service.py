@@ -16,7 +16,7 @@ class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
         self.nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": linker_name})
         self.icd10_mapper_service: CUItoICD10ServiceImpl = DependencyInjector.get_instance(CUItoICD10ServiceImpl)
 
-    def get_icd_10_codes(self, text: str) -> List:
+    def get_icd_10_codes(self, text: str) -> List[ICD10AnnotationResult]:
         doc = self.nlp(text)
         entities = doc.ents
 
