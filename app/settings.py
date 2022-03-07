@@ -2,7 +2,6 @@ import spacy
 from scispacy.candidate_generation import LinkerPaths
 from spacy.lang.en import English
 from scispacy.candidate_generation import DEFAULT_PATHS, DEFAULT_KNOWLEDGE_BASES
-from scispacy.linking import *
 
 from app.util.english_dictionary import EnglishDictionary
 from app.util.scispacy_custom_umls import UMLS2021KnowledgeBase
@@ -113,14 +112,14 @@ class Settings:
     @staticmethod
     def set_scispacy_custom_knowledgebase_path(ann_index_path: str, tfidf_vectorizer_path: str, tfidf_vectors_path: str,
                                                concept_aliases_list_path: str):
-        custom_linker_paths_2021AB = LinkerPaths(
+        custom_linker_paths_2021_ab = LinkerPaths(
             ann_index=ann_index_path,
             tfidf_vectorizer=tfidf_vectorizer_path,
             tfidf_vectors=tfidf_vectors_path,
             concept_aliases_list=concept_aliases_list_path,
         )
 
-        DEFAULT_PATHS["umls2021"] = custom_linker_paths_2021AB
+        DEFAULT_PATHS["umls2021"] = custom_linker_paths_2021_ab
         DEFAULT_KNOWLEDGE_BASES["umls2021"] = UMLS2021KnowledgeBase
 
     @staticmethod

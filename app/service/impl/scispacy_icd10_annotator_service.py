@@ -7,6 +7,7 @@ from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.icd10_annotator_service import ICD10AnnotatorService
 from app.service.impl.cui_to_icd10_service_impl import CUItoICD10ServiceImpl
 from app.util.dependency_injector import DependencyInjector
+from scispacy.linking import *
 
 
 class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
