@@ -13,7 +13,6 @@ from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
 from app.settings import Settings
 from data import data_base_path
-from data.scispacy_cache_for_itx import umls2021ab_json_path
 from data.scispacy_cache_for_itx.custom_datasets import scispacy_custom_dataset_path
 from sentiment_exclusion_list import sentiment_exclusion_list_folder_path
 
@@ -41,10 +40,6 @@ __caching_usage = ConfigManager.get_specific_config(section="caching_facility", 
 Settings.set_settings_use_cache(caching=bool(__caching_usage.lower() == "true"))
 # add routers
 Settings.start_initializing_smoker_detector()
-__router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base_path)
-for router_module in __router_modules:
-    app.include_router(router_module.router, prefix=router_module.prefix)
-
 # scispacy custom dataset path
 ann_index_bin = ConfigManager.get_specific_config(section="scispacy_ann_index", key="ann_index")
 ann_index_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
@@ -69,8 +64,6 @@ concept_aliases_list_path = os.path.join(os.path.join(os.path.dirname(data_base_
 
 Settings.set_scispacy_custom_knowledgebase_path(ann_index_path, tfidf_vectorizer_path, tfidf_vectors_path,
                                                 concept_aliases_list_path)
-# initiate logging
-logging_folder = ConfigManager.get_specific_config(section="logging", key="folder")
 
 __exclusion_list_folder = ConfigManager.get_specific_config(section="exclusion", key="list_")
 __sentiment_exclusion_file_name = ConfigManager.get_specific_config(section="sentiment_exclusion", key="list_file_name")
@@ -78,13 +71,18 @@ exclusion_list_ = os.path.join(os.path.join(os.path.dirname(app_base_path), __ex
 positive_sentiments_path_ = os.path.join(os.path.join(os.path.dirname(app_base_path),
                                                       sentiment_exclusion_list_folder_path),
                                          __sentiment_exclusion_file_name)
-Path(os.path.join(os.path.dirname(app_base_path), logging_folder)).mkdir(exist_ok=True)
 
 Settings.set_exclusion_dict(path_=exclusion_list_)
 Settings.set_positive_sentiments_path(path_=positive_sentiments_path_)
 Settings.start_initialize_dictionary()
 Settings.init_positive_sentiments_set()
+__router_modules = ImportUtil.import_modules_from_directory_as_list(routers_base_path)
+for router_module in __router_modules:
+    app.include_router(router_module.router, prefix=router_module.prefix)
 
+# initiate logging
+logging_folder = ConfigManager.get_specific_config(section="logging", key="folder")
+Path(os.path.join(os.path.dirname(app_base_path), logging_folder)).mkdir(exist_ok=True)
 logging_config_file_path = os.path.join(os.path.dirname(app_base_path), 'logging.ini')
 logging.config.fileConfig(logging_config_file_path,
                           defaults={'date': datetime.now().strftime('%Y-%m-%d-%H-%M-%S')},

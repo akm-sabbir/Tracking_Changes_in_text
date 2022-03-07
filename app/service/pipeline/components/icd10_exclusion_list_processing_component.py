@@ -13,12 +13,15 @@ from app.service.pipeline.components.negation_processing_component import Negati
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
+from app.settings import Settings
+from app.util.icd_exclusions import ICDExclusions
 
 
 class CodeExclusionHandlingComponent(BasePipelineComponent):
     DEPENDS_ON = [NegationHandlingComponent, NotePreprocessingComponent,
                   ACMICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
-    __icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl()
+    __icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl(
+        ICDExclusions(exclusions_json=Settings.get_exclusion_dict()))
 
     def __init__(self):
         super().__init__()

@@ -5,10 +5,10 @@ from unittest.mock import Mock, patch
 from asyncmock import AsyncMock
 
 from pydantic import ValidationError
-
+from app.settings import Settings
+Settings.exclusion_dict: dict = {}
 from app.dto.pipeline.Smoker import Smoker
 from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
-from app.settings import Settings
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
 from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.icd10_annotation import ICD10Annotation

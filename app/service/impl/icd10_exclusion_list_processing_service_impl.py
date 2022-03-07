@@ -2,10 +2,14 @@ from app.service.icd10_exclusion_service import ICD10ExclusionService
 from app.util.icd_exclusions import ICDExclusions
 import math
 from app.settings import Settings
+from app.util.icd_exclusions import ICDExclusions
 
 
 class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
-    icd_exclusion_util: ICDExclusions = ICDExclusions()
+    icd_exclusion_util: ICDExclusions
+
+    def __init__(self, exclusion_utility=None):
+        self.icd_exclusion_util = exclusion_utility
 
     def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict) -> dict:
         if self.icd_exclusion_util.exclusion_dictionary is None:
