@@ -1,12 +1,13 @@
 import unittest
 import collections
 from app.util.icd_exclusions import ICDExclusions
+from unittest.mock import MagicMock
 
 
 class TestICDExclusions(unittest.TestCase):
 
     def setUp(self):
-        self.icd_exclusions = ICDExclusions()
+        self.icd_exclusions = ICDExclusions({"A303": ["A40-A30", "A505"]})
 
     def test_get_common_substring(self):
         self.assertEqual(self.icd_exclusions.get_common_substring('E00', 'E05'),'E0', 'Should be E0')
@@ -23,6 +24,27 @@ class TestICDExclusions(unittest.TestCase):
         self.assertTrue(self.icd_exclusions.is_exlusion_in_range(both, 'E004'), 'Should be in target')
         self.assertFalse(self.icd_exclusions.is_exlusion_in_range(both, 'E006'), 'Should not be in target')
         self.assertFalse(self.icd_exclusions.is_exlusion_in_range(both, 'F99'), 'Should not be in target')
+
+    def test_return_codes(self):
+        self.assertTrue(list(self.icd_exclusions.return_codes("abc is not (A301-A305"))[0] == "A301-A305")
+        self.assertTrue(list(self.icd_exclusions.return_codes("abc is not (A301-A305)"))[0] == "A301-A305")
+
+    def test_is_excluded(self):
+        self.assertTrue(self.icd_exclusions.is_excluded(["A30-", "A50-A55"], ["A51"]))
+
+    def test_is_excluded_updated(self):
+        self.assertTrue(self.icd_exclusions.is_excluded_updated("A340", "A340"))
+        self.assertTrue(self.icd_exclusions.is_excluded_updated("A340-A349-", "A340"))
+        self.assertTrue(self.icd_exclusions.is_excluded_updated("A340-A349-", "A344"))
+        self.assertTrue(self.icd_exclusions.is_excluded_updated("A340-A349-", "A3492"))
+        self.assertTrue(self.icd_exclusions.is_excluded_updated("A340-A349-", "A349"))
+
+    def test_extract_codes(self):
+        self.icd_exclusions.extract_codes = MagicMock(return_value=None)
+        self.assertTrue(self.icd_exclusions.extract_codes() is None)
+
+    def test_preprocess_code(self):
+        self.assertTrue(self.icd_exclusions.preprocess_code("A34.30") == "A3430")
 
     def test_is_exlusion_after_range(self):
         left = 'E005'

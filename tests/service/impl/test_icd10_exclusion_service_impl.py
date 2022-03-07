@@ -102,7 +102,7 @@ class TestHCCServiceImpl(TestCase):
                  "A32": icd107}
         param = self.service.get_icd_10_code_exclusion_decision(param)
         assert param["A0531"].remove == True
-        #assert param["A40421"].remove == True
+        assert param["A40421"].remove == False
         assert self.service.get_exclusion_list_hccmap(["A04"], param) is True
         assert self.service.get_exclusion_list_hccmap(["A852"], param) is False
         assert self.service.get_decision_on_choice(param, "A40421", ["A0531", "A852"])[0] == "A0531"
