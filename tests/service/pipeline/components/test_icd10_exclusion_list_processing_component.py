@@ -25,7 +25,7 @@ class MockedIcd10ExclusionServiceImpl():
     def __init__(self,):
         pass
 
-    def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict):
+    def get_icd10_code_exclusion_decision_based_graph(self, icd10_metainfo: dict):
         icd101 = Mock(ICD10MetaInfo)
         icd101.hcc_map = "HCC85"
         icd101.score = 0.80

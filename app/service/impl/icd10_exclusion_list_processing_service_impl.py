@@ -33,7 +33,7 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
     def iterate_graph_nodes_and_exclude(self, list_of_nodes: list[ExclusionGraph], dict_of_codes: dict[str],
                                         icd10_metainfo: dict):
         for each_node in list_of_nodes:
-            if len(each_node.neighbors) != 0:
+            if len(each_node.neighbors) != 0 and each_node.vote >= 0:
                 selected_codes = self.get_no_selection_icd10_vote(each_node.code, each_node.neighbors, icd10_metainfo)
                 if selected_codes == 'left':
                     self.set_reset_voting([each_node.code], list_of_nodes, dict_of_codes)
