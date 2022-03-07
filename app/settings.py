@@ -113,14 +113,14 @@ class Settings:
     @staticmethod
     def set_scispacy_custom_knowledgebase_path(ann_index_path: str, tfidf_vectorizer_path: str, tfidf_vectors_path: str,
                                                concept_aliases_list_path: str):
-        CustomLinkerPaths_2021AB = LinkerPaths(
+        custom_linker_paths_2021AB = LinkerPaths(
             ann_index=ann_index_path,
             tfidf_vectorizer=tfidf_vectorizer_path,
             tfidf_vectors=tfidf_vectors_path,
             concept_aliases_list=concept_aliases_list_path,
         )
 
-        DEFAULT_PATHS["umls2021"] = CustomLinkerPaths_2021AB
+        DEFAULT_PATHS["umls2021"] = custom_linker_paths_2021AB
         DEFAULT_KNOWLEDGE_BASES["umls2021"] = UMLS2021KnowledgeBase
 
     @staticmethod
