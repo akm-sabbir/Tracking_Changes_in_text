@@ -1,23 +1,17 @@
 import json
-
 import os.path
-
 from typing import Dict
 
 from app.dto.core.umls_icd10_data import UMLSICD10Data
-
 from app.service.cui_to_icd10_service import CUItoICD10Service
-
 from mappings import mappings_base_path
 
 
 class CUItoICD10ServiceImpl(CUItoICD10Service):
 
     def __init__(self):
-
         self.cui_to_icd10_map: Dict[str, UMLSICD10Data] = {}
         data_path = os.path.join(mappings_base_path, "cui_to_icd10_mapping.json")
-
         with open(data_path) as json_file:
             umls_data = json.load(json_file)
             for cui in umls_data:
