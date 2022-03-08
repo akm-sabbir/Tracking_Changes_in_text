@@ -21,7 +21,7 @@ class TestPymetamapICD10AnnotationService(TestCase):
         concept1 = {"cui": "123", "mm": "MMI", "posInfo": "1/4;2/6", "score": "5.13"}
         concept2 = {"cui": "127", "mm": "MMI", "posInfo": "1/4", "score": "5.13"}
         concept3 = {"cui": "123", "mm": "MMI", "posInfo": "[6/1,8/2], [1/6,3/6]", "score": "5.13"}
-        concept4 = {"cui": "123", "mm": "MMI", "posInfo": "1/2,2/3", "score": "5.13"}
+        concept4 = {"cui": "123", "posInfo": "1/2,2/3", "score": "5.13"}
 
         mock_response = Mock()
         mock_response.json = Mock()
@@ -39,6 +39,7 @@ class TestPymetamapICD10AnnotationService(TestCase):
 
         result: List[ICD10AnnotationResult] = metamap_service.get_icd_10_codes("some text")
 
+        assert len(result) == 2
         assert result[0].medical_condition == "some"
         assert result[0].begin_offset == 0
         assert result[0].end_offset == 4
@@ -58,13 +59,6 @@ class TestPymetamapICD10AnnotationService(TestCase):
         assert result[1].suggested_codes[0].description == "concept"
         assert result[1].suggested_codes[0].score == 5.13
 
-        assert result[2].medical_condition == "some"
-        assert result[2].begin_offset == 0
-        assert result[2].end_offset == 4
-
-        assert result[2].suggested_codes[0].code == "R123.123"
-        assert result[2].suggested_codes[0].description == "concept"
-        assert result[2].suggested_codes[0].score == 5.13
 
     @patch("app.service.impl.pymetamap_icd10_annotator_service.DependencyInjector.get_instance")
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
