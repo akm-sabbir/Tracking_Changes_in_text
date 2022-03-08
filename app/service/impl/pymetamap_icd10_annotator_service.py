@@ -10,11 +10,6 @@ from app.util.dependency_injector import DependencyInjector
 from app.util.rest_client_util import RestClientUtil
 
 
-class MetamapRequest:
-    def __init__(self, text: str):
-        self.text: str = text
-
-
 class PymetamapICD10AnnotatorService(ICD10AnnotatorService):
 
     def __init__(self):
