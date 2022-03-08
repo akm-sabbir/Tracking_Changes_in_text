@@ -8,7 +8,7 @@ def mock_req_get(url, headers):
     return "get response returned"
 
 
-def mock_req_post(url, data):
+def mock_req_post(url, json):
     return "post response returned"
 
 
@@ -20,5 +20,5 @@ class TestRestClientUtil(TestCase):
 
     @patch("requests.post", mock_req_post)
     def test_rest_client_util_post_sync(self):
-        response = RestClientUtil.post_sync("some url", "req dto")
+        response = RestClientUtil.post_sync("some url", {"dto": "req dto"})
         assert response == "post response returned"

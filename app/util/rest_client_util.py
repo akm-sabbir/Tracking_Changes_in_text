@@ -10,5 +10,5 @@ class RestClientUtil:
 
     @staticmethod
     def post_sync(url: str, req_dto: dict) -> requests.Response:
-        response = requests.post(url=url, data=req_dto)
+        response = requests.post(url=url, json=req_dto)
         return response
