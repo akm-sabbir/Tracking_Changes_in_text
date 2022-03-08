@@ -21,8 +21,10 @@ class PymetamapICD10AnnotatorService(ICD10AnnotatorService):
         self.icd10_mapper_service: CUItoICD10ServiceImpl = DependencyInjector.get_instance(CUItoICD10ServiceImpl)
 
     def get_icd_10_codes(self, text: str) -> List:
-        response = RestClientUtil.post_sync(ConfigManager.get_specific_config("metamap", "service_url"), {'text': text})
-        return self._map_to_annotation_result_dto(text, response.json())
+        metamap_service_url = ConfigManager.get_specific_config("metamap", "service_url")
+        request_data = {'text': text}
+        metamap_response = RestClientUtil.post_sync(url=metamap_service_url, req_dto=request_data)
+        return self._map_to_annotation_result_dto(text, metamap_response.json())
 
     def _map_to_annotation_result_dto(self, text: str, concepts) -> List[ICD10AnnotationResult]:
         unique_concepts: Dict[str, ICD10AnnotationResult] = {}
