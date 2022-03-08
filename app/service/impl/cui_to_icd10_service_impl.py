@@ -16,7 +16,6 @@ class CUItoICD10ServiceImpl(CUItoICD10Service):
     def __init__(self):
 
         self.cui_to_icd10_map: Dict[str, UMLSICD10Data] = {}
-        self.icd10_data_map = {}
         data_path = os.path.join(mappings_base_path, "cui_to_icd10_mapping.json")
 
         with open(data_path) as json_file:
