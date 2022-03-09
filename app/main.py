@@ -12,6 +12,8 @@ from app.router import routers_base_path
 from app.util.config_manager import ConfigManager
 from app.util.import_util import ImportUtil
 from app.settings import Settings
+from data import data_base_path
+from data.scispacy_cache_for_itx.custom_datasets import scispacy_custom_dataset_path
 from sentiment_exclusion_list import sentiment_exclusion_list_folder_path
 
 app = FastAPI()
@@ -38,6 +40,31 @@ __caching_usage = ConfigManager.get_specific_config(section="caching_facility", 
 Settings.set_settings_use_cache(caching=bool(__caching_usage.lower() == "true"))
 # add routers
 Settings.start_initializing_smoker_detector()
+# scispacy custom dataset path
+ann_index_bin = ConfigManager.get_specific_config(section="scispacy_ann_index", key="ann_index")
+ann_index_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                           scispacy_custom_dataset_path),
+                              ann_index_bin)
+
+tfidf_vectorizer_file = ConfigManager.get_specific_config(section="scispacy_tfidf_vectorizer", key="tfidf_vectorizer")
+tfidf_vectorizer_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                                  scispacy_custom_dataset_path),
+                                     tfidf_vectorizer_file)
+
+tfidf_vectors_file = ConfigManager.get_specific_config(section="scispacy_tfidf_vectors", key="tfidf_vectors")
+tfidf_vectors_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                               scispacy_custom_dataset_path),
+                                  tfidf_vectors_file)
+
+concept_aliases_file = ConfigManager.get_specific_config(section="scispacy_concept_aliases_list",
+                                                         key="concept_aliases_list")
+concept_aliases_list_path = os.path.join(os.path.join(os.path.dirname(data_base_path),
+                                                      scispacy_custom_dataset_path),
+                                         concept_aliases_file)
+
+Settings.set_scispacy_custom_knowledgebase_path(ann_index_path, tfidf_vectorizer_path, tfidf_vectors_path,
+                                                concept_aliases_list_path)
+
 __exclusion_list_folder = ConfigManager.get_specific_config(section="exclusion", key="list_")
 __sentiment_exclusion_file_name = ConfigManager.get_specific_config(section="sentiment_exclusion", key="list_file_name")
 exclusion_list_ = os.path.join(os.path.join(os.path.dirname(app_base_path), __exclusion_list_folder),

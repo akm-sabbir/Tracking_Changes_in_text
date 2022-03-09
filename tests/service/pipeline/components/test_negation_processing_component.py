@@ -24,7 +24,6 @@ class TestNegationProcesingComponent(TestCase):
             eng_dict.insert_in(each_word, root)
         Settings.set_settings_dictionary(root)
         Settings.set_settings_tokenizer(English())
-        print("--- %s seconds ---" % (time.time() - start_time))
         component = NegationHandlingComponent()
         start_time = time.time()
         """
@@ -46,6 +45,5 @@ class TestNegationProcesingComponent(TestCase):
                                 SubjectiveSectionExtractorComponent: [SubjectiveText(test_data2, [])],
                                 MedicationSectionExtractorComponent: [MedicationText(test_data2, [])],
                                 })
-        print("--- %s seconds ---" % (time.time() - start_time))
 
         assert result[0].text.lower().find("no pain") != -1
