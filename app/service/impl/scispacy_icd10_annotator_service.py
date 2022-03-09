@@ -6,15 +6,19 @@ from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.icd10_annotator_service import ICD10AnnotatorService
 from app.service.impl.cui_to_icd10_service_impl import CUItoICD10ServiceImpl
+from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
 from scispacy.linking import EntityLinker # do not remove
 
 
 class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
-    def __init__(self, model_name: str, linker_name: str):
-        self.nlp = spacy.load(model_name)
+    def __init__(self):
+        self.__model_name = ConfigManager.get_specific_config("scispacy_umls_model_name", "umls_model_name")
+        self.__umls_linker_name = ConfigManager.get_specific_config("scispacy_umls_linker_name", "umls_linker_name")
 
-        self.nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": linker_name})
+        self.nlp = spacy.load(self.__model_name)
+
+        self.nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": self.__umls_linker_name})
         self.icd10_mapper_service: CUItoICD10ServiceImpl = DependencyInjector.get_instance(CUItoICD10ServiceImpl)
 
     def get_icd_10_codes(self, text: str) -> List[ICD10AnnotationResult]:

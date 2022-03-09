@@ -6,7 +6,7 @@ from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
 from app.service.impl.hcc_service_impl import HCCServiceImpl
-from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ICD10AnnotationComponent
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
@@ -14,7 +14,7 @@ from app.service.pipeline.components.note_preprocessing_component import NotePre
 
 
 class FilteredICD10ToHccAnnotationComponent(BasePipelineComponent):
-    DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent, ACMICD10AnnotationComponent,
+    DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent, ICD10AnnotationComponent,
                         ICD10AnnotationAlgoComponent]
 
     def __init__(self):

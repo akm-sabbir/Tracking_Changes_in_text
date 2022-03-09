@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
-from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
+from app.dto.core.pipeline.acm_icd10_response import ICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.pipeline.changed_word_annotation import ChangedWordAnnotation
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
@@ -10,7 +10,9 @@ from app.dto.pipeline.negation_component_result import NegationResult
 from app.dto.pipeline.subjective_section import SubjectiveText, SubjectiveSection
 from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
 from app.service.impl.icd10_positive_sentiment_exclusion_service_impl import ICD10SentimentExclusionServiceImpl
-from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.impl.pymetamap_icd10_annotator_service import PymetamapICD10AnnotatorService
+from app.service.impl.scispacy_icd10_annotator_service import ScispacyICD10AnnotatorService
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ICD10AnnotationComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
@@ -19,6 +21,7 @@ from app.service.pipeline.components.subjective_section_extractor_component impo
 
 class TestICD10AnnotationComponent(TestCase):
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.scispacy_icd10_annotator_service.spacy.load", Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     def test__run__should_return_correct_response__given_correct_input(self):
@@ -28,21 +31,30 @@ class TestICD10AnnotationComponent(TestCase):
         paragraph3 = Paragraph("medication text", 21, 30)
         paragraph4 = Paragraph("flurosemide some other text", 31, 40)
 
-        mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
+        mock_acm_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
+        mock_scispacy_icd10_service = Mock(ScispacyICD10AnnotatorService)
+        mock_metamap_icd10_service = Mock(PymetamapICD10AnnotatorService)
+
         mock_icd10_positive_sentiment_exclusion_service = Mock(ICD10SentimentExclusionServiceImpl)
-        icd10_annotation_component = ACMICD10AnnotationComponent()
+        icd10_annotation_component = ICD10AnnotationComponent()
 
         mock_save_item = Mock()
         mock_save_item.return_value = True
         mock_db_service = Mock()
         mock_db_service.save_item = mock_save_item
 
-        icd10_annotation_component._ACMICD10AnnotationComponent__icd10_annotation_service = mock_icd10_service
-        icd10_annotation_component._ACMICD10AnnotationComponent__icd10_positive_sentiment_exclusion_service = mock_icd10_positive_sentiment_exclusion_service
-        icd10_annotation_component._ACMICD10AnnotationComponent__db_service = mock_db_service
+        icd10_annotation_component._ICD10AnnotationComponent__icd10_annotation_service = mock_acm_icd10_service
+        icd10_annotation_component._ICD10AnnotationComponent__scispacy_annotation_service = mock_scispacy_icd10_service
+        icd10_annotation_component._ICD10AnnotationComponent__metamap_annotation_service = mock_metamap_icd10_service
+        icd10_annotation_component._ICD10AnnotationComponent__icd10_positive_sentiment_exclusion_service = mock_icd10_positive_sentiment_exclusion_service
+        icd10_annotation_component._ICD10AnnotationComponent__db_service = mock_db_service
 
-        mock_icd10_service.get_icd_10_codes = Mock()
-        mock_icd10_service.get_icd_10_codes.side_effect = self.__get_dummy_icd10_data()
+        mock_acm_icd10_service.get_icd_10_codes = Mock()
+        mock_acm_icd10_service.get_icd_10_codes.side_effect = self.__get_dummy_icd10_data()
+        mock_scispacy_icd10_service.get_icd_10_codes = Mock()
+        mock_scispacy_icd10_service.get_icd_10_codes.side_effect = self.__get_dummy_icd10_annotation_result()
+        mock_metamap_icd10_service.get_icd_10_codes = Mock()
+        mock_metamap_icd10_service.get_icd_10_codes.side_effect = self.__get_dummy_icd10_annotation_result()
 
         mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment = Mock()
         mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment.return_value = self.__get_dummy_icd10_annotation_result()
@@ -52,7 +64,7 @@ class TestICD10AnnotationComponent(TestCase):
 
         subjective_text = SubjectiveText(text, [section_1, section_2])
 
-        acm_result: ACMICD10Result = icd10_annotation_component.run(
+        acm_result: ICD10Result = icd10_annotation_component.run(
             {SectionExclusionServiceComponent: [],  # need to modify
              SubjectiveSectionExtractorComponent: [subjective_text],
              NotePreprocessingComponent: [[paragraph1, paragraph2], [paragraph3, paragraph4]],
@@ -65,9 +77,9 @@ class TestICD10AnnotationComponent(TestCase):
                                "Flurosemide": [ChangedWordAnnotation("flurosemide", "Flurosemide", 31, 40)]}})[0]
         calls = [call("some text"), call("pneumonia some other text")]
 
-        mock_icd10_service.get_icd_10_codes.assert_has_calls(calls)
+        mock_acm_icd10_service.get_icd_10_codes.assert_has_calls(calls)
 
-        assert mock_icd10_service.get_icd_10_codes.call_count == 2
+        assert mock_acm_icd10_service.get_icd_10_codes.call_count == 2
         icd10_result = acm_result.icd10_annotations
 
         assert acm_result.id == "123"
@@ -100,6 +112,7 @@ class TestICD10AnnotationComponent(TestCase):
         assert icd10_result[1].suggested_codes[1].score == 0.54
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
+    @patch("app.service.impl.scispacy_icd10_annotator_service.spacy.load", Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     def test__run__should_return_correct_response__given_correct_input_and_cached_data(self):
@@ -110,7 +123,7 @@ class TestICD10AnnotationComponent(TestCase):
         paragraph4 = Paragraph("flurosemide some other text", 31, 40)
 
         mock_icd10_service = Mock(AmazonICD10AnnotatorServiceImpl)
-        icd10_annotation_component = ACMICD10AnnotationComponent()
+        icd10_annotation_component = ICD10AnnotationComponent()
 
         mock_save_item = Mock()
         mock_save_item.return_value = True
@@ -125,8 +138,8 @@ class TestICD10AnnotationComponent(TestCase):
         dummy_data = self.__get_dummy_icd10_data()
         annotations = [item[1][0] for item in dummy_data]
         raw_acm_data = [item[0][0] for item in dummy_data]
-        dummy_result = ACMICD10Result("123", annotations, raw_acm_data)
-        acm_result: ACMICD10Result = icd10_annotation_component.run(
+        dummy_result = ICD10Result("123", annotations, raw_acm_data)
+        acm_result: ICD10Result = icd10_annotation_component.run(
             {
                 NegationHandlingComponent: [
                     paragraph1.text.replace("Tuberculosis", "tuberculosis") + "\n\n" + paragraph2.text,
@@ -173,8 +186,8 @@ class TestICD10AnnotationComponent(TestCase):
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
         icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
                                              score=0.54)
-        icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
-                                                          end_offset=24, is_negated=False,
+        icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=11,
+                                                          end_offset=15, is_negated=False,
                                                           suggested_codes=[icd10_annotation_1, icd10_annotation_2],
                                                           raw_acm_response={"data": "data"})
 
@@ -182,12 +195,12 @@ class TestICD10AnnotationComponent(TestCase):
         icd10_annotation_4 = ICD10Annotation(code="J12.89", description="Other viral pneumonia",
                                              score=0.45)
 
-        icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=11, end_offset=20,
+        icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=0, end_offset=7,
                                                           is_negated=True,
                                                           suggested_codes=[icd10_annotation_3, icd10_annotation_4],
                                                           raw_acm_response={"data": "data"})
 
-        return [icd10_annotation_result_1, icd10_annotation_result_2]
+        return [[icd10_annotation_result_1], [icd10_annotation_result_2]]
 
     def __get_dummy_icd10_data(self):
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)

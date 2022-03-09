@@ -12,6 +12,7 @@ from app.service.impl.scispacy_icd10_annotator_service import ScispacyICD10Annot
 
 
 class TestScispacyICD10AnnotatorService(TestCase):
+    @patch('app.service.impl.scispacy_icd10_annotator_service.ConfigManager.get_specific_config', Mock())
     @patch('app.service.impl.scispacy_icd10_annotator_service.spacy.load')
     @patch('app.service.impl.scispacy_icd10_annotator_service.DependencyInjector.get_instance')
     def test__get_icd_10_codes__should_return_correct_response__given_correct_input(self,
@@ -28,7 +29,7 @@ class TestScispacyICD10AnnotatorService(TestCase):
         mock_icd10_mapper.return_value = icd10_mapper_mock
         mock_nlp.return_value = self.__get_dummy_spacy_object()
 
-        scispacy_annotator: ICD10AnnotatorService = ScispacyICD10AnnotatorService("en_ner_bc5cdr_md", "umls2021")
+        scispacy_annotator: ICD10AnnotatorService = ScispacyICD10AnnotatorService()
 
         mock_icd10_codes = scispacy_annotator.get_icd_10_codes("Diabetes, heart attack.")
 
