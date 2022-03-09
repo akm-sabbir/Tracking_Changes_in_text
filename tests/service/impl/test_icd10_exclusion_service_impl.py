@@ -7,6 +7,7 @@ from app.util.icd_exclusions import ICDExclusions
 
 
 class MockedHCCEngine():
+
     def __init__(self, version: str):
         self.version = version
 
@@ -53,7 +54,8 @@ class TestHCCServiceImpl(TestCase):
                                   "A85": ["B262", "A872", "B258", "B004", "G933", "B020", "B100-", "B050", "A80-"]}
 
     def test_icd10_exclusion_service_to_get_response(self):
-        self.service = Icd10CodeExclusionServiceImpl(ICDExclusions(self.icd10_exclusion_dict))
+        exclusion_util = ICDExclusions(exclusions_json_dict=self.icd10_exclusion_dict)
+        self.service = Icd10CodeExclusionServiceImpl(exclusion_util)
         icd101 = Mock(ICD10MetaInfo)
         icd101.hcc_map = "HCC85"
         icd101.score = 0.80
@@ -100,7 +102,7 @@ class TestHCCServiceImpl(TestCase):
                  "A32": icd107}
         param = self.service.get_icd_10_code_exclusion_decision(param)
         assert param["A0531"].remove == True
-        assert param["A40421"].remove == True
+        assert param["A40421"].remove == False
         assert self.service.get_exclusion_list_hccmap(["A04"], param) is True
         assert self.service.get_exclusion_list_hccmap(["A852"], param) is False
         assert self.service.get_decision_on_choice(param, "A40421", ["A0531", "A852"])[0] == "A0531"

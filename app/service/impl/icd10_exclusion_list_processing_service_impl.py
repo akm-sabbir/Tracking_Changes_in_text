@@ -8,8 +8,8 @@ from app.util.icd_exclusions import ICDExclusions
 class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
     icd_exclusion_util: ICDExclusions
 
-    def __init__(self, exclusion_utility=None):
-        self.icd_exclusion_util = exclusion_utility
+    def __init__(self, icd_exclusion_utility=None):
+        self.icd_exclusion_util = icd_exclusion_utility
 
     def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict) -> dict:
         if self.icd_exclusion_util.exclusion_dictionary is None:
@@ -30,6 +30,7 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
             if meta_info.get(each_elem) is not None and len(meta_info.get(each_elem).hcc_map) != 0:
                 return True
         return False
+
 
     def __get_avg_acm_score(self, exclusion_list: list, icd10_metainfo: dict):
         scores = [icd10_metainfo[elem].score for elem in exclusion_list]
