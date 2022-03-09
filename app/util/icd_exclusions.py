@@ -27,6 +27,19 @@ class ICDExclusions:
                 if 1 <= len(re.findall(self.regex, each_data)) <= 2:
                     yield each_data
 
+    def extract_codes(self):
+        for key, value in self.exclusion_dictionary.items():
+            list_of_codes = []
+            for each_item in value:
+                for each_code in self.return_codes(each_item):
+                    list_of_codes.append(each_code)
+            if(len(list_of_codes) != 0):
+                print(each_item + ", extracted codes" + str(list_of_codes))
+            self.exclusion_dictionary[key] = list_of_codes
+        with open("exclusions_updated.json", "w") as outfile:
+            json.dump(self.exclusion_dictionary, outfile)
+        return
+
     def get_common_substring(self, string1, string2):
         common = os.path.commonprefix([string1, string2])
         return common

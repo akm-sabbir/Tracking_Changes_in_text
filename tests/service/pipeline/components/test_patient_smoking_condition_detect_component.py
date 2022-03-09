@@ -49,9 +49,6 @@ class Icd10SmokingPatternDetectionTest(TestCase):
     def test_5_run_should_return_bool(self):
         dummy_model_5 = DummySciSpacyModel()
         smoking_pattern_detect_comp = PatientSmokingConditionDetectionComponent(dummy_model_5.nlp_process)
-        text4 = "Was the patient queried about smoking behavior? Yes No\n" \
-                "Does the patient currently smoke? . (Hx)"
         text5 = "Does the patient currently smoke? Smoking: Patient smokes every day"
         _smoker: [PatientSmokingCondition] = smoking_pattern_detect_comp.run({"text": text5})
-        print(_smoker[0].isSmoker)
         assert _smoker[0].isSmoker == Smoker.DONT_KNOW
