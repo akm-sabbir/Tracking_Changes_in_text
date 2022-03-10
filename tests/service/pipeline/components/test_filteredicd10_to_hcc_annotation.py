@@ -1,18 +1,21 @@
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 from app.dto.core.patient_info import PatientInfo
+from app.dto.core.pipeline.acm_icd10_response import ICD10Result
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import \
+    ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
-from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 
 
 class TestFilteredICD10ToHccAnnotationComponent(TestCase):
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
     def test__run__should_return_correct_response__given_correct_input(self, mock_boto3):
         icd10_to_hcc_annotation_component = FilteredICD10ToHccAnnotationComponent()
-        params = {"patient_info": PatientInfo(70, "M"), ICD10AnnotationAlgoComponent: self.__get_dummy_icd10_data()}
+        params = {"patient_info": PatientInfo(70, "M"),
+                  ACMSciMetamapICD10AnnotationComponent: self.__get_dummy_icd10_data()}
         results = icd10_to_hcc_annotation_component.run(params)
 
         assert len(results[0].hcc_maps) == 2
@@ -40,5 +43,6 @@ class TestFilteredICD10ToHccAnnotationComponent(TestCase):
                                                           is_negated=True,
                                                           suggested_codes=[icd10_annotation_3, icd10_annotation_4,
                                                                            icd10_annotation_5])
-
-        return [icd10_annotation_result_1, icd10_annotation_result_2]
+        mock_result = Mock(ICD10Result)
+        mock_result.icd10_annotations = [icd10_annotation_result_1, icd10_annotation_result_2]
+        return [mock_result]

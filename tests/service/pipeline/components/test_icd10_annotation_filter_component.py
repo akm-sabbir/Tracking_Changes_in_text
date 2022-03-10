@@ -7,7 +7,7 @@ from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
-from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
@@ -30,7 +30,7 @@ class TestICD10AnnotationAlgoComponent(TestCase):
         mock_icd10_hcc_meta_info = Mock(Icd10HccMeta)
         mock_icd10_hcc_meta_info.hcc_annotation_response = mock_hcc_response
         params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold": 0.80,
-                  ICD10AnnotationComponent: [ICD10Result("1213", icd10_list, [{}])],
+                  ACMSciMetamapICD10AnnotationComponent: [ICD10Result("1213", icd10_list, [{}])],
                   CodeExclusionHandlingComponent: [ICD10Result("1213", icd10_list, [{}])],
                   ICD10ToHccAnnotationComponent: [mock_icd10_hcc_meta_info]}
         results = icd10_annotation_filter_component.run(params)
