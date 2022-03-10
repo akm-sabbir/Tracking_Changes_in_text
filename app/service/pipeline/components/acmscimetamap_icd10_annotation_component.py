@@ -21,12 +21,12 @@ from app.util.dependency_injector import DependencyInjector
 from app.util.icd_10_filter_util import ICD10FilterUtil
 
 
-class ICD10AnnotationComponent(BasePipelineComponent):
+class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
     DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent]
 
     def __init__(self):
         super().__init__()
-        self.__icd10_annotation_service: ICD10AnnotatorService = DependencyInjector.get_instance(
+        self.__acm_icd10_annotation_service: ICD10AnnotatorService = DependencyInjector.get_instance(
             AmazonICD10AnnotatorServiceImpl)
 
         self.__note_to_align: str = MedicalOntology.ICD10_CM.value
@@ -50,7 +50,7 @@ class ICD10AnnotationComponent(BasePipelineComponent):
         raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
             if not paragraph.text == "":
-                acm_data, acm_annotations = self.__icd10_annotation_service.get_icd_10_codes(paragraph.text)
+                acm_data, acm_annotations = self.__acm_icd10_annotation_service.get_icd_10_codes(paragraph.text)
                 raw_acm_data.extend(acm_data)
 
                 scispacy_predictions = self.__scispacy_annotation_service.get_icd_10_codes(paragraph.text)
