@@ -4,7 +4,7 @@ from app.dto.core.pipeline.acm_icd10_response import ICD10Result
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
-from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
@@ -15,7 +15,7 @@ from app.service.pipeline.components.icd10_exclusion_list_processing_component i
 
 class ICD10AnnotationAlgoComponent(BasePipelineComponent):
     DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent,
-                        ICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent]
+                        ACMSciMetamapICD10AnnotationComponent, ICD10ToHccAnnotationComponent, CodeExclusionHandlingComponent]
 
     def __init__(self):
         super().__init__()
@@ -23,7 +23,7 @@ class ICD10AnnotationAlgoComponent(BasePipelineComponent):
             DependencyInjector.get_instance(ICD10AnnotatorServiceWithFilterImpl)
 
     def run(self, annotation_results: dict) -> List[ICD10AnnotationResult]:
-        icd10_result: ICD10Result = annotation_results[ICD10AnnotationComponent]
+        icd10_result: ICD10Result = annotation_results[ACMSciMetamapICD10AnnotationComponent]
         icd10_annotation_result: List[ICD10AnnotationResult] = icd10_result[0].icd10_annotations
         hcc_result: HCCResponseDto = annotation_results[ICD10ToHccAnnotationComponent][0].hcc_annotation_response
         hcc_mapping: dict = hcc_result.hcc_maps

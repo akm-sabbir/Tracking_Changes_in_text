@@ -24,7 +24,6 @@ class ICD10SmokingPatternDecisionImpl(ICD10SmokingPatternDetection):
         text = text.replace(")", " ")
         text = text.replace("/", " ")
         line = self.smoker_parser.get_parsed_info(text=text)
-        print(line)
         if line != None:
             doc = self.nlp_algo(line.lower().strip())
             smoker = Smoker.DONT_KNOW
