@@ -22,6 +22,7 @@ from app.service.pipeline.components.subjective_section_extractor_component impo
 class TestICD10AnnotationComponent(TestCase):
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
     @patch("app.service.impl.scispacy_icd10_annotator_service.spacy.load", Mock())
+    @patch('app.service.impl.scispacy_icd10_annotator_service.termset', Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     def test__run__should_return_correct_response__given_correct_input(self):
@@ -114,6 +115,7 @@ class TestICD10AnnotationComponent(TestCase):
 
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3", Mock())
     @patch("app.service.impl.scispacy_icd10_annotator_service.spacy.load", Mock())
+    @patch('app.service.impl.scispacy_icd10_annotator_service.termset', Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     def test__run__should_return_correct_response__given_correct_input_and_cached_data(self):

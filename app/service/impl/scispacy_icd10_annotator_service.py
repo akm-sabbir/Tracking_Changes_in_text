@@ -2,13 +2,17 @@ from typing import List
 
 import spacy
 
+from negspacy.termsets import termset
+
+from app.dto.core.negation_patterns import NegationPatterns
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.icd10_annotator_service import ICD10AnnotatorService
 from app.service.impl.cui_to_icd10_service_impl import CUItoICD10ServiceImpl
 from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
-from scispacy.linking import EntityLinker # do not remove
+from scispacy.linking import EntityLinker  # do not remove
+from app.util.negation_sentence_segmentation import set_custom_boundaries # do not remove
 
 
 class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
@@ -18,7 +22,19 @@ class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
 
         self.nlp = spacy.load(self.__model_name)
 
-        self.nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True, "linker_name": self.__umls_linker_name})
+        self.nlp.add_pipe("scispacy_linker", config={"resolve_abbreviations": True,
+                                                     "linker_name": self.__umls_linker_name})
+
+        # For negation
+        self.nlp.add_pipe('set_custom_boundaries', before="parser")
+
+        clinical_termset = termset("en_clinical")
+        clinical_termset.add_patterns({
+            "preceding_negations": NegationPatterns.PRECEDING_NEGATIONS.value,
+            "following_negations": NegationPatterns.FOLLOWING_NEGATIONS.value,
+        })
+        self.nlp.add_pipe("negex", config={"neg_termset": clinical_termset.get_patterns()})
+
         self.icd10_mapper_service: CUItoICD10ServiceImpl = DependencyInjector.get_instance(CUItoICD10ServiceImpl)
 
     def get_icd_10_codes(self, text: str) -> List[ICD10AnnotationResult]:
@@ -36,5 +52,6 @@ class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
     def _map_to_annotation_result_dto(self, entities: tuple) -> List[ICD10AnnotationResult]:
         return [ICD10AnnotationResult(medical_condition=entity.text,
                                       begin_offset=entity.start_char, end_offset=entity.end_char,
-                                      is_negated=False, suggested_codes=self._map_cui_to_icd10_code(entity._.kb_ents))
+                                      is_negated=True if entity._.negex is True else False,
+                                      suggested_codes=self._map_cui_to_icd10_code(entity._.kb_ents))
                 for entity in entities if entity._.kb_ents]
