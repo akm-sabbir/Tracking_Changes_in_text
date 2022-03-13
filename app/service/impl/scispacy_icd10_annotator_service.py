@@ -52,6 +52,6 @@ class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
     def _map_to_annotation_result_dto(self, entities: tuple) -> List[ICD10AnnotationResult]:
         return [ICD10AnnotationResult(medical_condition=entity.text,
                                       begin_offset=entity.start_char, end_offset=entity.end_char,
-                                      is_negated=True if entity._.negex is True else False,
+                                      is_negated=entity._.negex,
                                       suggested_codes=self._map_cui_to_icd10_code(entity._.kb_ents))
                 for entity in entities if entity._.kb_ents]
