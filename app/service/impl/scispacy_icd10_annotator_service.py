@@ -28,12 +28,12 @@ class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
         # For negation
         self.nlp.add_pipe('set_custom_boundaries', before="parser")
 
-        clinical_termset = termset("en_clinical")
-        clinical_termset.add_patterns({
+        self.__clinical_termset = termset("en_clinical")
+        self.__clinical_termset.add_patterns({
             "preceding_negations": NegationPatterns.PRECEDING_NEGATIONS.value,
             "following_negations": NegationPatterns.FOLLOWING_NEGATIONS.value,
         })
-        self.nlp.add_pipe("negex", config={"neg_termset": clinical_termset.get_patterns()})
+        self.nlp.add_pipe("negex", config={"neg_termset": self.__clinical_termset.get_patterns()})
 
         self.icd10_mapper_service: CUItoICD10ServiceImpl = DependencyInjector.get_instance(CUItoICD10ServiceImpl)
 
