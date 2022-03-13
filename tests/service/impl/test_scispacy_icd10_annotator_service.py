@@ -64,11 +64,13 @@ class TestScispacyICD10AnnotatorService(TestCase):
         dummy_entity1.start_char = 0
         dummy_entity1.end_char = 12
         dummy_entity1._.kb_ents = [('CUI124012', 0.67), ('CUI125012', 0.97)]
+        dummy_entity1._.negex = True
 
         dummy_entity2 = Mock(spacy.tokens.span.Span)
         dummy_entity2.text = "some entity 2"
         dummy_entity2.start_char = 14
         dummy_entity2.end_char = 25
         dummy_entity2._.kb_ents = [('CUI124012', 0.67), ('CUI125012', 0.97)]
+        dummy_entity2._.negex = False
 
         return (dummy_entity1, dummy_entity2)
