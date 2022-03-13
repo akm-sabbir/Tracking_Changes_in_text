@@ -76,4 +76,8 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
                                                                            annotation_results)
 
         self.__db_service.save_item(result)
+
+        #exclude negated
+        result.icd10_annotations = [annotation for annotation in result.icd10_annotations if
+                                    annotation.is_negated is False]
         return [result]
