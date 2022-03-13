@@ -197,7 +197,7 @@ class TestICD10AnnotationComponent(TestCase):
                                              score=0.45)
 
         icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=0, end_offset=7,
-                                                          is_negated=True,
+                                                          is_negated=False,
                                                           suggested_codes=[icd10_annotation_3, icd10_annotation_4],
                                                           raw_acm_response={"data": "data"})
 
@@ -217,7 +217,7 @@ class TestICD10AnnotationComponent(TestCase):
                                              score=0.45)
 
         icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=0, end_offset=7,
-                                                          is_negated=True,
+                                                          is_negated=False,
                                                           suggested_codes=[icd10_annotation_3, icd10_annotation_4],
                                                           raw_acm_response={"data": "data"})
 
