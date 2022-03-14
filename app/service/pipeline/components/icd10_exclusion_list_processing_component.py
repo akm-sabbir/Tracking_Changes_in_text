@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import List
 
-from app.dto.core.pipeline.acm_icd10_response import ICD10Result
+from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto

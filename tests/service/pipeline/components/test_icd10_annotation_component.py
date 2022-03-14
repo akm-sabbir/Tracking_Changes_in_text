@@ -1,7 +1,7 @@
 from unittest import TestCase
 from unittest.mock import Mock, call, patch
 
-from app.dto.core.pipeline.acm_icd10_response import ICD10Result
+from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.pipeline.changed_word_annotation import ChangedWordAnnotation
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
