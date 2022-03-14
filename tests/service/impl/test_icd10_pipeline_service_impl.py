@@ -5,7 +5,7 @@ from unittest.mock import Mock, patch
 
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
 from app.dto.core.patient_info import PatientInfo
-from app.dto.core.pipeline.acm_icd10_response import ICD10Result
+from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.dummy_component_one_result import DummyComponentOneResult
 from app.dto.pipeline.dummy_component_two_result import DummyComponentTwoResult

@@ -1,7 +1,7 @@
 from typing import List, Dict
 
 from app.dto.core.medical_ontology import MedicalOntology
-from app.dto.core.pipeline.acm_icd10_response import ICD10Result
+from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.icd10_annotator_service import ICD10AnnotatorService
