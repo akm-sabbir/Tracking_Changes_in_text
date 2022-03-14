@@ -2,9 +2,13 @@ from unittest import TestCase
 from unittest.mock import patch, Mock, call
 
 from app.dto.core.pipeline.paragraph import Paragraph
+from app.dto.pipeline.medication_section import MedicationText
+from app.dto.pipeline.subjective_section import SubjectiveText
+from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.dto.pipeline.negation_component_result import NegationResult
+from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 
 
 class TestNotePreprocessingComponent(TestCase):
@@ -20,8 +24,8 @@ class TestNotePreprocessingComponent(TestCase):
         mock_break_into_paragraphs.return_value = mock_return_value
         result = component.run({"text": "some text.\n\nSome other text. medication text.\n\nSome other medication.",
                                 'acm_cached_result': None,
-                                NegationHandlingComponent: [NegationResult("some text.\n\nSome other text."),
-                                                            NegationResult("medication text.\n\nSome other medication.")]})
+                                SubjectiveSectionExtractorComponent: [SubjectiveText("some text.\n\nSome other text.", [])],
+                                MedicationSectionExtractorComponent: [MedicationText("medication text.\n\nSome other medication.", [])]})
         assert result[0] == mock_return_value
         assert result[1] == mock_return_value
 
