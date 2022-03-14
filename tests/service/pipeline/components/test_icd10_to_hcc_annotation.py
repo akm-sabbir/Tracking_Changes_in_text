@@ -1,10 +1,10 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
-from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
+from app.dto.core.pipeline.acm_icd10_response import ICD10Result
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
-from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
@@ -19,7 +19,7 @@ class TestICD10ToHccAnnotationComponent(TestCase):
             Mock(ICD10AnnotatorServiceWithFilterImpl)
 
         params = {"dx_threshold": 0.9, "icd10_threshold": 0.67, "parent_threshold": 0.80,
-                  ACMICD10AnnotationComponent: [ACMICD10Result("123", self.__get_dummy_icd10_data(), [{}])]
+                  ACMSciMetamapICD10AnnotationComponent: [ICD10Result("123", self.__get_dummy_icd10_data(), [{}])]
                   }
         results: list[Icd10HccMeta] = icd10_to_hcc_annotation_component.run(params)
 

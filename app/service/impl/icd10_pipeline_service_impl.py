@@ -5,14 +5,14 @@ from functools import partial
 from munch import munchify
 
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
-from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
+from app.dto.core.pipeline.acm_icd10_response import ICD10Result
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.dto.pipeline.smoker_condition import PatientSmokingCondition
 from app.service.icd10_pipeline_service import ICD10PipelineService
 from app.service.impl.dynamo_db_service import DynamoDbService
-from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.acm_rxnorm_annotation_component import ACMRxNormAnnotationComponent
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
@@ -36,10 +36,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                       SectionExclusionServiceComponent(),
                                       SubjectiveSectionExtractorComponent(), MedicationSectionExtractorComponent(),
                                       NegationHandlingComponent(), NotePreprocessingComponent(),
-                                      ACMICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
-                                      ICD10ToHccAnnotationComponent(),
-                                      CodeExclusionHandlingComponent(),
-                                      ICD10AnnotationAlgoComponent(),
+                                      ACMSciMetamapICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
                                       FilteredICD10ToHccAnnotationComponent()]
 
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)
@@ -68,9 +65,9 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
 
         pipeline_result = await asyncio.get_running_loop().run_in_executor(None, run_pipeline_func)
 
-        icd10_annotations: List[ICD10AnnotationResult] = pipeline_result[ICD10AnnotationAlgoComponent]
+        icd10_annotations: List[ICD10AnnotationResult] = pipeline_result[ACMSciMetamapICD10AnnotationComponent][0].icd10_annotations
         hcc_maps: HCCResponseDto = pipeline_result[FilteredICD10ToHccAnnotationComponent][0]
-        acm_annotation_result: ACMICD10Result = pipeline_result[ACMICD10AnnotationComponent][0]
+        acm_annotation_result: ICD10Result = pipeline_result[ACMSciMetamapICD10AnnotationComponent][0]
         smoking_condition: PatientSmokingCondition = pipeline_result[PatientSmokingConditionDetectionComponent][0]
 
         return ICD10AnnotationResponse(

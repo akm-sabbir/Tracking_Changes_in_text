@@ -24,7 +24,7 @@ class PymetamapICD10AnnotatorService(ICD10AnnotatorService):
     def _map_to_annotation_result_dto(self, text: str, concepts) -> List[ICD10AnnotationResult]:
         unique_concepts: Dict[str, ICD10AnnotationResult] = {}
         for concept in concepts:
-            if "mm" not in concept:
+            if "mm" not in concept:  # check if ConceptMMI object
                 continue
             icd10_data = self.icd10_mapper_service.get_umls_data_from_cui(concept["cui"])
             if icd10_data.icd10 == "":
@@ -60,10 +60,11 @@ class PymetamapICD10AnnotatorService(ICD10AnnotatorService):
             end_position = int(end_position_info.split("/")[0]) + int(end_position_info.split("/")[1]) - 1
 
             medical_condition = text[start_position:end_position]
+            negation = True if '0' not in re.findall(r"[0-1](?=[],])", concept["trigger"]) else False
 
             icd10_annotation_result = ICD10AnnotationResult(medical_condition=medical_condition,
                                                             begin_offset=start_position, end_offset=end_position,
-                                                            is_negated=False, suggested_codes=icd10_annotations)
+                                                            is_negated=negation, suggested_codes=icd10_annotations)
 
             unique_concepts[position_string] = icd10_annotation_result
         return list(unique_concepts.values())

@@ -1,13 +1,13 @@
 from typing import List
 
-from app.dto.core.pipeline.acm_icd10_response import ACMICD10Result
+from app.dto.core.pipeline.acm_icd10_response import ICD10Result
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.pipeline.icd10_meta_info import ICD10MetaInfo
 from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
 from app.service.impl.hcc_service_impl import HCCServiceImpl
-from app.service.pipeline.components.acm_icd10_annotation_component import ACMICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
@@ -15,15 +15,15 @@ from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
 
 
 class ICD10ToHccAnnotationComponent(BasePipelineComponent):
-    DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent, ACMICD10AnnotationComponent]
+    DEPENDS_ON: List = [NegationHandlingComponent, NotePreprocessingComponent, ACMSciMetamapICD10AnnotationComponent]
 
     def __init__(self):
         super().__init__()
         self.__hcc_service: HCCService = HCCServiceImpl()
 
     def run(self, annotation_results: dict) -> List[Icd10HccMeta]:
-        acm_result: List[ACMICD10Result] = annotation_results[ACMICD10AnnotationComponent]
-        annotated_list: List[ICD10AnnotationResult] = acm_result[0].icd10_annotations
+        icd10_result: List[ICD10Result] = annotation_results[ACMSciMetamapICD10AnnotationComponent]
+        annotated_list: List[ICD10AnnotationResult] = icd10_result[0].icd10_annotations
         all_icd10_annotations = []
         icd10_metadata_map = dict()
         for annotation_entity in annotated_list:

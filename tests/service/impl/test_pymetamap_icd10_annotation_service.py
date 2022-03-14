@@ -18,10 +18,13 @@ class TestPymetamapICD10AnnotationService(TestCase):
         mock_config_manager.return_value = "some url"
         icd10_mapper_mock = Mock()
 
-        concept1 = {"cui": "123", "mm": "MMI", "posInfo": "1/4;2/6", "score": "5.13"}
-        concept2 = {"cui": "127", "mm": "MMI", "posInfo": "1/4", "score": "5.13"}
-        concept3 = {"cui": "123", "mm": "MMI", "posInfo": "[6/1,8/2], [1/6,3/6]", "score": "5.13"}
-        concept4 = {"cui": "123", "posInfo": "1/2,2/3", "score": "5.13"}
+        concept1 = {"cui": "123", "mm": "MMI", "posInfo": "1/4;2/6", "score": "5.13",
+                    "trigger": '["Isopod"-ab-1-"isopod"-adj-1]'}
+        concept2 = {"cui": "127", "mm": "MMI", "posInfo": "1/4", "score": "5.13",
+                    "trigger": '["Isopod"-ab-1-"isopod"-adj-1]'}
+        concept3 = {"cui": "123", "mm": "MMI", "posInfo": "[6/1,8/2], [1/6,3/6]", "score": "5.13",
+                    "trigger": '["Isopod"-ab-1-"isopod"-adj-0]'}
+        concept4 = {"cui": "123", "posInfo": "1/2,2/3", "score": "5.13", "trigger": '["Isopod"-ab-1-"isopod"-adj-1]'}
 
         mock_response = Mock()
         mock_response.json = Mock()
@@ -43,6 +46,7 @@ class TestPymetamapICD10AnnotationService(TestCase):
         assert result[0].medical_condition == "some"
         assert result[0].begin_offset == 0
         assert result[0].end_offset == 4
+        assert result[0].is_negated is True
 
         assert result[0].suggested_codes[0].code == "R123.123"
         assert result[0].suggested_codes[0].description == "concept"
@@ -55,10 +59,11 @@ class TestPymetamapICD10AnnotationService(TestCase):
         assert result[1].medical_condition == "text"
         assert result[1].begin_offset == 5
         assert result[1].end_offset == 9
+        assert result[0].is_negated is True
+
         assert result[1].suggested_codes[0].code == "R123.123"
         assert result[1].suggested_codes[0].description == "concept"
         assert result[1].suggested_codes[0].score == 5.13
-
 
     @patch("app.service.impl.pymetamap_icd10_annotator_service.DependencyInjector.get_instance")
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
