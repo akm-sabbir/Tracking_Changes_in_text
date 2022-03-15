@@ -2,7 +2,7 @@ from unittest import TestCase
 from unittest.mock import patch, Mock
 
 from app.dto.core.patient_info import PatientInfo
-from app.dto.core.pipeline.acm_icd10_response import ICD10Result
+from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import \
