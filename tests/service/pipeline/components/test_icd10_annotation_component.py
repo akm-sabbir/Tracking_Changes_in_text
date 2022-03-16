@@ -12,7 +12,8 @@ from app.service.impl.amazon_icd10_annotator_service import AmazonICD10Annotator
 from app.service.impl.icd10_positive_sentiment_exclusion_service_impl import ICD10SentimentExclusionServiceImpl
 from app.service.impl.pymetamap_icd10_annotator_service import PymetamapICD10AnnotatorService
 from app.service.impl.scispacy_icd10_annotator_service import ScispacyICD10AnnotatorService
-from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import \
+    ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
@@ -25,7 +26,8 @@ class TestICD10AnnotationComponent(TestCase):
     @patch('app.service.impl.scispacy_icd10_annotator_service.termset', Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
-    @patch("app.service.pipeline.components.acmscimetamap_icd10_annotation_component.SpanMergerUtil.get_icd_10_codes_with_relevant_spans")
+    @patch(
+        "app.service.pipeline.components.acmscimetamap_icd10_annotation_component.SpanMergerUtil.get_icd_10_codes_with_relevant_spans")
     def test__run__should_return_correct_response__given_correct_input(self, mock_span_util: Mock):
         paragraph1 = Paragraph("some text", 0, 10)
         paragraph2 = Paragraph("pneumonia some other text", 11, 20)
@@ -60,8 +62,9 @@ class TestICD10AnnotationComponent(TestCase):
 
         dummy_icd10_result = self.__get_dummy_icd10_annotation_result()
         mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment = Mock()
-        mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment.return_value = [dummy_icd10_result[0][0], dummy_icd10_result[1][0]]
-        mock_span_util.side_effect = self.__get_dummy_icd10_annotation_result()
+        mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment.return_value = [
+            dummy_icd10_result[0][0], dummy_icd10_result[1][0]]
+        mock_span_util.side_effect = self.__mock_span_util_side_effect
         text = paragraph1.text + paragraph2.text
         section_1 = SubjectiveSection(paragraph1.text, 90, 100, 0, 30)
         section_2 = SubjectiveSection(paragraph2.text, 200, 209, 60, 100)
@@ -227,3 +230,7 @@ class TestICD10AnnotationComponent(TestCase):
 
         return [([{"raw_data": "data1"}], [icd10_annotation_result_1]),
                 ([{"raw_data": "data2"}], [icd10_annotation_result_2])]
+
+    @staticmethod
+    def __mock_span_util_side_effect(icd10_annotations, no_of_components_in_algorithm, medant_note):
+        return icd10_annotations
