@@ -66,11 +66,8 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
                     annotation.end_offset += paragraph.start_index
                 icd10_annotation_results += annotations
 
-        merge_overlapped_icd10_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(
-            icd10_annotation_results, self.__no_of_components_in_icd10_algorithm)
-
         filtered_icd10_annotations_from_sentiment = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
-            merge_overlapped_icd10_annotations)
+            icd10_annotation_results)
 
         filtered_icd10_annotations_from_excluded_sections = ICD10FilterUtil.get_filtered_annotations_based_on_excluded_sections(
             filtered_icd10_annotations_from_sentiment, annotation_results[SectionExclusionServiceComponent]
@@ -86,5 +83,10 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
                                     annotation.is_negated is False]
 
         self.__db_service.save_item(result)
+
+        # merge the spans
+        result.icd10_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(
+            result.icd10_annotations, self.__no_of_components_in_icd10_algorithm
+        )
 
         return [result]

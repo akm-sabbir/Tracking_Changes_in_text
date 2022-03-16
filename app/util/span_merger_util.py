@@ -22,7 +22,7 @@ class SpanMergerUtil:
 
             current_components_taken = 1
 
-            while current_components_taken <= no_of_components_in_algorithm:
+            while current_components_taken < no_of_components_in_algorithm:
                 if current_index + current_components_taken < len(icd10_annotations) \
                         and icd10_annotation.begin_offset <= icd10_annotations[
                     current_index + current_components_taken].begin_offset <= end_offset:
