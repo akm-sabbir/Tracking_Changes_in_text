@@ -84,7 +84,7 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
 
         # merge the spans
         result.icd10_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(
-            result.icd10_annotations, self.__no_of_components_in_icd10_algorithm
+            result.icd10_annotations, self.__no_of_components_in_icd10_algorithm, annotation_results["text"]
         )
 
         self.__db_service.save_item(result)

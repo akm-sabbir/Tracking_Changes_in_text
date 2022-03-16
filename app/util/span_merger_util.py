@@ -7,7 +7,7 @@ from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 class SpanMergerUtil:
     @staticmethod
     def get_icd_10_codes_with_relevant_spans(icd10_annotations: List[ICD10AnnotationResult],
-                                             no_of_components_in_algorithm: int) -> List[ICD10AnnotationResult]:
+                                             no_of_components_in_algorithm: int, medant_note: str) -> List[ICD10AnnotationResult]:
         results: List[ICD10AnnotationResult] = []
 
         icd10_annotations.sort(key=lambda x: x.begin_offset)
@@ -45,6 +45,7 @@ class SpanMergerUtil:
                     break
 
             icd10_annotation.end_offset = end_offset
+            icd10_annotation.medical_condition = medant_note[icd10_annotation.begin_offset: end_offset]
             icd10_annotation.suggested_codes = suggested_codes
 
             results.append(icd10_annotation)
