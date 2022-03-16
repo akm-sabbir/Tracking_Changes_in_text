@@ -19,6 +19,7 @@ from app.util.annotations_alignment_util import AnnotationAlignmentUtil
 from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
 from app.util.icd_10_filter_util import ICD10FilterUtil
+from app.util.span_merger_util import SpanMergerUtil
 
 
 class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
@@ -63,8 +64,11 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
                     annotation.end_offset += paragraph.start_index
                 icd10_annotation_results += annotations
 
+        merged_overlapped_icd10_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(
+            icd10_annotation_results, 3)
+
         filtered_icd10_annotations_from_sentiment = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
-            icd10_annotation_results)
+            merged_overlapped_icd10_annotations)
 
         filtered_icd10_annotations_from_excluded_sections = ICD10FilterUtil.get_filtered_annotations_based_on_excluded_sections(
             filtered_icd10_annotations_from_sentiment, annotation_results[SectionExclusionServiceComponent]
@@ -78,6 +82,6 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         self.__db_service.save_item(result)
 
         #exclude negated
-        result.icd10_annotations = [annotation for annotation in result.icd10_annotations if
-                                    annotation.is_negated is False]
+        # result.icd10_annotations = [annotation for annotation in result.icd10_annotations if
+        #                             annotation.is_negated is False]
         return [result]
