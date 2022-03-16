@@ -1,5 +1,6 @@
 from typing import List, Dict
 
+from app.dto.core.icd10_algorithm_constants import ICD10Algorithm
 from app.dto.core.medical_ontology import MedicalOntology
 from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
@@ -19,6 +20,7 @@ from app.util.annotations_alignment_util import AnnotationAlignmentUtil
 from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
 from app.util.icd_10_filter_util import ICD10FilterUtil
+from app.util.span_merger_util import SpanMergerUtil
 
 
 class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
@@ -30,6 +32,7 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
             AmazonICD10AnnotatorServiceImpl)
 
         self.__note_to_align: str = MedicalOntology.ICD10_CM.value
+        self.__no_of_components_in_icd10_algorithm = ICD10Algorithm.NO_OF_COMPONENTS.value
 
         self.__icd10_positive_sentiment_exclusion_service: ICD10SentimentExclusionService = DependencyInjector.get_instance(
             ICD10SentimentExclusionServiceImpl)
@@ -75,9 +78,14 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
                                                                            annotation_results)
 
-        #exclude negated
+        # exclude negated
         result.icd10_annotations = [annotation for annotation in result.icd10_annotations if
                                     annotation.is_negated is False]
+
+        # merge the spans
+        result.icd10_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(
+            result.icd10_annotations, self.__no_of_components_in_icd10_algorithm
+        )
 
         self.__db_service.save_item(result)
 
