@@ -79,9 +79,10 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
                                                                            annotation_results)
 
+        # exclude negated
+        result.icd10_annotations = [annotation for annotation in result.icd10_annotations if
+                                    annotation.is_negated is False]
+
         self.__db_service.save_item(result)
 
-        #exclude negated
-        # result.icd10_annotations = [annotation for annotation in result.icd10_annotations if
-        #                             annotation.is_negated is False]
         return [result]

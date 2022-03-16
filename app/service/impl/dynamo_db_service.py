@@ -19,7 +19,6 @@ class DynamoDbService(DBService):
             self.dynamodb = boto3.resource('dynamodb')
         self.table = self.dynamodb.Table(table_name)
 
-    @lru_cache(maxsize=1024)
     def get_item(self, item_id: Any):
         try:
             response = self.table.query(
