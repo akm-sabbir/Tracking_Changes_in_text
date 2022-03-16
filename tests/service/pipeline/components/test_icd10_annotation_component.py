@@ -25,7 +25,8 @@ class TestICD10AnnotationComponent(TestCase):
     @patch('app.service.impl.scispacy_icd10_annotator_service.termset', Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
-    def test__run__should_return_correct_response__given_correct_input(self):
+    @patch("app.service.pipeline.components.acmscimetamap_icd10_annotation_component.SpanMergerUtil.get_icd_10_codes_with_relevant_spans")
+    def test__run__should_return_correct_response__given_correct_input(self, mock_span_util: Mock):
         paragraph1 = Paragraph("some text", 0, 10)
         paragraph2 = Paragraph("pneumonia some other text", 11, 20)
 
@@ -60,6 +61,7 @@ class TestICD10AnnotationComponent(TestCase):
         dummy_icd10_result = self.__get_dummy_icd10_annotation_result()
         mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment = Mock()
         mock_icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment.return_value = [dummy_icd10_result[0][0], dummy_icd10_result[1][0]]
+        mock_span_util.side_effect = self.__get_dummy_icd10_annotation_result()
         text = paragraph1.text + paragraph2.text
         section_1 = SubjectiveSection(paragraph1.text, 90, 100, 0, 30)
         section_2 = SubjectiveSection(paragraph2.text, 200, 209, 60, 100)
@@ -70,7 +72,7 @@ class TestICD10AnnotationComponent(TestCase):
             {SectionExclusionServiceComponent: [],  # need to modify
              SubjectiveSectionExtractorComponent: [subjective_text],
              NotePreprocessingComponent: [[paragraph1, paragraph2], [paragraph3, paragraph4]],
-             "acm_cached_result": None, "id": "123",
+             "acm_cached_result": None, "id": "123", "text": "abcd",
              NegationHandlingComponent: [
                  NegationResult(paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia")),
                  NegationResult(paragraph3.text + "\n\n" + paragraph4.text.replace("flurosemide", "Flurosemide")),

@@ -1,3 +1,5 @@
+import string
+import random
 from typing import List
 from unittest import TestCase
 
@@ -11,8 +13,13 @@ class TestSpanMergerUtil(TestCase):
         mock_icd10_annotations = self.__get_dummy_icd10_annotation_result()
         no_of_components_in_algorithm = 3
 
+        # printing lowercase
+        letters = string.ascii_lowercase
+        mock_medant_note = ''.join(random.choice(letters) for _ in range(1000))
+
         icd10_filtered_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(mock_icd10_annotations,
-                                                                                         no_of_components_in_algorithm)
+                                                                                         no_of_components_in_algorithm,
+                                                                                         mock_medant_note)
 
 
         assert icd10_filtered_annotations[0].begin_offset == 0
@@ -30,6 +37,11 @@ class TestSpanMergerUtil(TestCase):
         assert icd10_filtered_annotations[3].suggested_codes[0].code == 'A15.0'
         assert icd10_filtered_annotations[3].suggested_codes[1].code == 'J12.89'
         assert icd10_filtered_annotations[3].suggested_codes[2].code == 'A15.9'
+
+        assert icd10_filtered_annotations[0].medical_condition == mock_medant_note[0:7]
+        assert icd10_filtered_annotations[1].medical_condition == mock_medant_note[8:10]
+        assert icd10_filtered_annotations[2].medical_condition == mock_medant_note[50:130]
+        assert icd10_filtered_annotations[3].medical_condition == mock_medant_note[300:900]
 
 
     def __get_dummy_icd10_annotation_result(self) -> List[ICD10AnnotationResult]:
@@ -109,6 +121,6 @@ class TestSpanMergerUtil(TestCase):
                                                           suggested_codes=[icd10_annotation_15, icd10_annotation_16],
                                                           raw_acm_response={"data": "data"})
 
-        return [icd10_annotation_result_1, icd10_annotation_result_2, icd10_annotation_result_3,
-                icd10_annotation_result_4, icd10_annotation_result_5, icd10_annotation_result_6,
-                icd10_annotation_result_7, icd10_annotation_result_8]
+        return [icd10_annotation_result_1, icd10_annotation_result_2, icd10_annotation_result_3, # 300 - 500, 360 - 600, 370 - 700
+                icd10_annotation_result_4, icd10_annotation_result_5, icd10_annotation_result_6, # 300 - 500, 360 - 600, 550 - 700
+                icd10_annotation_result_7, icd10_annotation_result_8] # 0 - 7, 8 - 10
