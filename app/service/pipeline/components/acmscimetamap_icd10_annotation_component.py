@@ -1,5 +1,6 @@
 from typing import List, Dict
 
+from app.dto.core.icd10_algorithm_constants import ICD10Algorithm
 from app.dto.core.medical_ontology import MedicalOntology
 from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
@@ -31,6 +32,7 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
             AmazonICD10AnnotatorServiceImpl)
 
         self.__note_to_align: str = MedicalOntology.ICD10_CM.value
+        self.__no_of_components_in_icd10_algorithm = ICD10Algorithm.NO_OF_COMPONENTS.value
 
         self.__icd10_positive_sentiment_exclusion_service: ICD10SentimentExclusionService = DependencyInjector.get_instance(
             ICD10SentimentExclusionServiceImpl)
@@ -64,11 +66,11 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
                     annotation.end_offset += paragraph.start_index
                 icd10_annotation_results += annotations
 
-        merged_overlapped_icd10_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(
-            icd10_annotation_results, 3)
+        merge_overlapped_icd10_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(
+            icd10_annotation_results, self.__no_of_components_in_icd10_algorithm)
 
         filtered_icd10_annotations_from_sentiment = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
-            merged_overlapped_icd10_annotations)
+            merge_overlapped_icd10_annotations)
 
         filtered_icd10_annotations_from_excluded_sections = ICD10FilterUtil.get_filtered_annotations_based_on_excluded_sections(
             filtered_icd10_annotations_from_sentiment, annotation_results[SectionExclusionServiceComponent]
