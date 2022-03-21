@@ -14,7 +14,7 @@ class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
 
     def get_icd_10_codes(self, text: str) -> Tuple[List[Dict], List[ICD10AnnotationResult]]:
         try:
-            result = self.__client.infer_icd10_cm(Text=text)
+            result = self.__client.infer_icd10_cm(Text=text.lower())
         except Exception:
             raise ServiceException(message="Error getting ICD10 annotation from ACM")
         icd_10_entities = result['Entities']

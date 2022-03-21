@@ -53,7 +53,7 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
             if not paragraph.text == "":
-                acm_data, acm_annotations = self.__acm_icd10_annotation_service.get_icd_10_codes(paragraph.text.lower())
+                acm_data, acm_annotations = self.__acm_icd10_annotation_service.get_icd_10_codes(paragraph.text)
                 raw_acm_data.extend(acm_data)
 
                 scispacy_predictions = self.__scispacy_annotation_service.get_icd_10_codes(paragraph.text)
