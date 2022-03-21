@@ -18,17 +18,18 @@ class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
         except Exception:
             raise ServiceException(message="Error getting ICD10 annotation from ACM")
         icd_10_entities = result['Entities']
-        return icd_10_entities, [self.__map_to_icd_dto(icd_10_entity) for icd_10_entity in icd_10_entities]
+        return icd_10_entities, [self.__map_to_icd_dto(icd_10_entity, text) for icd_10_entity in icd_10_entities]
 
-    def __map_to_icd_dto(self, icd_10_entity: dict) -> ICD10AnnotationResult:
-        text = icd_10_entity['Text']
+    def __map_to_icd_dto(self, icd_10_entity: dict, text: str) -> ICD10AnnotationResult:
         score = icd_10_entity['Score']
         begin_offset = icd_10_entity['BeginOffset']
         end_offset = icd_10_entity['EndOffset']
+        text = text[begin_offset:end_offset]
         is_negated = "NEGATION" in [trait["Name"] for trait in icd_10_entity["Traits"]]
         suggested_codes = [
             ICD10Annotation(code=concept['Code'], description=concept['Description'], score=concept['Score'])
             for concept in icd_10_entity['ICD10CMConcepts']
         ]
-        return ICD10AnnotationResult(medical_condition=text, score =score, begin_offset=begin_offset, end_offset=end_offset,
-                                      is_negated=is_negated, suggested_codes=suggested_codes)
+        return ICD10AnnotationResult(medical_condition=text, score=score, begin_offset=begin_offset,
+                                     end_offset=end_offset,
+                                     is_negated=is_negated, suggested_codes=suggested_codes)
