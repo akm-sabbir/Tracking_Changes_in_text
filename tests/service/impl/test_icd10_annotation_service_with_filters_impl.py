@@ -16,13 +16,13 @@ class TestICD10AnnotatorServiceWithFilterImpl(TestCase):
         mock_client.infer_icd10_cm = Mock()
         mock_client.infer_icd10_cm.return_value = self.__get_dummy_icd10_response()
 
-        acm_data, responses = AmazonICD10AnnotatorServiceImpl().get_icd_10_codes("text")
+        acm_data, responses = AmazonICD10AnnotatorServiceImpl().get_icd_10_codes("0abcdefgh1")
         result_sets = self.__filtering_object.get_icd_10_filtered_codes(responses, hcc_map={},
                                                                         dx_threshold=0.9,
                                                                         icd10_threshold=0.67,
                                                                         parent_threshold=0.80)
         mock_boto3_client.assert_called_once_with(service_name="comprehendmedical")
-        mock_client.infer_icd10_cm.assert_called_once_with(Text="text")
+        mock_client.infer_icd10_cm.assert_called_once_with(Text="0abcdefgh1")
 
         assert result_sets[0].medical_condition == "efgh"
         assert result_sets[0].begin_offset == 5

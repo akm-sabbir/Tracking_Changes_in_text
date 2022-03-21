@@ -29,7 +29,7 @@ class TestICD10AnnotationComponent(TestCase):
     @patch(
         "app.service.pipeline.components.acmscimetamap_icd10_annotation_component.SpanMergerUtil.get_icd_10_codes_with_relevant_spans")
     def test__run__should_return_correct_response__given_correct_input(self, mock_span_util: Mock):
-        paragraph1 = Paragraph("some text", 0, 10)
+        paragraph1 = Paragraph("Some TEXT", 0, 10)
         paragraph2 = Paragraph("pneumonia some other text", 11, 20)
 
         paragraph3 = Paragraph("medication text", 21, 30)
@@ -82,7 +82,7 @@ class TestICD10AnnotationComponent(TestCase):
              ],
              "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)],
                                "Flurosemide": [ChangedWordAnnotation("flurosemide", "Flurosemide", 31, 40)]}})[0]
-        calls = [call("some text"), call("pneumonia some other text")]
+        calls = [call("Some TEXT"), call("pneumonia some other text")]
 
         mock_acm_icd10_service.get_icd_10_codes.assert_has_calls(calls)
 
