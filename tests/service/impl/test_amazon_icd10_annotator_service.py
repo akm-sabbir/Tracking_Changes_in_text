@@ -14,11 +14,11 @@ class TestAmazonICD10AnnotatorService(TestCase):
         mock_client.infer_icd10_cm = Mock()
         mock_client.infer_icd10_cm.return_value = self.__get_dummy_icd10_response()
 
-        acm_response, responses = AmazonICD10AnnotatorServiceImpl().get_icd_10_codes("0abcdefgh1")
+        acm_response, responses = AmazonICD10AnnotatorServiceImpl().get_icd_10_codes("0ABCdeFGh1")
         mock_boto3_client.assert_called_once_with(service_name="comprehendmedical")
         mock_client.infer_icd10_cm.assert_called_once_with(Text="0abcdefgh1")
 
-        assert responses[0].medical_condition == "abcd"
+        assert responses[0].medical_condition == "ABCd"
         assert responses[0].begin_offset == 1
         assert responses[0].end_offset == 5
         assert responses[0].is_negated
@@ -32,7 +32,7 @@ class TestAmazonICD10AnnotatorService(TestCase):
         assert responses[0].suggested_codes[1].description == "Disease 7"
         assert responses[0].suggested_codes[1].score == 0.5
 
-        assert responses[1].medical_condition == "efgh"
+        assert responses[1].medical_condition == "eFGh"
         assert responses[1].begin_offset == 5
         assert responses[1].end_offset == 9
         assert not responses[1].is_negated

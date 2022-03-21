@@ -82,7 +82,7 @@ class TestICD10AnnotationComponent(TestCase):
              ],
              "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)],
                                "Flurosemide": [ChangedWordAnnotation("flurosemide", "Flurosemide", 31, 40)]}})[0]
-        calls = [call("some text"), call("pneumonia some other text")]
+        calls = [call("Some TEXT"), call("pneumonia some other text")]
 
         mock_acm_icd10_service.get_icd_10_codes.assert_has_calls(calls)
 
