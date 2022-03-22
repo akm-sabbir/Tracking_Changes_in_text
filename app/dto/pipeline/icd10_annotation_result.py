@@ -7,7 +7,7 @@ from app.dto.pipeline.icd10_annotation import ICD10Annotation
 
 class ICD10AnnotationResult(BaseDto, BasePipelineComponentResult):
     medical_condition: str
-    score: Optional[float]
+    score: Optional[float] = 0
     begin_offset: int
     end_offset: int
     is_negated: bool
