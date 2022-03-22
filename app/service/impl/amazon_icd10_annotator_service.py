@@ -20,11 +20,11 @@ class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
         icd_10_entities = result['Entities']
         return icd_10_entities, [self.__map_to_icd_dto(icd_10_entity, text) for icd_10_entity in icd_10_entities]
 
-    def __map_to_icd_dto(self, icd_10_entity: dict, text: str) -> ICD10AnnotationResult:
+    def __map_to_icd_dto(self, icd_10_entity: dict, full_text: str) -> ICD10AnnotationResult:
         score = icd_10_entity['Score']
         begin_offset = icd_10_entity['BeginOffset']
         end_offset = icd_10_entity['EndOffset']
-        text = text[begin_offset:end_offset]
+        text = full_text[begin_offset:end_offset]
         is_negated = "NEGATION" in [trait["Name"] for trait in icd_10_entity["Traits"]]
         suggested_codes = [
             ICD10Annotation(code=concept['Code'], description=concept['Description'], score=concept['Score'])
