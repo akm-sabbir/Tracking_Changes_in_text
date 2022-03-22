@@ -18,8 +18,8 @@ class TestAmazonICD10AnnotatorService(TestCase):
         mock_boto3_client.assert_called_once_with(service_name="comprehendmedical")
         mock_client.infer_icd10_cm.assert_called_once_with(Text="0abcdefgh1")
 
-        assert responses[0].medical_condition == "ABCd"
-        assert responses[0].begin_offset == 1
+        assert responses[0].medical_condition == "0ABCd"
+        assert responses[0].begin_offset == 0
         assert responses[0].end_offset == 5
         assert responses[0].is_negated
         assert responses[0].score == 0.8
@@ -32,9 +32,9 @@ class TestAmazonICD10AnnotatorService(TestCase):
         assert responses[0].suggested_codes[1].description == "Disease 7"
         assert responses[0].suggested_codes[1].score == 0.5
 
-        assert responses[1].medical_condition == "eFGh"
+        assert responses[1].medical_condition == "eFGh1"
         assert responses[1].begin_offset == 5
-        assert responses[1].end_offset == 9
+        assert responses[1].end_offset == 10
         assert not responses[1].is_negated
         assert responses[1].score == 0.9
 
@@ -47,6 +47,29 @@ class TestAmazonICD10AnnotatorService(TestCase):
         assert responses[1].suggested_codes[1].score == 0.78
 
         assert acm_response == self.__get_dummy_icd10_response()["Entities"]
+
+    @patch('boto3.client')
+    def test__get_icd_10_codes__should_send_lowercase_text_to_acm__given_correct_text(self, mock_boto3_client: Mock):
+        mock_client = Mock()
+        mock_boto3_client.return_value = mock_client
+        mock_client.infer_icd10_cm = Mock()
+        mock_client.infer_icd10_cm.return_value = self.__get_dummy_icd10_response()
+        service = AmazonICD10AnnotatorServiceImpl()
+
+        service.get_icd_10_codes("0ABCdeFGh1")
+        mock_client.infer_icd10_cm.assert_called_with(Text="0abcdefgh1")
+
+        service.get_icd_10_codes("0ABCDEFGH1")
+        mock_client.infer_icd10_cm.assert_called_with(Text="0abcdefgh1")
+
+        service.get_icd_10_codes("0abcdefgh1")
+        mock_client.infer_icd10_cm.assert_called_with(Text="0abcdefgh1")
+
+        service.get_icd_10_codes("+0ABCdeFGh7!@#$%^&*()")
+        mock_client.infer_icd10_cm.assert_called_with(Text="+0abcdefgh7!@#$%^&*()")
+
+
+
 
     @patch('boto3.client')
     def test__get_icd_10_codes__should_raise_service_exception__given_internal_exception_raise(self,
@@ -63,8 +86,8 @@ class TestAmazonICD10AnnotatorService(TestCase):
     def __get_dummy_icd10_response(self):
         return {"Entities": [
             {
-                "Text": "abcd",
-                "BeginOffset": 1,
+                "Text": "1abcd",
+                "BeginOffset": 0,
                 "EndOffset": 5,
                 "Score": 0.8,
                 "ICD10CMConcepts": [
@@ -86,9 +109,9 @@ class TestAmazonICD10AnnotatorService(TestCase):
                 ]
             },
             {
-                "Text": "efgh",
+                "Text": "efgh0",
                 "BeginOffset": 5,
-                "EndOffset": 9,
+                "EndOffset": 10,
                 "Score": 0.9,
                 "ICD10CMConcepts": [
                     {
