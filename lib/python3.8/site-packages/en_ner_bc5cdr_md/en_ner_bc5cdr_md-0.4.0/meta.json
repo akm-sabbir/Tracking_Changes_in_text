@@ -1,0 +1,23 @@
+{
+  "lang":"en",
+  "name":"ner_bc5cdr_md",
+  "version":"0.4.0",
+  "description":"Spacy Models for Biomedical Text.",
+  "author":"Allen Institute for Artificial Intelligence",
+  "email":"ai2-info@allenai.org",
+  "url":"https://allenai.github.io/SciSpaCy/",
+  "license":"CC BY-SA 3.0",
+  "sources":[
+    "BC5CDR",
+    "OntoNotes 5",
+    "Common Crawl",
+    "GENIA 1.0"
+  ],
+  "spacy_version":">=3.0.1,<3.1.0",
+  "vectors":{
+    "width":200,
+    "vectors":50000,
+    "keys":4087446,
+    "name":"en_core_sci_md.vectors"
+  }
+}

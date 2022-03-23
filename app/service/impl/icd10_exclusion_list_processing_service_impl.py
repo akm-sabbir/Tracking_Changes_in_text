@@ -1,8 +1,9 @@
 from app.service.icd10_exclusion_service import ICD10ExclusionService
-from app.util.icd_exclusions import ICDExclusions
 import math
 from app.settings import Settings
 from app.util.icd_exclusions import ICDExclusions
+from app.dto.core.service.exclusion_graph import ExclusionGraph
+from collections import defaultdict
 
 
 class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
@@ -10,6 +11,110 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
 
     def __init__(self, icd_exclusion_utility=None):
         self.icd_exclusion_util = icd_exclusion_utility
+
+    def form_exclusion_graph(self, icd10_metainfo: dict):
+        icd10_lists = icd10_metainfo.keys()
+        list_of_nodes = []
+        for key, value in icd10_metainfo.items():
+            exclusion_list = self.icd_exclusion_util.get_excluded_list(key, icd10_lists)
+            node = ExclusionGraph()
+            node.code = key
+            node.neighbors = dict()
+            for each_elem in exclusion_list:
+                node.neighbors[each_elem] = 0
+                node.degree += 1
+            list_of_nodes.append(node)
+        list_of_nodes = sorted(list_of_nodes, key=lambda x: x.degree, reverse=True)
+        return list_of_nodes
+
+    def built_graph_index(self, list_of_nodes: list):
+        dict_of_codes = defaultdict(str)
+        for index, value in enumerate(list_of_nodes):
+            dict_of_codes[value.code] = index
+
+        return dict_of_codes
+
+    def iterate_graph_nodes_and_exclude(self, list_of_nodes: list, dict_of_codes: dict,
+                                        icd10_metainfo: dict):
+        for each_node in list_of_nodes:
+            if len(each_node.neighbors) != 0 and each_node.vote >= 0:
+                key_code = []
+                for each_ne_node in each_node.neighbors.items():
+                    if each_ne_node[1] == 0:
+                        key_code.append(each_ne_node[0])
+                if len(key_code) == 0:
+                    continue
+                selected_codes = self.get_no_selection_icd10_vote(each_node.code, key_code,
+                                                                  icd10_metainfo)
+
+                for each_neighbor in key_code:
+                    if selected_codes is "left":
+                        voter_code = each_node.code
+                        reciever_code = each_neighbor
+                    if selected_codes is "right":
+                        voter_code = each_neighbor
+                        reciever_code = each_node.code
+                    self.set_reset_voting(voter_code, reciever_code, list_of_nodes, dict_of_codes)
+        for each_node in list_of_nodes:
+            print(str(each_node.code) + " " + str(each_node.vote))
+            print(each_node.neighbors)
+        return list_of_nodes
+
+    def set_reset_voting(self, voter_code: str, reciever_code: str, list_of_nodes: list, dict_of_codes: dict):
+        index_of_voter = dict_of_codes[voter_code]
+        index_of_reciever = dict_of_codes[reciever_code]
+        list_of_nodes[index_of_voter].neighbors[reciever_code] = 1
+        list_of_nodes[index_of_reciever].vote -= 1
+        for each_node in list(list_of_nodes[index_of_reciever].neighbors.keys()):
+            if list_of_nodes[index_of_reciever].neighbors[each_node] == 1:
+                list_of_nodes[dict_of_codes[each_node]].vote += 1
+                list_of_nodes[index_of_reciever].neighbors[each_node] = 0
+        return
+
+    def get_icd10_code_exclusion_decision_based_graph(self, icd10_metainfo: dict) -> dict:
+        list_of_nodes = self.form_exclusion_graph(icd10_metainfo)
+        dict_of_codes = self.built_graph_index(list_of_nodes)
+        print(dict_of_codes)
+        for each_index, each_value in enumerate(list_of_nodes):
+            print(each_index)
+            print(each_value.code)
+            print(each_value.neighbors)
+        list_of_nodes = self.iterate_graph_nodes_and_exclude(list_of_nodes, dict_of_codes,
+                                        icd10_metainfo)
+        for each_node in list_of_nodes:
+            if each_node.vote < 0:
+                icd10_metainfo[each_node.code].remove = True
+        return icd10_metainfo
+
+    def get_no_selection_icd10_vote(self, key_code: str, neighbors: list, icd10_metainfo: dict):
+        if len(icd10_metainfo.get(key_code).hcc_map) != 0 and \
+                self.get_exclusion_list_hccmap(neighbors, icd10_metainfo) is True \
+                and sum([1 if len(icd10_metainfo.get(each_elem).hcc_map) != 0 else 0 for each_elem in neighbors]) \
+                > 1:
+            return "right"
+        if len(icd10_metainfo.get(key_code).hcc_map) != 0 and \
+                self.get_exclusion_list_hccmap(neighbors, icd10_metainfo) is True:
+            code_ = self.get_decision_on_choice(icd10_metainfo, key_code, neighbors)
+            if code_[0] == key_code:
+                return "left"
+            else:
+                return "right"
+
+        if len(icd10_metainfo.get(key_code).hcc_map) != 0 and \
+                self.get_exclusion_list_hccmap(neighbors, icd10_metainfo) is False:
+            return "left"
+
+        if len(icd10_metainfo.get(key_code).hcc_map) == 0 and \
+                self.get_exclusion_list_hccmap(neighbors, icd10_metainfo) is True:
+            return "right"
+
+        code_ = self.get_decision_on_choice(icd10_metainfo, key_code, neighbors)
+        if code_[0] == key_code:
+            return "left"
+        else:
+            return "right"
+
+
 
     def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict) -> dict:
         if self.icd_exclusion_util.exclusion_dictionary is None:
