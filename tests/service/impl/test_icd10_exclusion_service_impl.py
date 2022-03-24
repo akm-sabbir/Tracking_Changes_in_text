@@ -109,7 +109,7 @@ class TestHCCServiceImpl(TestCase):
         #param = self.service.get_icd_10_code_exclusion_decision(param)
         param = self.service.get_icd10_code_exclusion_decision_based_graph(param)
         assert param["A0531"].remove == True
-        assert param["A40421"].remove == False
+        assert param["A852"].remove == True
         assert self.service.get_exclusion_list_hccmap(["A04"], param) is True
         assert self.service.get_exclusion_list_hccmap(["A852"], param) is False
         assert self.service.get_decision_on_choice(param, "A40421", ["A0531", "A852"])[0] == "A0531"
