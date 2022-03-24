@@ -40,18 +40,28 @@ class MockedHCCEngine():
 class TestHCCServiceImpl(TestCase):
 
     service: Icd10CodeExclusionServiceImpl
-    icd10_exclusion_dict: dict = {"A04": ["A05-", "A1832"], "A05": ["A404-", "A32-", "T61-T62", "A040-A044", "A02-"],
+    icd10_exclusion_dict: dict = {"A04": ["A05", "A1832"], "A05": ["A404-", "A32-", "T61-T62", "A040-A044", "A02-"],
                            "A06": ["A07-"], "A08": ["J09X3", "J102", "J112"], "A09": ["K529", "R197"],
                                   "A30": ["B92"],
                                   "A32": ["P372"],
                                   "A35": ["A34", "A33"],
                                   "A40": ["P360-P361", "O85", "A4181"],
-                                  "A41": ["A40-", "O85", "R7881", "P36-"], "A42": ["B471"], "A46": ["O8689"],
-                                  "A48": ["B471"],
-                                  "A49": ["A699", "A749", "B95-B96", "A799", "A399"], "A56": ["P391", "P231"],
+                                  "A41": ["A40", "O85", "R7881", "P36-"], "A42": ["B471"], "A46": ["O8689"],
+                                  "A48": ["B471", "A749"],
+                                  "B471": ["A48"],
+                                  "A49": ["B471", "A699", "A749", "B95-B96", "A799", "A399"],
+                                  "A749": ["A48", "A49"],
+                                  "A56": ["P391", "P231"],
                                   "A71": ["B940"],
-                                  "A74": ["M023-", "A55-A56", "P391", "P231"], "A75": ["A7981"],
-                                  "A85": ["B262", "A872", "B258", "B004", "G933", "B020", "B100-", "B050", "A80-"]}
+                                  "A74": ["M023-", "A55-A56", "P391", "P231"],
+                                  "A75": ["A7981"],
+                                  "A85": ["B262", "A872", "B258", "B004", "G933", "B020", "B100-", "B050", "A80-"],
+                                  "A0531": ["A40421", "A7421", "A32", "A853"],
+                                  "A32": ["A0531"],
+                                  "A853": ["A0531"],
+                                  "A7421": ["A852", "A0531"],
+                                  "A40421": ["A0531", "A852"],
+                                  "A852": ["A7421", "A40421"]}
 
     def test_icd10_exclusion_service_to_get_response(self):
         exclusion_util = ICDExclusions(exclusions_json_dict=self.icd10_exclusion_dict)
@@ -98,11 +108,40 @@ class TestHCCServiceImpl(TestCase):
         icd107.length = 3
         icd107.entity_score = 0.99
         icd107.remove = False
+        icd108 = Mock(ICD10MetaInfo)
+        icd108.hcc_map = "HCC85"
+        icd108.score = 0.87
+        icd108.length = 3
+        icd108.entity_score = 0.99
+        icd108.remove = False
+        icd109 = Mock(ICD10MetaInfo)
+        icd109.hcc_map = "HCC85"
+        icd109.score = 0.80
+        icd109.length = 4
+        icd109.entity_score = 0.99
+        icd109.remove = False
+        icd110 = Mock(ICD10MetaInfo)
+        icd110.hcc_map = "HCC85"
+        icd110.score = 0.81
+        icd110.length = 3
+        icd110.entity_score = 0.99
+        icd110.remove = False
+        icd111 = Mock(ICD10MetaInfo)
+        icd111.hcc_map = "HCC85"
+        icd111.score = 0.97
+        icd111.length = 4
+        icd111.entity_score = 0.99
+        icd111.remove = False
+        param2 = {"A48": icd108, "B471": icd109, "A49": icd110, "A749": icd111}
         param = {"A0531": icd101, "A40421": icd102, "A853": icd103, "A04": icd104, "A7421": icd105, "A852": icd106,
                  "A32": icd107}
-        param = self.service.get_icd_10_code_exclusion_decision(param)
+        param = self.service.get_icd10_code_exclusion_decision_based_graph(param)
+        param2 = self.service.get_icd10_code_exclusion_decision_based_graph(param2)
         assert param["A0531"].remove == True
-        assert param["A40421"].remove == False
+        assert param["A852"].remove == True
+        assert param2["A48"].remove == True
+        assert param2["A49"].remove == True
+        assert param2["B471"].remove == False
         assert self.service.get_exclusion_list_hccmap(["A04"], param) is True
         assert self.service.get_exclusion_list_hccmap(["A852"], param) is False
         assert self.service.get_decision_on_choice(param, "A40421", ["A0531", "A852"])[0] == "A0531"
