@@ -110,22 +110,6 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
         return self.dir_left if (self.get_decision_on_choice(icd10_metainfo, key_code, neighbors_)[0] == key_code) else \
             self.dir_right
 
-
-
-    def get_icd_10_code_exclusion_decision(self, icd10_metainfo: dict) -> dict:
-        if self.icd_exclusion_util.exclusion_dictionary is None:
-            self.icd_exclusion_util.set_exclusion_dictionary(Settings.get_exclusion_dict())
-        icd10_lists = icd10_metainfo.keys()
-
-        for key, value in icd10_metainfo.items():
-            if value.remove is False:
-                exclusion_list = self.icd_exclusion_util.get_excluded_list(key, icd10_lists)
-                if len(exclusion_list) > 0:
-                    icd10s_to_remove = self.get_not_selected_icd10_list(key, exclusion_list, icd10_metainfo)
-                    for each in icd10s_to_remove:
-                        icd10_metainfo[each].remove = True
-        return icd10_metainfo
-
     def get_exclusion_list_hccmap(self, exclusion_list: list, meta_info: dict):
         for each_elem in exclusion_list:
             if meta_info.get(each_elem) is not None and len(meta_info.get(each_elem).hcc_map) != 0:
