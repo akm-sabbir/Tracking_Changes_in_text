@@ -85,7 +85,6 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
         node_key, node_value = neighbors
         if node_value == 0 and list_of_nodes[dict_of_nodes[node_key]].vote >= 0:
             return node_key
-        return
 
     def get_no_selection_icd10_vote(self, key_code: str, neighbors_: list, icd10_metainfo: dict, list_of_nodes: list,
                                     dict_of_nodes: dict):
