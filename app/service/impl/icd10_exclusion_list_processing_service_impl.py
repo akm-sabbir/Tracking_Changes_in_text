@@ -116,7 +116,6 @@ class Icd10CodeExclusionServiceImpl(ICD10ExclusionService):
                 return True
         return False
 
-
     def __get_avg_acm_score(self, exclusion_list: list, icd10_metainfo: dict):
         scores = [icd10_metainfo[elem].score for elem in exclusion_list]
         return sum(scores) / len(scores)
