@@ -20,7 +20,8 @@ venvNew/
 
 #pycharm files
 .idea/
-
+.requirements.text.tct
+.pyvenv.cfg
 dist/
 .scannerwork
 build/
