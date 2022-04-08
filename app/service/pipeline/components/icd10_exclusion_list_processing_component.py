@@ -5,8 +5,13 @@ from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.response.hcc_response_dto import HCCResponseDto
+from app.service.pipeline.components.acm_rxnorm_annotation_component import ACMRxNormAnnotationComponent
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.impl.icd10_exclusion_list_processing_service_impl import Icd10CodeExclusionServiceImpl
+from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
+from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
+from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
+from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.service.icd10_negation_service import ICD10NegationService
@@ -18,8 +23,12 @@ from app.util.icd_exclusions import ICDExclusions
 
 
 class CodeExclusionHandlingComponent(BasePipelineComponent):
-    DEPENDS_ON = [NegationHandlingComponent, NotePreprocessingComponent,
-                  ACMSciMetamapICD10AnnotationComponent, ICD10ToHccAnnotationComponent]
+    DEPENDS_ON = [PatientSmokingConditionDetectionComponent,
+                                      SectionExclusionServiceComponent,
+                                      SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
+                                      NegationHandlingComponent, NotePreprocessingComponent,
+                                      ACMSciMetamapICD10AnnotationComponent,
+                                       ICD10ToHccAnnotationComponent]
     __icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl(
         ICDExclusions(exclusions_json_dict=Settings.get_exclusion_dict()))
 

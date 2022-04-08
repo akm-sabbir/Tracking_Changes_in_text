@@ -37,6 +37,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                       SubjectiveSectionExtractorComponent(), MedicationSectionExtractorComponent(),
                                       NegationHandlingComponent(), NotePreprocessingComponent(),
                                       ACMSciMetamapICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
+                                      ICD10ToHccAnnotationComponent(),
                                       CodeExclusionHandlingComponent(),
                                       ICD10AnnotationAlgoComponent(),
                                       FilteredICD10ToHccAnnotationComponent()]
