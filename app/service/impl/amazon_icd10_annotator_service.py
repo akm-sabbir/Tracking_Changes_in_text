@@ -11,7 +11,7 @@ from app.service.icd10_annotator_service import ICD10AnnotatorService
 class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
 
     def __init__(self):
-        self.__client = boto3.client(service_name='comprehendmedical', region_name='us-west-2')
+        self.__client = boto3.client(service_name='comprehendmedical')
 
     def get_icd_10_codes(self, text: str) -> Tuple[List[Dict], List[ICD10AnnotationResult]]:
         try:

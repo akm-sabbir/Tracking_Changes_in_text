@@ -101,10 +101,14 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert response.raw_acm_data == mock_acm_response.raw_acm_data
 
         component_serial = [PatientSmokingConditionDetectionComponent,
-                            SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
-                            MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
-                            FilteredICD10ToHccAnnotationComponent]
+                                      SectionExclusionServiceComponent,
+                                      SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
+                                      NegationHandlingComponent, NotePreprocessingComponent,
+                                      ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                                      ICD10ToHccAnnotationComponent,
+                                      CodeExclusionHandlingComponent,
+                                      ICD10AnnotationAlgoComponent,
+                                      FilteredICD10ToHccAnnotationComponent]
 
         for idx, type in enumerate(component_serial):
             assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[idx], type)
@@ -176,10 +180,14 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert response.icd10_annotations[0] == icd10_annotation_result_1
 
         component_serial = [PatientSmokingConditionDetectionComponent,
-                            SectionExclusionServiceComponent, SubjectiveSectionExtractorComponent,
-                            MedicationSectionExtractorComponent, NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
-                            FilteredICD10ToHccAnnotationComponent]
+                                      SectionExclusionServiceComponent,
+                                      SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
+                                      NegationHandlingComponent, NotePreprocessingComponent,
+                                      ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                                      ICD10ToHccAnnotationComponent,
+                                      CodeExclusionHandlingComponent,
+                                      ICD10AnnotationAlgoComponent,
+                                      FilteredICD10ToHccAnnotationComponent]
 
         for idx, type in enumerate(component_serial):
             assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[idx], type)

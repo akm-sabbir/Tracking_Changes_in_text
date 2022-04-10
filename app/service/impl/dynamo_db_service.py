@@ -21,7 +21,7 @@ class DynamoDbService(DBService):
     def __init__(self, table_name: str):
         self.__logger = logging.getLogger(__name__)
         if self.dynamodb is None:
-            self.dynamodb = boto3.resource('dynamodb', region_name="us-west-2")
+            self.dynamodb = boto3.resource('dynamodb')
         self.table = self.dynamodb.Table(table_name)
 
     def get_item(self, item_id: Any):
