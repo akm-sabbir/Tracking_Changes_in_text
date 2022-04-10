@@ -20,13 +20,8 @@ class DynamoDbService(DBService):
 
     def __init__(self, table_name: str):
         self.__logger = logging.getLogger(__name__)
-        KEY_='AKIASDZNPBJOOBDEH7HB'
-        SECRET_KEY_='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'
-        session = boto3.Session(
-                                aws_access_key_id=KEY_,
-                                aws_secret_access_key=SECRET_KEY_)
         if self.dynamodb is None:
-            self.dynamodb = session.resource('dynamodb', region_name="us-west-2")
+            self.dynamodb = boto3.resource('dynamodb', region_name="us-west-2")
         self.table = self.dynamodb.Table(table_name)
 
     def get_item(self, item_id: Any):

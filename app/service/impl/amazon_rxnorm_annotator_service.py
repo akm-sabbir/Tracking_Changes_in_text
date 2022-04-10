@@ -11,12 +11,7 @@ from app.service.rxnorm_annotator_service import RxNormAnnotatorService
 
 class AmazonRxNormAnnotatorServiceImpl(RxNormAnnotatorService):
     def __init__(self):
-        KEY_ = 'AKIASDZNPBJOOBDEH7HB'
-        SECRET_KEY_ = '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'
-        session = boto3.Session(
-            aws_access_key_id=KEY_,
-            aws_secret_access_key=SECRET_KEY_)
-        self.__client = session.client(service_name='comprehendmedical', region_name="us-west-2")
+        self.__client = boto3.client(service_name='comprehendmedical', region_name="us-west-2")
 
     def get_rxnorm_codes(self, text: str) -> Tuple[List[Dict], List[RxNormAnnotationResult]]:
         try:
