@@ -9,12 +9,6 @@ from boto3.dynamodb.conditions import Key
 from app.service.db_service import DBService
 
 
-class DecimalEncoder(json.JSONEncoder):
-  def default(self, obj):
-    if isinstance(obj, Decimal):
-      return str(obj)
-    return json.JSONEncoder.default(self, obj)
-
 class DynamoDbService(DBService):
     dynamodb = None
 
