@@ -15,12 +15,15 @@ ENV/
 env.bak/
 venv.bak/
 venvNew/
+avc_hcc_backend/
+bin/
 #caches
 .pytest_cache
 
 #pycharm files
 .idea/
-
+.requirements.test.txt
+.pyvenv.cfg
 dist/
 .scannerwork
 build/

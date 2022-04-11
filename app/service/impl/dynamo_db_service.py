@@ -1,4 +1,4 @@
-import json
+import simplejson as json
 import logging
 from decimal import Decimal
 from typing import Any
@@ -30,8 +30,7 @@ class DynamoDbService(DBService):
 
     def save_item(self, model: Any):
         model_dict = json.loads(
-            json.dumps(model, default=lambda o: getattr(o, '__dict__', str(o))), parse_float=Decimal
-        )
+            json.dumps(model, default=lambda o: getattr(o, '__dict__', str(o))), parse_float=Decimal)
         try:
             response = self.table.put_item(
                 Item=model_dict

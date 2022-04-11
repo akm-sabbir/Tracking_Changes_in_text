@@ -9,6 +9,7 @@ from app.service.icd10_annotator_service import ICD10AnnotatorService
 
 
 class AmazonICD10AnnotatorServiceImpl(ICD10AnnotatorService):
+
     def __init__(self):
         self.__client = boto3.client(service_name='comprehendmedical')
 
