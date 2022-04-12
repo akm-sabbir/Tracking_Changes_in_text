@@ -11,9 +11,9 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
         test_text1 = "as the patient queried about smoking behavior? Yes No\n" \
                "Does the patient currently smoke? Smoking: Patient has never smoked - (1/21/2020).\n"
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
-        print(test_result1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         assert actual_test_result1[2][1] == 7
+        assert actual_test_result1[2][2] == 14
         assert actual_test_result1[6][0] == "behavior"
 
     def test__get_text_tokenized_and_span_should_return_proper_data_second_set(self) -> None:
@@ -27,5 +27,7 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         assert actual_test_result1[2][1] == 7
+        assert actual_test_result1[2][2] == 11
         assert actual_test_result1[6][0] == "continues"
-        assert  actual_test_result1[18][0] == 'fall'
+        assert actual_test_result1[18][0] == 'fall'
+        assert  actual_test_result1[42][0] == 'incontinent'
