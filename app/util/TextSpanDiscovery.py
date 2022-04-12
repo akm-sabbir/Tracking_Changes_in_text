@@ -20,11 +20,11 @@ class TextSpanDiscovery:
               start, end in tok]
         return ts
 
-    def tokenize_with_span_for_text(self, text):
+    def __get_tokens_with_span(self, text):
         ts = [[text[start:end], start, end] for start, end in TreebankWordTokenizer().span_tokenize(text)]
         return ts
 
-    def get_start_end_pos_span(self, graph :dict, child_node :str, marker: int):
+    def __get_start_end_pos_span(self, graph :dict, child_node :str, marker: int):
         if graph.get(child_node, None) is not None:
             node = graph.get(child_node)
             if node.is_root is True:
@@ -42,7 +42,7 @@ class TextSpanDiscovery:
         node.track_pos = node.track_pos % len(node.pos_list)
         return node
 
-    def process_each_token(self, spanned_info) -> TokenNode:
+    def get_processed_tokens(self, spanned_info) -> TokenNode:
         for each_span in spanned_info:
             punctuation_list = re.findall("[" + string.punctuation + "]+", each_span[0])
             key = each_span[0][0:-1] if len(punctuation_list) > 0 else each_span[0]
@@ -59,7 +59,7 @@ class TextSpanDiscovery:
                 self.token_dict[key].pos_list.append(Span(each_span[1], each_span[2], 0))
         return self.token_dict
 
-    def text_structuring(self, text):
+    def __get_updated_token_position(self, text):
         ts = self.tokenize_with_span_for_text(text)
         token_dict = self.process_each_token(ts)
         new_dict = OrderedDict()
