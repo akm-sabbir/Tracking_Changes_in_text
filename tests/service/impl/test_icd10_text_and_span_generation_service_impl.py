@@ -14,7 +14,7 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         count = sum([1 if actual_test_result1[i][0] == '?' else 0 for i in range(len(actual_test_result1))])
         count_paren = sum([1 if actual_test_result1[i][0] == '(' else 0 for i in range(len(actual_test_result1))])
-        count_colon = sum([1 if actual_test_result1[i][0] == '(' else 0 for i in range(len(actual_test_result1))])
+        count_colon = sum([1 if actual_test_result1[i][0] == ':' else 0 for i in range(len(actual_test_result1))])
         assert count == 2
         assert count_paren == 1
         assert count_colon == 1
