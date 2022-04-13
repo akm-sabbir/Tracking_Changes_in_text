@@ -15,11 +15,20 @@ class ICD10TextAndSpanGenerationServiceImpl(ICD10TextTokenAndSpanGeneration):
         return ts
 
     def process_each_token(self, spanned_info) -> list:
+        new_spanned_info = []
         for each_span in spanned_info:
-            each_span[0], each_span[2] = (each_span[0][0:-1], (each_span[2] - 1)) if len(each_span[0]) > 0 and \
-                                            each_span[0][-1] in string.punctuation else (each_span[0], each_span[2])
+            each_span[0], each_span[2], new_comp = (each_span[0][0:-1], (each_span[2] - 1), each_span[0][-1:]) \
+                                            if len(each_span[0]) > 1 and \
+                                            each_span[0][-1] in string.punctuation else (each_span[0], each_span[2], None)
+            new_spanned_info.append(each_span)
+            if new_comp is not None:
+                new_span = []
+                new_span.append(new_comp)
+                new_span.append(each_span[2])
+                new_span.append(each_span[2] + len(new_comp))
+                new_spanned_info.append(new_span)
 
-        return spanned_info
+        return new_spanned_info
 
     def remove_empty_string(self, spanned_info_list) -> list:
         return list(filter(lambda x: len(x[0]) > 0, spanned_info_list))

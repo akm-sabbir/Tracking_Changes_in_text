@@ -26,8 +26,10 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
            "he also chronic diarrheafrom time to time,  the absence of recurrent leg cramps is obvious"
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
+        print(actual_test_result1)
         assert actual_test_result1[2][1] == 7
         assert actual_test_result1[2][2] == 11
-        assert actual_test_result1[6][0] == "continues"
-        assert actual_test_result1[18][0] == 'fall'
-        assert  actual_test_result1[42][0] == 'incontinent'
+        assert actual_test_result1[7][0] == "continues"
+        assert  actual_test_result1[11][0] == "daily"
+        assert actual_test_result1[21][0] == 'fall'
+        assert  actual_test_result1[50][0] == 'incontinent'
