@@ -9,5 +9,5 @@ class Span:
         self.end = end
         self.offset = offset
 
-    def __update_offset(self, offset):
+    def update_offset(self, offset):
         self.offset = offset
