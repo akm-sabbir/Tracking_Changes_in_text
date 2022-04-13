@@ -41,3 +41,15 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
         assert actual_test_result1[21][0] == 'fall'
         assert actual_test_result1[50][0] == 'incontinent'
         assert count == 14
+
+    def test__get_text_tokenized_and_span_should_return_proper_data_second_set(self):
+        self.icd10TextTokenGenerator = ICD10TextAndSpanGenerationServiceImpl()
+        test_text2= "He said his ulcerative colitis flares up and giveshim a hard time doing is school work or job work." \
+        " His abdominal pain, N / V comes and goes; sometiomessevere."
+        test_result2 = self.icd10TextTokenGenerator.get_token_with_span(test_text2)
+        actual_test_result2 = self.icd10TextTokenGenerator.process_each_token(test_result2)
+        count = sum([1 if actual_test_result2[i][0] == '/' else 0 for i in range(len(actual_test_result2))])
+        assert actual_test_result2[2][1] == 8
+        assert actual_test_result2[2][2] == 11
+        assert actual_test_result2[30][0] == ";"
+        assert count == 1

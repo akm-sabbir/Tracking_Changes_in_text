@@ -1,8 +1,10 @@
 from app.service.icd10_text_token_span_gen_service import ICD10TextTokenAndSpanGeneration
-from app.dto.core.util import Span
 from nltk import TreebankWordTokenizer
-import re
 import string
+
+# this class we designed to break down the text into smallest tokens and
+#retrieve the span of each token in original text so that we can accurately shows
+# span of text in front end side
 
 
 class ICD10TextAndSpanGenerationServiceImpl(ICD10TextTokenAndSpanGeneration):
@@ -13,6 +15,8 @@ class ICD10TextAndSpanGenerationServiceImpl(ICD10TextTokenAndSpanGeneration):
     def _tokenize_with_span(self, text):
         ts = [[text[start:end], start, end] for start, end in self.__tokenizer.span_tokenize(text)]
         return ts
+
+    # following function generate tokens and actual span for a given text content
 
     def process_each_token(self, spanned_info) -> list:
         new_spanned_info = []
@@ -30,8 +34,11 @@ class ICD10TextAndSpanGenerationServiceImpl(ICD10TextTokenAndSpanGeneration):
 
         return new_spanned_info
 
+    # following function is used to remove any empty token
     def remove_empty_string(self, spanned_info_list) -> list:
         return list(filter(lambda x: len(x[0]) > 0, spanned_info_list))
+    # we expect following output [["token1", start index, end index], ["token2", start, end] ...]
+    #from the below funtion
 
     def get_token_with_span(self, text: str) -> list:
         tokenized_text = self._tokenize_with_span(text)
