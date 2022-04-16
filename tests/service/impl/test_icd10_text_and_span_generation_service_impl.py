@@ -41,7 +41,7 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
         assert actual_test_result1[50][0] == 'incontinent'
         assert count == 14
 
-    def test__get_text_tokenized_and_span_should_return_proper_data_second_set(self):
+    def test__get_text_tokenized_and_span_should_return_proper_data_third_set(self):
         self.icd10TextTokenGenerator = ICD10TextAndSpanGenerationServiceImpl()
         test_text2= "He said his ulcerative colitis flares up and giveshim a hard time doing is school work or job work." \
         " His abdominal pain, N / V comes and goes; sometiomessevere."
