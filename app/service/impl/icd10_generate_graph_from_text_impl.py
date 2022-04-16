@@ -1,6 +1,6 @@
 import re
 
-from app.service.icd10_track_changes_in_text import ICD10ChangeInTextStructure
+from app.service.icd10_generate_graph_from_text import ICD10GenerateGraphFromText
 from collections import OrderedDict
 from collections import defaultdict
 import string
@@ -8,7 +8,7 @@ from app.dto.core.util.Span import Span
 from app.dto.core.util.TokenNode import TokenNode
 
 
-class ICD10TrackChangeInTextStructureImpl(ICD10ChangeInTextStructure):
+class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
 
     def __init__(self, changed_token_dict):
         self.dictionary = changed_token_dict
@@ -37,36 +37,29 @@ class ICD10TrackChangeInTextStructureImpl(ICD10ChangeInTextStructure):
     def reset_global_offset(self):
         self.global_offset = 0
 
-    def process_token_to_create_graph(self, spanned_info) -> TokenNode:
+    def process_token_to_create_graph(self, spanned_info: list) -> TokenNode:
         for each_span in spanned_info:
             punctuation_list = re.findall("[" + string.punctuation + "]+", each_span[0])
-            key = each_span[0][0:-1] if len(punctuation_list) > 0 else each_span[0]
-            each_span[2] = (each_span[2] - 1) if len(punctuation_list) > 0 else each_span[2]
-            if len(key) == 0:
-                print("I AM CONTINUING")
+            if len(punctuation_list) > 0 and len( each_span[0]) == 1:
                 continue
-            if self.token_dict.get(key, None) is None:
-                node = TokenNode()
-                node.parent_token = ""
-                node.length = len(key)
-                node.is_root = True
-                node.track_pos = 0
-                node.pos_list = [Span(each_span[1], each_span[2], 0)]
-                node.pos_tracking = defaultdict(int)
+            if self.token_dict.get(each_span[0], None) is None:
+                node = self.get_new_node_for_token(pos_list=[Span(each_span[1], each_span[2], 0)],
+                                                   length=len(each_span[0]))
                 node.pos_tracking[each_span[1]] = each_span[1]
-                self.token_dict[key] = node
+                self.token_dict[each_span[0]] = node
             else:
-                self.token_dict[key].pos_list.append(Span(each_span[1], each_span[2], 0))
-                self.token_dict[key].pos_tracking[each_span[1]] = each_span[1]
+                self.token_dict[each_span[0]].pos_list.append(Span(each_span[1], each_span[2], 0))
+                self.token_dict[each_span[0]].pos_tracking[each_span[1]] = each_span[1]
         return self.token_dict
 
-    def get_new_node_for_token(self, key : str):
+    def get_new_node_for_token(self, parent_key: str = "", is_root=True, pos_list: list = [], length: int = 0):
         new_node = TokenNode()
         new_node.pos_tracking = defaultdict(int)
-        new_node.pos_list = []
-        new_node.is_root = False
+        new_node.pos_list = pos_list
+        new_node.is_root = is_root
         new_node.track_pos = 0
-        new_node.parent_token = key
+        new_node.length = length
+        new_node.parent_token = parent_key
         return new_node
 
     def track_change_in_text(self, token_dict, text_span):
@@ -77,13 +70,9 @@ class ICD10TrackChangeInTextStructureImpl(ICD10ChangeInTextStructure):
             if corrected_key is not None:
                 node = token_dict[key]
                 for index, each_tups in enumerate(corrected_key):
-                    new_node = self.get_new_node_for_token()
-                    print("old text: " + each_tups[0])
+                    new_node = self.get_new_node_for_token(key, is_root=False, length=len(each_tups[1]))
                     start = key.find(each_tups[0]) + node.pos_list[node.track_pos].start
-                    print("old pos: " + str(start))
-                    print("new text: " + each_tups[1])
                     self.global_offset += (1 if index > 0 else 0)
-                    print("new pos: " + str(start + self.global_offset))
                     new_node.pos_list.append(Span(start, start + len(each_tups[1]), self.global_offset))
                     new_node.pos_tracking[start + self.global_offset] = start
                     new_dict[each_tups[1]] = new_node
@@ -92,10 +81,7 @@ class ICD10TrackChangeInTextStructureImpl(ICD10ChangeInTextStructure):
                 if node.track_pos == len(node.pos_list):
                     node.track_pos = 0
                 new_text = [each_tups[1] for each_tups in corrected_key]
-                print("old key " + text_span[index][0])
                 text_span[index][0] = " ".join(new_text)
-                print(text_span[index][0])
-        print("End of Processing")
         return {**token_dict, **new_dict}
 
     def generate_metainfo_for_changed_text(self, spanned_info: dict) -> dict:
