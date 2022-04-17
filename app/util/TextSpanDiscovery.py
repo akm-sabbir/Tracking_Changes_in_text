@@ -12,7 +12,6 @@ class TextSpanDiscovery:
         self.dictionary = changed_token_dict
         self.token_dict = OrderedDict()
         self.global_offset = 0
-        self.__logger = logging.getLogger(__name__)
 
     """Global_offset is an importan pointer that track how many places text are shifting towards either left or right through
     expansion and shrinking"""
