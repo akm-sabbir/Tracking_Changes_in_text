@@ -8,7 +8,7 @@ from app.exception.service_exception import ServiceException
 
 class TextSpanDiscovery:
 
-    def __init__(self, changed_token_dict=None):
+    def __init__(self, changed_token_dict):
         self.dictionary = changed_token_dict
         self.token_dict = OrderedDict()
         self.global_offset = 0
@@ -35,13 +35,6 @@ class TextSpanDiscovery:
     def track_the_changes_in_text(self, token_dict, text_span):
 
         new_dict = OrderedDict()
-        try:
-            if self.dictionary is None:
-                raise ValueError("Missing dictionary need to be initialized")
-        except ValueError:
-            self.__logger.error("Error while reading from dictionary not initlialzied in TextSpanDiscovery module"
-                                " ", exc_info=True)
-            raise ServiceException(message="Missing dictionary to generate result")
         for index, (key, value1, value2) in enumerate(text_span):
             corrected_key = self.dictionary.get(key, None)
             if corrected_key is not None:

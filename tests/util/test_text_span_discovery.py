@@ -89,3 +89,5 @@ class TestSpanDiscovery(TestCase):
         assert updated_token_dict["swolling"].pos_list[0].start == 201
         assert updated_token_dict["swolling"].pos_list[0].end == 209
         assert updated_token_dict["swolling"].pos_list[0].offset == 1
+
+
