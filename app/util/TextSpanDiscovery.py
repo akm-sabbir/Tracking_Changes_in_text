@@ -14,9 +14,12 @@ class TextSpanDiscovery:
         self.global_offset = 0
         self.__logger = logging.getLogger(__name__)
 
+    """Global_offset is an importan pointer that track how many places text are shifting towards either left or right through
+    expansion and shrinking"""
     def reset_global_offset(self):
         self.global_offset = 0
 
+    """Following function is used to create a complex objec  of type TokenNode"""
     def get_new_node_(self, parent_: str = "", isRoot=True, posList: list = list(), length: int = 0):
         node = TokenNode()
         node.pos_tracking = defaultdict(int)
@@ -26,7 +29,9 @@ class TextSpanDiscovery:
         node.length = length
         node.parent_token = parent_
         return node
-
+    """In The following function we first check whether the dictionary base is initialzied or not. If it is not initialized
+    in that case we are going return Code 500 internal server error, the error will be logged in log file. If everythign
+    is properly initialized then we proceed to track the changes in text position"""
     def track_the_changes_in_text(self, token_dict, text_span):
 
         new_dict = OrderedDict()
@@ -56,6 +61,8 @@ class TextSpanDiscovery:
                 text_span[index][0] = " ".join(new_text)
         return {**token_dict, **new_dict}
 
+    """This is the function externally visible. It takes graph dictionary and text span information as parameter and return
+    updated graph dictionary with new text positional information"""
     def generate_metainfo_for_changed_text(self, token_dict: dict, spanned_info: dict) -> dict:
         self.reset_global_offset()
         token_dict2 = self.track_the_changes_in_text(token_dict, spanned_info)
