@@ -20,11 +20,11 @@ class TextSpanDiscovery:
         self.global_offset = 0
 
     """Following function is used to create a complex objec  of type TokenNode"""
-    def get_new_node_(self, parent_: str = "", isRoot=True, posList: list = list(), length: int = 0):
+    def get_new_node_(self, parent_: str = "", is_root=True, pos_list: list = list(), length: int = 0):
         node = TokenNode()
         node.pos_tracking = defaultdict(int)
-        node.pos_list = posList
-        node.is_root = isRoot
+        node.pos_list = pos_list
+        node.is_root = is_root
         node.track_pos = 0
         node.length = length
         node.parent_token = parent_
@@ -47,7 +47,7 @@ class TextSpanDiscovery:
             if corrected_key is not None:
                 node = token_dict[key]
                 for index, each_tups in enumerate(corrected_key):
-                    new_node = self.get_new_node_(key, isRoot=False, length=len(each_tups[1]), posList=[])
+                    new_node = self.get_new_node_(key, is_root=False, length=len(each_tups[1]), pos_list=[])
                     start = key.find(each_tups[0]) + node.pos_list[node.track_pos].start
                     self.global_offset += (1 if index > 0 else 0)
                     new_node.pos_list.append(Span(start=start, end=start + len(each_tups[1]), offset=self.global_offset))
