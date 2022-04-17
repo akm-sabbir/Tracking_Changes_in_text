@@ -8,6 +8,3 @@ class Span:
         self.start = start
         self.end = end
         self.offset = offset
-
-    def update_offset(self, offset):
-        self.offset = offset
