@@ -5,47 +5,55 @@ from unittest import TestCase
 from app.util import TextSpanDiscovery
 
 class TestSpanDiscovery(TestCase):
-    __get_dummy_dictionary = {"this": [("this", "these")],
-                          "wellwriten": [("well", "well"), ("writen", "written")],
-                          "analyz": [("analyz", "analyze")],
-                          "broadview": [("broad", "broad"), ("view", "view")],
-                          "baddest": [("baddest", "worst")],
-                          "hart": [("hart", "heard")],
-                          "diarrheafrom": [("diarrhea", "diarrhea"), ("from", "from")],
-                          "withsputum": [("with", "with"), ("sputum", "sputum")],
-                          "stil": [("stil", "still")],
-                          "noswolling": [("no", "no"), ("swolling", "swolling")],
-                          "hisheadache": [("his", "his"), ("headache", "headache")],
-                          "haveshingles": [("have", "have"), ("shingles", "shingles")],
-                          "giveshim": [("gives", "gives"), ("him", "him")]
+    __get_dummy_dictionary = {
+                            "this": [("this", "these")],
+                            "wellwriten": [("well", "well"), ("writen", "written")],
+                            "analyz": [("analyz", "analyze")],
+                            "broadview": [("broad", "broad"), ("view", "view")],
+                            "baddest": [("baddest", "worst")],
+                            "hart": [("hart", "heard")],
+                            "diarrheafrom": [("diarrhea", "diarrhea"), ("from", "from")],
+                            "withsputum": [("with", "with"), ("sputum", "sputum")],
+                            "stil": [("stil", "still")],
+                            "noswolling": [("no", "no"), ("swolling", "swolling")],
+                            "hisheadache": [("his", "his"), ("headache", "headache")],
+                            "haveshingles": [("have", "have"), ("shingles", "shingles")],
+                            "giveshim": [("gives", "gives"), ("him", "him")]
                           }
+    text_span_discovery_tool: TextSpanDiscovery
 
-    def test__get_icd_10_codes_with_relevant_spans__should_return_correct_response__given_correct_input(self):
-        mock_icd10_annotations = self.__get_dummy_dictionary()
-        no_of_components_in_algorithm = 3
+    def test__get_icd_10_codes_with_relevant_spans__should_return_correct_response__given_correct_input_setone(self):
+        self.text_span_discovery_tool = TextSpanDiscovery()
+        text = "this is a wellwriten? sentence? we are going to analyz it. this was wellwriten policy. " \
+           "so thanks. we have a broadview on this topic."
+    text2 = "This was a baddest news I hart from you."
 
-        icd10_filtered_annotations = TextSpanDiscovery().get_icd_10_codes_with_relevant_spans(mock_icd10_annotations,
-                                                                                         no_of_components_in_algorithm,
-                                                                                         mock_medant_note)
+    def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__give_correct_input_settwo(self):
 
+        self.text_span_discovery_tool = TextSpanDiscovery()
+        text3 = "He has alot going on, he continues to drinks, daily, " \
+                "and he has been feeling dizzy with some fall,he was in the er recently " \
+                "and he had a head CT, he still smokes, coughing wheezying breathless, withsputum, " \
+                "he stil has urinary incontinent, he has been confirmed to have colon cancer, " \
+                "he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent, " \
+                "he also chronic diarrheafrom time to time,  the absence of recurrent leg cramps is obvious"
 
-        assert icd10_filtered_annotations[0].begin_offset == 0
-        assert icd10_filtered_annotations[0].end_offset == 7
-
-        assert icd10_filtered_annotations[1].begin_offset == 8
-        assert icd10_filtered_annotations[1].end_offset == 10
-
-        assert icd10_filtered_annotations[2].begin_offset == 50
-        assert icd10_filtered_annotations[2].end_offset == 130
-
-        assert icd10_filtered_annotations[3].begin_offset == 300
-        assert icd10_filtered_annotations[3].end_offset == 900
-
-        assert icd10_filtered_annotations[3].suggested_codes[0].code == 'A15.0'
-        assert icd10_filtered_annotations[3].suggested_codes[1].code == 'J12.89'
-        assert icd10_filtered_annotations[3].suggested_codes[2].code == 'A15.9'
-
-        assert icd10_filtered_annotations[0].medical_condition == mock_medant_note[0:7]
-        assert icd10_filtered_annotations[1].medical_condition == mock_medant_note[8:10]
-        assert icd10_filtered_annotations[2].medical_condition == mock_medant_note[50:130]
-        assert icd10_filtered_annotations[3].medical_condition == mock_medant_note[300:900]
+    def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__given_correct_input_setthree(self):
+        self.text_span_discovery_tool = TextSpanDiscovery()
+        text4 = "She has hx of dm, cad, cops, depression, and morbid obesity, she is currently having alot of lowbuttock pain, " \
+                "the pain is worse at night, she cant seat or put pressure on her buttock, " \
+                "there has been noswolling, it is hard to work to tingling no numbness, duration month, " \
+                "she also lost her job during covid, she was very depressed but she is feeling better now, " \
+                "but she is still smoking, coughing, with sputum inthe morining, with some wheezing, " \
+                "although she did loss alot of weight, but over covid she has gained13lbs, " \
+                "no tingling no numbness in her feet, no foot ulcers, " \
+                "she also stoppd alot of medication hermedication becuase of financial issues He is here for " \
+                "followup on his colitis and " \
+                "headache.He said his ulcerative colitis flares up and giveshim a hard time doing is school work or job work." \
+                "His abdominal pain, N / V comes and goes; sometiomessevere.He said his Gi dr just changed him medicine to Apriso " \
+                "which helps sometimes.Hius GI dr hadplan to have his abominal surgery in the future; His Gi dr wants start him on " \
+                "Xeljang but he needs to haveshingles shot; which he is not able to get because of his age; " \
+                "he is wondering if his PCP can give him aShingle shot. " \
+                "He said he has seen neurologist who prescribed him a sumatriptan for hisheadache / migraine and " \
+                "this medication is helping him.He has no CP, SOB, coughing and wheezing." \
+                "Hehas no other issues reported. Schzophrenia, Hypothyroidism"

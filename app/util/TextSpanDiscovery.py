@@ -36,7 +36,7 @@ class TextSpanDiscovery:
     def reset_global_offset(self):
         self.global_offset = 0
 
-    def track_change_in_text(self, token_dict, text_span):
+    def track_the_changes_in_text(self, token_dict, text_span):
 
         new_dict = OrderedDict()
         for index, (key, value1, value2) in enumerate(text_span):
@@ -58,8 +58,7 @@ class TextSpanDiscovery:
                 text_span[index][0] = " ".join(new_text)
         return {**token_dict, **new_dict}
 
-    def generate_metainfo_for_changed_text(self, spanned_info: dict) -> dict:
-        token_dict = self.process_token_to_create_graph(spanned_info)
+    def generate_metainfo_for_changed_text(self, token_dict: dict, spanned_info: dict) -> dict:
         self.reset_global_offset()
-        token_dict2 = self.track_change_in_text(token_dict, spanned_info)
+        token_dict2 = self.track_the_changes_in_text(token_dict, spanned_info)
         return token_dict2
