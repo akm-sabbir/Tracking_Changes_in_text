@@ -13,6 +13,25 @@ class TextSpanDiscovery:
         self.token_dict = OrderedDict()
         self.global_offset = 0
 
+    def get_start_end_pos_span(self, graph: dict, child_node: str, marker: int):
+        if graph.get(child_node, None) is not None:
+            node = graph.get(child_node)
+            if node.is_root is True:
+                span_to_return = node.pos_list[node.track_pos].start if marker == 0 else node.pos_list[
+                    node.track_pos].end
+                node = self.position_tracker_repositioning(node)
+                return span_to_return
+            else:
+                return self.get_start_end_pos_span(
+                    graph, node.parent_token, marker
+                )
+        return -1
+
+    def position_tracker_repositioning(self, node: dict):
+        node.track_pos += 1
+        node.track_pos = node.track_pos % len(node.pos_list)
+        return node
+
     """Global_offset is an importan pointer that track how many places text are shifting towards either left or right through
     expansion and shrinking"""
     def reset_global_offset(self):
