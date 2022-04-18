@@ -44,6 +44,20 @@ class TextSpanDiscovery:
         node.parent_token = parent_
         return node
 
+    def get_new_nodes(self, key: str, corrected_key: list, value1: int, value2: int, new_span: list, token_dict: dict):
+        for index, each_tups in enumerate(corrected_key):
+            start = key.find(each_tups[0]) + value1
+            is_space_needed = 1 if index > 0 else 0
+            self.global_offset += is_space_needed
+            subword = each_tups[0] if len(key) != len(each_tups[0]) else ""
+            new_node = self.get_new_node_(key, is_root=False, length=len(each_tups[1]), sub_word=subword)
+            new_node.pos_tracking[start + self.global_offset] = value1
+            new_span.append([each_tups[1], start + self.global_offset, start + self.global_offset + len(each_tups[1])])
+            if token_dict.get(each_tups[1], None) == None:
+                token_dict[each_tups[1]] = {}
+            token_dict[each_tups[1]][start + self.global_offset] = new_node
+            self.global_offset += (len(each_tups[1]) - len(each_tups[0]))
+
     """In The following function we first check whether the dictionary base is initialzied or not. If it is not initialized
     in that case we are going return Code 500 internal server error, the error will be logged in log file. If everythign
     is properly initialized then we proceed to track the changes in text position"""
@@ -51,18 +65,8 @@ class TextSpanDiscovery:
         new_span = []
         for index, (key, value1, value2) in enumerate(text_span):
             corrected_key = self.dictionary.get(key, None)
-            if corrected_key is not None:
-                for index, each_tups in enumerate(corrected_key):
-                    start = key.find(each_tups[0]) + value1
-                    self.global_offset += (1 if index > 0 else 0)
-                    new_node = self.get_new_node_(key, is_root=False, length=len(each_tups[1]), sub_word=
-                                                  each_tups[0] if len(key) != len(each_tups[0]) else "")
-                    new_node.pos_tracking[start + self.global_offset] = value1
-                    new_span.append([each_tups[1], start + self.global_offset, start + self.global_offset + len(each_tups[1])])
-                    if token_dict.get(each_tups[1], None) is None:
-                        token_dict[each_tups[1]] = {}
-                    token_dict[each_tups[1]][start + self.global_offset] = new_node
-                    self.global_offset += (len(each_tups[1]) - len(each_tups[0]))
+            if corrected_key != None:
+                self.get_new_nodes(key, corrected_key, value1, value2, new_span, token_dict)
             else:
                 new_span.append([key, value1 + self.global_offset, value2 + self.global_offset])
         return (token_dict, new_span)

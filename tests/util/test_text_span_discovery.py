@@ -95,7 +95,6 @@ class TestSpanDiscovery(TestCase):
             "the pain is worse at night, she cant seat or put pressure on her buttock, " \
             "there has been noswolling, it is hard to work to tingling no numbness, duration month, "
         ts = token_generator_with_span.get_token_with_span(text5)
-        print(ts)
         nodes = graph_generator.process_token_to_create_graph(ts)
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["buttock"].__contains__(175) == True
@@ -108,6 +107,12 @@ class TestSpanDiscovery(TestCase):
         (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swell", 200, "")
         assert span_info == 201
         assert root == 8
+        (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swell", 201, "")
+        assert span_info == -1
+        assert  root == None
+        (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swelled", 201, "")
+        assert  span_info == -1
+        assert  root == None
         assert len([each for each in new_ts if each[0] == 'butock']) == 1
         assert len([each for each in new_ts if each[0] == 'butox']) == 1
         assert updated_token_dict["swolling"][202].parent_token == "noswolling"
