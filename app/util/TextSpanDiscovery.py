@@ -44,7 +44,7 @@ class TextSpanDiscovery:
         node.parent_token = parent_
         return node
 
-    def get_new_nodes(self, key: str, corrected_key: list, value1: int, value2: int, new_span: list, token_dict: dict):
+    def get_new_nodes(self, key: str, corrected_key: list, value1: int, new_span: list, token_dict: dict):
         for index, each_tups in enumerate(corrected_key):
             start = key.find(each_tups[0]) + value1
             is_space_needed = 1 if index > 0 else 0
