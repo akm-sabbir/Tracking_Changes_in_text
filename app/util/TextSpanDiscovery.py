@@ -66,7 +66,7 @@ class TextSpanDiscovery:
         for index, (key, value1, value2) in enumerate(text_span):
             corrected_key = self.dictionary.get(key, None)
             if corrected_key != None:
-                self.get_new_nodes(key, corrected_key, value1, value2, new_span, token_dict)
+                self.get_new_nodes(key, corrected_key, value1, new_span, token_dict)
             else:
                 new_span.append([key, value1 + self.global_offset, value2 + self.global_offset])
         return (token_dict, new_span)
