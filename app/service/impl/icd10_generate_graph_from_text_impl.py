@@ -20,14 +20,12 @@ class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
             punctuation_list = re.findall("[" + string.punctuation + "]+", each_span[0])
             if len(punctuation_list) > 0 and len( each_span[0]) == 1:
                 continue
-            if self.token_dict.get(each_span[0], None) is None:
-                node = self.get_new_node_for_token(pos_list=[Span(each_span[1], each_span[2], 0)],
+            node = self.get_new_node_for_token(pos_list=[Span(each_span[1], each_span[2], 0)],
                                                    length=len(each_span[0]))
-                node.pos_tracking[each_span[1]] = each_span[1]
-                self.token_dict[each_span[0]] = node
-            else:
-                self.token_dict[each_span[0]].pos_list.append(Span(each_span[1], each_span[2], 0))
-                self.token_dict[each_span[0]].pos_tracking[each_span[1]] = each_span[1]
+            node.pos_tracking[each_span[1]] = each_span[1]
+            if self.token_dict.get(each_span[0], None) is None:
+                self.token_dict[each_span[0]] = {}
+            self.token_dict[each_span[0]][each_span[1]] = node
         return self.token_dict
     """Following function helps to create a new object of type TokenNode and initialize it with differetn 
     type of information. It helps to create data structure"""

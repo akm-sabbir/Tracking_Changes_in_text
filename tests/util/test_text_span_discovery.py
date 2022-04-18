@@ -17,9 +17,13 @@ class TestSpanDiscovery(TestCase):
                             "withsputum": [("with", "with"), ("sputum", "sputum")],
                             "stil": [("stil", "still")],
                             "noswolling": [("no", "no"), ("swolling", "swolling")],
+                             "swolling" : [("swolling", "swell")],
                             "hisheadache": [("his", "his"), ("headache", "headache")],
                             "haveshingles": [("have", "have"), ("shingles", "shingles")],
-                            "giveshim": [("gives", "gives"), ("him", "him")]
+                            "giveshim": [("gives", "gives"), ("him", "him")],
+                            "lowbuttock": [("low", "low"), ("buttock", "buttock")],
+                            "buttock": [("buttock", "butock")],
+                            "butock": [("butock", "butox")]
                           }
     text_span_discovery_tool: TextSpanDiscovery
 
@@ -31,14 +35,11 @@ class TestSpanDiscovery(TestCase):
            "so thanks. we have a broadview on this topic."
         ts = token_generator_with_span.get_token_with_span(text)
         nodes = graph_generator.process_token_to_create_graph(ts)
-        updated_token_dict = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
-        updated_token_dict["broadview"].parent_token == ""
-        updated_token_dict["broadview"].pos_list[0].start == 108
-        assert updated_token_dict["broad"].parent_token == "broadview"
-        assert updated_token_dict["broad"].pos_tracking[115] == 108
-        assert updated_token_dict["broad"].pos_list[0].start == 108
-        assert updated_token_dict["broad"].pos_list[0].end == 113
-        assert updated_token_dict["broad"].pos_list[0].offset == 7
+        updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
+        assert updated_token_dict["broadview"].get(108, None) != None
+        assert updated_token_dict["broadview"][108].parent_token == ""
+        assert updated_token_dict["broad"][115].parent_token == "broadview"
+        assert updated_token_dict["broad"][115].pos_tracking[115] == 108
 
     def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__give_correct_input_settwo(self):
 
@@ -53,12 +54,11 @@ class TestSpanDiscovery(TestCase):
                 "he also chronic diarrheafrom time to time,  the absence of recurrent leg cramps is obvious"
         ts = token_generator_with_span.get_token_with_span(text3)
         nodes = graph_generator.process_token_to_create_graph(ts)
-        updated_token_dict = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
-        assert updated_token_dict["diarrhea"].parent_token == "diarrheafrom"
-        assert updated_token_dict["diarrhea"].pos_tracking[407] == 405
-        assert updated_token_dict["diarrhea"].pos_list[0].start == 405
-        assert updated_token_dict["diarrhea"].pos_list[0].end == 413
-        assert updated_token_dict["diarrhea"].pos_list[0].offset == 2
+        updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
+        assert updated_token_dict["diarrhea"][407].parent_token == "diarrheafrom"
+        assert updated_token_dict["diarrhea"][407].pos_tracking[407] == 405
+        assert updated_token_dict["diarrhea"][407].is_root == False
+        assert updated_token_dict["diarrhea"][407].length == 8
 
     def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__given_correct_input_setthree(self):
         self.text_span_discovery_tool = TextSpanDiscovery(self.get_dummy_dictionary)
@@ -83,11 +83,39 @@ class TestSpanDiscovery(TestCase):
                 "Hehas no other issues reported. Schzophrenia, Hypothyroidism"
         ts = token_generator_with_span.get_token_with_span(text4)
         nodes = graph_generator.process_token_to_create_graph(ts)
-        updated_token_dict = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
-        assert updated_token_dict["swolling"].parent_token == "noswolling"
-        assert updated_token_dict["swolling"].pos_tracking[202] == 201
-        assert updated_token_dict["swolling"].pos_list[0].start == 201
-        assert updated_token_dict["swolling"].pos_list[0].end == 209
-        assert updated_token_dict["swolling"].pos_list[0].offset == 1
+        updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
+        assert updated_token_dict["swolling"][202].parent_token == "noswolling"
+        assert updated_token_dict["swolling"][202].pos_tracking[202] == 199
 
-
+    def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__given_correct_input_setfour(self):
+        self.text_span_discovery_tool = TextSpanDiscovery(self.get_dummy_dictionary)
+        token_generator_with_span = ICD10TextAndSpanGenerationServiceImpl()
+        graph_generator = ICD10GenerateGraphFromTextImpl()
+        text5 = "She has hx of dm, cad, cops, depression, and morbid obesity, she is currently having alot of lowbuttock pain, " \
+            "the pain is worse at night, she cant seat or put pressure on her buttock, " \
+            "there has been noswolling, it is hard to work to tingling no numbness, duration month, "
+        ts = token_generator_with_span.get_token_with_span(text5)
+        nodes = graph_generator.process_token_to_create_graph(ts)
+        updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
+        assert updated_token_dict["buttock"].__contains__(175) == True
+        assert updated_token_dict["buttock"][97].parent_token == "lowbuttock"
+        assert updated_token_dict["buttock"][97].sub_word == 'buttock'
+        assert updated_token_dict["buttock"][175].sub_word == ""
+        assert len([each for each in new_ts if each[0] == 'butock']) == 1
+        assert len([each for each in new_ts if each[0] == 'butox']) == 0
+        updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(updated_token_dict, new_ts)
+        (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swell", 200, "")
+        assert span_info == 201
+        assert root == 8
+        (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swell", 201, "")
+        assert span_info == -1
+        assert  root == None
+        (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swelled", 201, "")
+        assert  span_info == -1
+        assert  root == None
+        assert len([each for each in new_ts if each[0] == 'butock']) == 1
+        assert len([each for each in new_ts if each[0] == 'butox']) == 1
+        assert updated_token_dict["swolling"][202].parent_token == "noswolling"
+        assert updated_token_dict["swolling"][202].pos_tracking[202] == 199
+        assert updated_token_dict["swell"][200].parent_token == "swolling"
+        assert updated_token_dict["swell"][200].pos_tracking[200] == 202
