@@ -16,16 +16,14 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
-        assert len(graph_nodes['patient'].pos_list) == 2
-        assert graph_nodes['patient'].pos_tracking[7] == 7
-        assert graph_nodes['patient'].pos_tracking[63] == 63
-        assert  graph_nodes['patient'].length == 7
-        assert graph_nodes['patient'].pos_list[0].start == 7
-        assert graph_nodes['patient'].pos_list[0].end == 14
-        assert  graph_nodes['patient'].parent_token == ""
+        assert graph_nodes['patient'][7].pos_tracking[7] == 7
+        assert graph_nodes['patient'][63].pos_tracking[63] == 63
+        assert graph_nodes['patient'][63].length == 7
+        assert graph_nodes['patient'][7].length == 7
+        assert graph_nodes['patient'][7].parent_token == ""
+        assert graph_nodes['patient'][63].parent_token == ""
         assert graph_nodes.get("?", None) == None
-        assert graph_nodes['patient'].is_root == True
-        assert graph_nodes['1/21/2020'].length == 9
+        assert graph_nodes['patient'][7].is_root == True
 
     def test_graph_dict_from_token_should_return_proper_datastructure_second_set(self) -> None:
         self.icd10TextTokenGenerator = ICD10TextAndSpanGenerationServiceImpl()
@@ -39,18 +37,12 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
-        assert len(graph_nodes['he'].pos_list) == 12
-        assert graph_nodes['he'].pos_tracking[22] == 22
-        assert graph_nodes['he'].pos_tracking[57] == 57
-        assert graph_nodes['he'].pos_list[0].start == 22
-        assert graph_nodes['he'].pos_list[0].end == 24
-        assert graph_nodes['he'].pos_list[1].start == 57
-        assert graph_nodes['he'].pos_list[1].end == 59
-        assert  graph_nodes['he'].length == 2
-        assert graph_nodes['he'].is_root == True
-        assert  graph_nodes['he'].parent_token == ""
+        assert graph_nodes['he'][22].pos_tracking[22] == 22
+        assert graph_nodes['he'][57].pos_tracking[57] == 57
+        assert  graph_nodes['he'][22].length == 2
+        assert graph_nodes['he'][22].is_root == True
+        assert  graph_nodes['he'][22].parent_token == ""
         assert graph_nodes.get(",", None) == None
-        assert graph_nodes['he'].track_pos == 0
 
     def test_graph_dict_from_token_should_return_proper_datastructure_third_set(self) -> None:
         self.icd10TextTokenGenerator = ICD10TextAndSpanGenerationServiceImpl()
@@ -60,13 +52,11 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
-        assert len(graph_nodes['work'].pos_list) == 2
-        assert graph_nodes['work'].pos_tracking[82] == 82
-        assert graph_nodes['work'].pos_tracking[94] == 94
-        assert graph_nodes['work'].pos_list[0].start == 82
-        assert graph_nodes['work'].pos_list[0].end == 86
-        assert  graph_nodes['work'].length == 4
-        assert graph_nodes['work'].is_root == True
-        assert  graph_nodes['work'].parent_token == ""
+        assert graph_nodes['work'][82].pos_tracking[82] == 82
+        assert graph_nodes['work'][94].pos_tracking[94] == 94
+        assert graph_nodes['work'][94].parent_token == ""
+        assert graph_nodes['work'][94].is_root == True
+        assert  graph_nodes['work'][82].length == 4
+        assert graph_nodes['work'][82].is_root == True
+        assert  graph_nodes['work'][82].parent_token == ""
         assert graph_nodes.get(",", None) == None
-        assert graph_nodes['work'].track_pos == 0
