@@ -1,4 +1,5 @@
 import logging
+import string
 
 from app.dto.core.util.TokenNode import TokenNode
 from app.dto.core.util.Span import Span
@@ -70,6 +71,12 @@ class TextSpanDiscovery:
             else:
                 new_span.append([key, value1 + self.global_offset, value2 + self.global_offset])
         return (token_dict, new_span)
+
+    def improved_text_reconstruction(self, new_text: list):
+        for index in range(len(new_text) - 1):
+            if new_text[index + 1][0] not in set([':',';','!','?','.', ',']):
+                new_text[index][0] = new_text[index][0] + " "
+        return "".join([each_elem[0] for each_elem in new_text])
 
     """This is the function externally visible. It takes graph dictionary and text span information as parameter and return
     updated graph dictionary with new text positional information"""
