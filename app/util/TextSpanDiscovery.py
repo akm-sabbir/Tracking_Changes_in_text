@@ -8,6 +8,7 @@ from app.exception.service_exception import ServiceException
 
 
 class TextSpanDiscovery:
+    ROOT_LOCATION: int = -1
 
     def __init__(self, changed_token_dict):
         self.dictionary = changed_token_dict
@@ -37,7 +38,7 @@ class TextSpanDiscovery:
     """Following function is used to create a complex objec  of type TokenNode"""
     def get_new_node_(self, parent_: str = "", is_root=True, sub_word: str = "", length: int = 0):
         node = TokenNode()
-        node.pos_tracking = -1
+        node.pos_tracking = TextSpanDiscovery.ROOT_LOCATION
         node.sub_word = sub_word
         node.is_root = is_root
         node.track_pos = 0

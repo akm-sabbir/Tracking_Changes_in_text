@@ -9,7 +9,11 @@ from app.dto.core.util.TokenNode import TokenNode
 
 """ Following class helps to track the changes in text by keeping the relationship between original text and extrapolated
 text."""
+
+
 class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
+
+    ROOT_LOCATION: int = -1
 
     def __init__(self,):
         self.token_dict = OrderedDict()
@@ -31,7 +35,7 @@ class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
     type of information. It helps to create data structure"""
     def get_new_node_for_token(self, parent_key: str = "", is_root=True, pos_list: list = [], length: int = 0):
         new_node = TokenNode()
-        new_node.pos_tracking = -1
+        new_node.pos_tracking = ICD10GenerateGraphFromTextImpl.ROOT_LOCATION
         new_node.pos_list = pos_list
         new_node.is_root = is_root
         new_node.track_pos = 0
