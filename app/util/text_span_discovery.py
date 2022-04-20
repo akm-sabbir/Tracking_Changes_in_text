@@ -61,12 +61,12 @@ class TextSpanDiscovery:
     is properly initialized then we proceed to track the changes in text position"""
     def track_the_changes_in_text(self, token_dict, text_span) -> tuple:
         new_span = []
-        for index, (key, value1, value2) in enumerate(text_span):
+        for index, (key, start_of_span, end_of_span) in enumerate(text_span):
             corrected_key = self.dictionary.get(key, None)
             if corrected_key != None:
-                self.get_new_nodes(key, corrected_key, value1, new_span, token_dict)
+                self.get_new_nodes(key, corrected_key, start_of_span, new_span, token_dict)
             else:
-                new_span.append([key, value1 + self.global_offset, value2 + self.global_offset])
+                new_span.append([key, start_of_span + self.global_offset, end_of_span + self.global_offset])
         return (token_dict, new_span)
 
     def improved_text_reconstruction(self, new_text: list) -> str:
