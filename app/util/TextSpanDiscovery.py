@@ -83,5 +83,5 @@ class TextSpanDiscovery:
     updated graph dictionary with new text positional information"""
     def generate_metainfo_for_changed_text(self, token_dict: dict, spanned_info: dict) -> dict:
         self.reset_global_offset()
-        token_dict2 = self.track_the_changes_in_text(token_dict, spanned_info)
-        return token_dict2
+        updated_tokenize_dict,new_span = self.track_the_changes_in_text(token_dict, spanned_info)
+        return updated_tokenize_dict, new_span
