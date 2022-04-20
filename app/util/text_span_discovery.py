@@ -72,7 +72,7 @@ class TextSpanDiscovery:
     def improved_text_reconstruction(self, new_text: list) -> str:
         new_token_list = [""]*len(new_text)
         for index in range(len(new_text) - 1):
-            if new_text[index + 1][0] not in set([':',';','!','?','.', ',']):
+            if new_text[index + 1][0] not in set([':', ';', '!', '?', '.', ',']):
                 new_token_list[index] = new_text[index][0] + " "
             else:
                 new_token_list[index] = new_text[index][0]

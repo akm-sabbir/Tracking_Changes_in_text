@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from app.service.icd10_text_token_span_gen_service import ICD10TextTokenAndSpanGeneration
-from app.util.TextSpanDiscovery import TextSpanDiscovery
+from app.util.text_span_discovery import TextSpanDiscovery
 from app.service.impl.icd10_text_token_span_gen_service_impl import ICD10TextAndSpanGenerationServiceImpl
 from app.service.impl.icd10_generate_graph_from_text_impl import ICD10GenerateGraphFromTextImpl
 
