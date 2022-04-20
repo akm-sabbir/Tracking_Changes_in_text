@@ -22,7 +22,7 @@ class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
                 continue
             node = self.get_new_node_for_token(pos_list=[Span(each_span[1], each_span[2], 0)],
                                                    length=len(each_span[0]))
-            node.pos_tracking[each_span[1]] = each_span[1]
+            node.pos_tracking = each_span[1]
             if self.token_dict.get(each_span[0], None) is None:
                 self.token_dict[each_span[0]] = {}
             self.token_dict[each_span[0]][each_span[1]] = node
@@ -31,7 +31,7 @@ class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
     type of information. It helps to create data structure"""
     def get_new_node_for_token(self, parent_key: str = "", is_root=True, pos_list: list = [], length: int = 0):
         new_node = TokenNode()
-        new_node.pos_tracking = defaultdict(int)
+        new_node.pos_tracking = -1 #defaultdict(int)
         new_node.pos_list = pos_list
         new_node.is_root = is_root
         new_node.track_pos = 0

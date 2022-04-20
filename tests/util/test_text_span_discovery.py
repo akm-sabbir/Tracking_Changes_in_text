@@ -39,7 +39,7 @@ class TestSpanDiscovery(TestCase):
         assert updated_token_dict["broadview"].get(108, None) != None
         assert updated_token_dict["broadview"][108].parent_token == ""
         assert updated_token_dict["broad"][115].parent_token == "broadview"
-        assert updated_token_dict["broad"][115].pos_tracking[115] == 108
+        assert updated_token_dict["broad"][115].pos_tracking == 108
 
     def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__give_correct_input_settwo(self):
 
@@ -56,7 +56,7 @@ class TestSpanDiscovery(TestCase):
         nodes = graph_generator.process_token_to_create_graph(ts)
         updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["diarrhea"][407].parent_token == "diarrheafrom"
-        assert updated_token_dict["diarrhea"][407].pos_tracking[407] == 405
+        assert updated_token_dict["diarrhea"][407].pos_tracking == 405
         assert updated_token_dict["diarrhea"][407].is_root == False
         assert updated_token_dict["diarrhea"][407].length == 8
 
@@ -85,7 +85,7 @@ class TestSpanDiscovery(TestCase):
         nodes = graph_generator.process_token_to_create_graph(ts)
         updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["swolling"][202].parent_token == "noswolling"
-        assert updated_token_dict["swolling"][202].pos_tracking[202] == 199
+        assert updated_token_dict["swolling"][202].pos_tracking == 199
 
     def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__given_correct_input_setfour(self):
         self.text_span_discovery_tool = TextSpanDiscovery(self.get_dummy_dictionary)
@@ -117,9 +117,9 @@ class TestSpanDiscovery(TestCase):
         assert len([each for each in new_ts if each[0] == 'butock']) == 2
         assert len([each for each in new_ts if each[0] == 'butox']) == 1
         assert updated_token_dict["swolling"][202].parent_token == "noswolling"
-        assert updated_token_dict["swolling"][202].pos_tracking[202] == 199
+        assert updated_token_dict["swolling"][202].pos_tracking == 199
         assert updated_token_dict["swell"][200].parent_token == "swolling"
-        assert updated_token_dict["swell"][200].pos_tracking[200] == 202
+        assert updated_token_dict["swell"][200].pos_tracking == 202
 
     def test__icd_10_text_reconstruction_response__given_correct_ouput_setfive(self):
         self.text_span_discovery_tool = TextSpanDiscovery(self.get_dummy_dictionary)
@@ -135,3 +135,6 @@ class TestSpanDiscovery(TestCase):
 
         assert text.find("buttock") == 97
         assert  text.find('swolling') == 202
+        updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(updated_token_dict, new_ts)
+        text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
+        assert text.find("swell") != -1
