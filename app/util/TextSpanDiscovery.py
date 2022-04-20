@@ -84,7 +84,7 @@ class TextSpanDiscovery:
 
     """This is the function externally visible. It takes graph dictionary and text span information as parameter and return
     updated graph dictionary with new text positional information"""
-    def generate_metainfo_for_changed_text(self, token_dict: dict, spanned_info: dict) -> dict:
+    def generate_metainfo_for_changed_text(self, token_dict: dict, spanned_info: dict) -> tuple:
         self.reset_global_offset()
         updated_tokenize_dict, new_span = self.track_the_changes_in_text(token_dict, spanned_info)
         return (updated_tokenize_dict, new_span)
