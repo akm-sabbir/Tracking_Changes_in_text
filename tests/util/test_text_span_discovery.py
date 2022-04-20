@@ -131,9 +131,13 @@ class TestSpanDiscovery(TestCase):
         nodes = graph_generator.process_token_to_create_graph(ts)
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
-
         assert text.find("buttock") == 97
         assert  text.find('swolling') == 202
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(updated_token_dict, new_ts)
         text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
+        print(text)
         assert text.find("swell") != -1
+        assert text.find("butox")
+        assert  text.count(',') == 12
+        assert  text.count("lowbuttock") == 0
+        assert text.find("no swell,") != -1

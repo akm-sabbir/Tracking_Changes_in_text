@@ -73,14 +73,18 @@ class TextSpanDiscovery:
         return (token_dict, new_span)
 
     def improved_text_reconstruction(self, new_text: list):
+        new_token_list = [""]*len(new_text)
         for index in range(len(new_text) - 1):
             if new_text[index + 1][0] not in set([':',';','!','?','.', ',']):
-                new_text[index][0] = new_text[index][0] + " "
-        return "".join([each_elem[0] for each_elem in new_text])
+                new_token_list[index] = new_text[index][0] + " "
+            else:
+                new_token_list[index] = new_text[index][0]
+        new_token_list[-1] = new_text[-1][0]
+        return "".join([each_elem for each_elem in new_token_list])
 
     """This is the function externally visible. It takes graph dictionary and text span information as parameter and return
     updated graph dictionary with new text positional information"""
     def generate_metainfo_for_changed_text(self, token_dict: dict, spanned_info: dict) -> dict:
         self.reset_global_offset()
-        updated_tokenize_dict,new_span = self.track_the_changes_in_text(token_dict, spanned_info)
+        updated_tokenize_dict, new_span = self.track_the_changes_in_text(token_dict, spanned_info)
         return updated_tokenize_dict, new_span
