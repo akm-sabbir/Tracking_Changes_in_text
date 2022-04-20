@@ -37,7 +37,7 @@ class TextSpanDiscovery:
     """Following function is used to create a complex objec  of type TokenNode"""
     def get_new_node_(self, parent_: str = "", is_root=True, sub_word: str = "", length: int = 0):
         node = TokenNode()
-        node.pos_tracking = -1 #defaultdict(int)
+        node.pos_tracking = -1
         node.sub_word = sub_word
         node.is_root = is_root
         node.track_pos = 0
@@ -52,7 +52,6 @@ class TextSpanDiscovery:
             self.global_offset += is_space_needed
             subword = each_tups[0] if len(key) != len(each_tups[0]) else ""
             new_node = self.get_new_node_(key, is_root=False, length=len(each_tups[1]), sub_word=subword)
-            #new_node.pos_tracking[start + self.global_offset] = value1
             new_node.pos_tracking = value1
             new_span.append([each_tups[1], start + self.global_offset, start + self.global_offset + len(each_tups[1])])
             if token_dict.get(each_tups[1], None) == None:

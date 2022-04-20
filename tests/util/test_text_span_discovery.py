@@ -99,7 +99,6 @@ class TestSpanDiscovery(TestCase):
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["buttock"].__contains__(175) == True
         assert updated_token_dict["buttock"][97].parent_token == "lowbuttock"
-        #assert updated_token_dict["lowbuttock"][212].parent_token == ""
         assert updated_token_dict["buttock"][97].sub_word == 'buttock'
         assert updated_token_dict["buttock"][175].sub_word == ""
         assert len([each for each in new_ts if each[0] == 'butock']) == 1
