@@ -42,14 +42,14 @@ class TextSpanDiscovery:
         node.parent_token = parent_
         return node
 
-    def get_new_nodes(self, key: str, corrected_key: list, value1: int, new_span: list, token_dict: dict):
+    def get_new_nodes(self, key: str, corrected_key: list, start_of_span: int, new_span: list, token_dict: dict):
         for index, each_tups in enumerate(corrected_key):
-            start = key.find(each_tups[0]) + value1
+            start = key.find(each_tups[0]) + start_of_span
             is_space_needed = 1 if index > 0 else 0
             self.global_offset += is_space_needed
             subword = each_tups[0] if len(key) != len(each_tups[0]) else ""
             new_node = self.get_new_node_(key, is_root=False, length=len(each_tups[1]), sub_word=subword)
-            new_node.pos_tracking = value1
+            new_node.pos_tracking = start_of_span
             new_span.append([each_tups[1], start + self.global_offset, start + self.global_offset + len(each_tups[1])])
             if token_dict.get(each_tups[1], None) == None:
                 token_dict[each_tups[1]] = {}
