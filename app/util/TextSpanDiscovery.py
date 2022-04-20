@@ -87,4 +87,4 @@ class TextSpanDiscovery:
     def generate_metainfo_for_changed_text(self, token_dict: dict, spanned_info: dict) -> dict:
         self.reset_global_offset()
         updated_tokenize_dict, new_span = self.track_the_changes_in_text(token_dict, spanned_info)
-        return updated_tokenize_dict, new_span
+        return (updated_tokenize_dict, new_span)
