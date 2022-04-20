@@ -62,7 +62,7 @@ class TextSpanDiscovery:
     """In The following function we first check whether the dictionary base is initialzied or not. If it is not initialized
     in that case we are going return Code 500 internal server error, the error will be logged in log file. If everythign
     is properly initialized then we proceed to track the changes in text position"""
-    def track_the_changes_in_text(self, token_dict, text_span):
+    def track_the_changes_in_text(self, token_dict, text_span) -> tuple:
         new_span = []
         for index, (key, value1, value2) in enumerate(text_span):
             corrected_key = self.dictionary.get(key, None)
@@ -72,7 +72,7 @@ class TextSpanDiscovery:
                 new_span.append([key, value1 + self.global_offset, value2 + self.global_offset])
         return (token_dict, new_span)
 
-    def improved_text_reconstruction(self, new_text: list):
+    def improved_text_reconstruction(self, new_text: list) -> str:
         new_token_list = [""]*len(new_text)
         for index in range(len(new_text) - 1):
             if new_text[index + 1][0] not in set([':',';','!','?','.', ',']):

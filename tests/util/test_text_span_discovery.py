@@ -135,7 +135,6 @@ class TestSpanDiscovery(TestCase):
         assert  text.find('swolling') == 202
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(updated_token_dict, new_ts)
         text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
-        print(text)
         assert text.find("swell") != -1
         assert text.find("butox")
         assert  text.count(',') == 12
