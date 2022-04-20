@@ -2,10 +2,10 @@ import re
 
 from app.service.icd10_generate_graph_from_text import ICD10GenerateGraphFromText
 from collections import OrderedDict
-from collections import defaultdict
 import string
 from app.dto.core.util.Span import Span
 from app.dto.core.util.TokenNode import TokenNode
+from typing import Optional
 
 """ Following class helps to track the changes in text by keeping the relationship between original text and extrapolated
 text."""
@@ -13,7 +13,7 @@ text."""
 
 class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
 
-    ROOT_LOCATION: object = None
+    ROOT_LOCATION: Optional[int] = None
 
     def __init__(self,):
         self.token_dict = OrderedDict()

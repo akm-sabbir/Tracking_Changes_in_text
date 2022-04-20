@@ -1,14 +1,10 @@
-import logging
-import string
-
 from app.dto.core.util.TokenNode import TokenNode
-from app.dto.core.util.Span import Span
-from collections import OrderedDict, defaultdict
-from app.exception.service_exception import ServiceException
+from collections import OrderedDict
+from typing import Optional
 
 
 class TextSpanDiscovery:
-    ROOT_LOCATION: object = None
+    ROOT_LOCATION: Optional[int] = None
 
     def __init__(self, changed_token_dict):
         self.dictionary = changed_token_dict
