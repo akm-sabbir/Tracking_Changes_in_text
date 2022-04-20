@@ -8,7 +8,7 @@ from app.exception.service_exception import ServiceException
 
 
 class TextSpanDiscovery:
-    ROOT_LOCATION: int = -1
+    ROOT_LOCATION: object = None
 
     def __init__(self, changed_token_dict):
         self.dictionary = changed_token_dict

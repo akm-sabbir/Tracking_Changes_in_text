@@ -13,7 +13,7 @@ text."""
 
 class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
 
-    ROOT_LOCATION: int = -1
+    ROOT_LOCATION: int = None
 
     def __init__(self,):
         self.token_dict = OrderedDict()
