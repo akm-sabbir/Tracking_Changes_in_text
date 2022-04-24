@@ -16,8 +16,8 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
-        assert graph_nodes['patient'][7].pos_tracking[7] == 7
-        assert graph_nodes['patient'][63].pos_tracking[63] == 63
+        assert graph_nodes['patient'][7].pos_tracking == 7
+        assert graph_nodes['patient'][63].pos_tracking == 63
         assert graph_nodes['patient'][63].length == 7
         assert graph_nodes['patient'][7].length == 7
         assert graph_nodes['patient'][7].parent_token == ""
@@ -37,8 +37,8 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
-        assert graph_nodes['he'][22].pos_tracking[22] == 22
-        assert graph_nodes['he'][57].pos_tracking[57] == 57
+        assert graph_nodes['he'][22].pos_tracking == 22
+        assert graph_nodes['he'][57].pos_tracking == 57
         assert  graph_nodes['he'][22].length == 2
         assert graph_nodes['he'][22].is_root == True
         assert  graph_nodes['he'][22].parent_token == ""
@@ -52,8 +52,8 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
         graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
-        assert graph_nodes['work'][82].pos_tracking[82] == 82
-        assert graph_nodes['work'][94].pos_tracking[94] == 94
+        assert graph_nodes['work'][82].pos_tracking == 82
+        assert graph_nodes['work'][94].pos_tracking == 94
         assert graph_nodes['work'][94].parent_token == ""
         assert graph_nodes['work'][94].is_root == True
         assert  graph_nodes['work'][82].length == 4

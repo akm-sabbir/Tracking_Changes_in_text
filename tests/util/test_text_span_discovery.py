@@ -1,7 +1,7 @@
 from unittest import TestCase
 
 from app.service.icd10_text_token_span_gen_service import ICD10TextTokenAndSpanGeneration
-from app.util.TextSpanDiscovery import TextSpanDiscovery
+from app.util.text_span_discovery import TextSpanDiscovery
 from app.service.impl.icd10_text_token_span_gen_service_impl import ICD10TextAndSpanGenerationServiceImpl
 from app.service.impl.icd10_generate_graph_from_text_impl import ICD10GenerateGraphFromTextImpl
 
@@ -39,7 +39,7 @@ class TestSpanDiscovery(TestCase):
         assert updated_token_dict["broadview"].get(108, None) != None
         assert updated_token_dict["broadview"][108].parent_token == ""
         assert updated_token_dict["broad"][115].parent_token == "broadview"
-        assert updated_token_dict["broad"][115].pos_tracking[115] == 108
+        assert updated_token_dict["broad"][115].pos_tracking == 108
 
     def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__give_correct_input_settwo(self):
 
@@ -56,7 +56,7 @@ class TestSpanDiscovery(TestCase):
         nodes = graph_generator.process_token_to_create_graph(ts)
         updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["diarrhea"][407].parent_token == "diarrheafrom"
-        assert updated_token_dict["diarrhea"][407].pos_tracking[407] == 405
+        assert updated_token_dict["diarrhea"][407].pos_tracking == 405
         assert updated_token_dict["diarrhea"][407].is_root == False
         assert updated_token_dict["diarrhea"][407].length == 8
 
@@ -85,7 +85,7 @@ class TestSpanDiscovery(TestCase):
         nodes = graph_generator.process_token_to_create_graph(ts)
         updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["swolling"][202].parent_token == "noswolling"
-        assert updated_token_dict["swolling"][202].pos_tracking[202] == 199
+        assert updated_token_dict["swolling"][202].pos_tracking == 199
 
     def test__get_icd_10_codes_with_relevant_spans_should_return_correct_response__given_correct_input_setfour(self):
         self.text_span_discovery_tool = TextSpanDiscovery(self.get_dummy_dictionary)
@@ -93,7 +93,7 @@ class TestSpanDiscovery(TestCase):
         graph_generator = ICD10GenerateGraphFromTextImpl()
         text5 = "She has hx of dm, cad, cops, depression, and morbid obesity, she is currently having alot of lowbuttock pain, " \
             "the pain is worse at night, she cant seat or put pressure on her buttock, " \
-            "there has been noswolling, it is hard to work to tingling no numbness, duration month, "
+            "there has been noswolling, lowbuttock, it is hard to work to tingling no numbness, duration month, "
         ts = token_generator_with_span.get_token_with_span(text5)
         nodes = graph_generator.process_token_to_create_graph(ts)
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
@@ -113,9 +113,30 @@ class TestSpanDiscovery(TestCase):
         (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swelled", 201, "")
         assert  span_info == -1
         assert  root == None
-        assert len([each for each in new_ts if each[0] == 'butock']) == 1
+        assert len([each for each in new_ts if each[0] == 'butock']) == 2
         assert len([each for each in new_ts if each[0] == 'butox']) == 1
         assert updated_token_dict["swolling"][202].parent_token == "noswolling"
-        assert updated_token_dict["swolling"][202].pos_tracking[202] == 199
+        assert updated_token_dict["swolling"][202].pos_tracking == 199
         assert updated_token_dict["swell"][200].parent_token == "swolling"
-        assert updated_token_dict["swell"][200].pos_tracking[200] == 202
+        assert updated_token_dict["swell"][200].pos_tracking == 202
+
+    def test__icd_10_text_reconstruction_response__given_correct_ouput_setfive(self):
+        self.text_span_discovery_tool = TextSpanDiscovery(self.get_dummy_dictionary)
+        token_generator_with_span = ICD10TextAndSpanGenerationServiceImpl()
+        graph_generator = ICD10GenerateGraphFromTextImpl()
+        text5 = "She has hx of dm, cad, cops, depression, and morbid obesity, she is currently having alot of lowbuttock pain, " \
+                "the pain is worse at night, she cant seat or put pressure on her buttock, " \
+                "there has been noswolling, lowbuttock, it is hard to work to tingling no numbness, duration month, "
+        ts = token_generator_with_span.get_token_with_span(text5)
+        nodes = graph_generator.process_token_to_create_graph(ts)
+        updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
+        text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
+        assert text.find("buttock") == 97
+        assert  text.find('swolling') == 202
+        updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(updated_token_dict, new_ts)
+        text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
+        assert text.find("swell") != -1
+        assert text.find("butox")
+        assert  text.count(',') == 12
+        assert  text.count("lowbuttock") == 0
+        assert text.find("no swell,") != -1
