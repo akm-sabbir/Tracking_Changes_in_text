@@ -101,8 +101,8 @@ class TestSpanDiscovery(TestCase):
         assert updated_token_dict["buttock"][97].parent_token == "lowbuttock"
         assert updated_token_dict["buttock"][97].sub_word == 'buttock'
         assert updated_token_dict["buttock"][175].sub_word == ""
-        assert len([each for each in new_ts if each[0] == 'butock']) == 1
-        assert len([each for each in new_ts if each[0] == 'butox']) == 0
+        assert len([each for each in new_ts if each.token == 'butock']) == 1
+        assert len([each for each in new_ts if each.token == 'butox']) == 0
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(updated_token_dict, new_ts)
         (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swell", 200, "")
         assert span_info == 201
@@ -113,8 +113,8 @@ class TestSpanDiscovery(TestCase):
         (span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "swelled", 201, "")
         assert  span_info == -1
         assert  root == None
-        assert len([each for each in new_ts if each[0] == 'butock']) == 2
-        assert len([each for each in new_ts if each[0] == 'butox']) == 1
+        assert len([each for each in new_ts if each.token == 'butock']) == 2
+        assert len([each for each in new_ts if each.token == 'butox']) == 1
         assert updated_token_dict["swolling"][202].parent_token == "noswolling"
         assert updated_token_dict["swolling"][202].pos_tracking == 199
         assert updated_token_dict["swell"][200].parent_token == "swolling"

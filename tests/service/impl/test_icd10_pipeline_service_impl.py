@@ -27,6 +27,7 @@ from app.service.pipeline.components.note_preprocessing_component import NotePre
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from tests.service.pipeline.components.dummy_component_one import DummyComponentOne
 from tests.service.pipeline.components.dummy_component_two import DummyComponentTwo
 from app.settings import Settings
@@ -103,6 +104,7 @@ class TestICD10PipelineServiceImpl(TestCase):
         component_serial = [PatientSmokingConditionDetectionComponent,
                                       SectionExclusionServiceComponent,
                                       SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
+                                      TextTokenizationComponent,
                                       NegationHandlingComponent, NotePreprocessingComponent,
                                       ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
                                       ICD10ToHccAnnotationComponent,
@@ -182,6 +184,7 @@ class TestICD10PipelineServiceImpl(TestCase):
         component_serial = [PatientSmokingConditionDetectionComponent,
                                       SectionExclusionServiceComponent,
                                       SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
+                                      TextTokenizationComponent,
                                       NegationHandlingComponent, NotePreprocessingComponent,
                                       ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
                                       ICD10ToHccAnnotationComponent,

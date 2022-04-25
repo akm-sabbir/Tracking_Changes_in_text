@@ -4,11 +4,14 @@ from typing import Dict, List
 import spacy
 from spacy.tokens import Token
 
+from app.dto.core.service.Tokens import TokenInfo
 from app.service.icd10_negation_service import ICD10NegationService
 from app.service.impl.icd10_negation_service_impl import Icd10NegationServiceImpl
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.util.pipeline_util import PipelineUtil
@@ -16,7 +19,7 @@ from app.dto.pipeline.negation_component_result import NegationResult
 
 
 class NegationHandlingComponent(BasePipelineComponent):
-    DEPENDS_ON = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent]
+    DEPENDS_ON = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent, TextTokenizationComponent]
 
     def __init__(self):
         super().__init__()
@@ -28,16 +31,16 @@ class NegationHandlingComponent(BasePipelineComponent):
             return []
         tokenizer = Settings.get_settings_tokenizer()
 
-        subjective_section_text_tokens = self.__fix_negation_for_section(tokenizer,
+        subjective_section_text_tokens = self.__fix_negation_for_section(
                                                                          annotation_results[
-                                                                            SubjectiveSectionExtractorComponent][
-                                                                            0].text,
+                                                                            TextTokenizationComponent][
+                                                                            0].token_container,
                                                                          annotation_results)
 
-        medication_section_text_tokens = self.__fix_negation_for_section(tokenizer,
+        medication_section_text_tokens = self.__fix_negation_for_section(
                                                                          annotation_results[
-                                                                            MedicationSectionExtractorComponent][
-                                                                            0].text,
+                                                                            TextTokenizationComponent][
+                                                                            1].token_container,
                                                                          annotation_results)
         subjective_section_text = "".join(subjective_section_text_tokens).strip()
         medication_section_text = "".join(medication_section_text_tokens).strip()
@@ -45,11 +48,10 @@ class NegationHandlingComponent(BasePipelineComponent):
         return [NegationResult(text=subjective_section_text),
                 NegationResult(text=medication_section_text)]
 
-    def __fix_negation_for_section(self, tokenizer: spacy.Any, text: str, annotation_results: dict):
-        tokens = tokenizer(text.lower())
-        text_tokens = [each.text for each in tokens]
-        for index, token in enumerate(tokens):
-            each_token = token.text.lower()
+    def __fix_negation_for_section(self, token_container: List[TokenInfo], annotation_results: dict):
+
+        for index, token in enumerate(token_container):
+            each_token = token.token.lower()
             if each_token.lower().find("no") == 0:
                 fixed_token = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
                 text_tokens[index] = fixed_token

@@ -24,6 +24,7 @@ from app.service.pipeline.components.note_preprocessing_component import NotePre
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from app.service.pipeline.pipeline_manager import PipelineManager
 from app.util.config_manager import ConfigManager
 from app.settings import Settings
@@ -35,6 +36,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
         self.__pipeline_components = [PatientSmokingConditionDetectionComponent(Settings.get_nlp_smoker_detector()),
                                       SectionExclusionServiceComponent(),
                                       SubjectiveSectionExtractorComponent(), MedicationSectionExtractorComponent(),
+                                      TextTokenizationComponent(),
                                       NegationHandlingComponent(), NotePreprocessingComponent(),
                                       ACMSciMetamapICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
                                       ICD10ToHccAnnotationComponent(),

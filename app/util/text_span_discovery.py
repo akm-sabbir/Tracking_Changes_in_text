@@ -1,7 +1,7 @@
 from app.dto.core.util.TokenNode import TokenNode
 from collections import OrderedDict
 from typing import Optional
-
+from app.dto.core.service.Tokens import TokenInfo
 
 class TextSpanDiscovery:
     ROOT_LOCATION: Optional[int] = None
@@ -50,7 +50,8 @@ class TextSpanDiscovery:
             subword = each_tups[0] if len(key) != len(each_tups[0]) else ""
             new_node = self.get_new_node_(key, is_root=False, length=len(each_tups[1]), sub_word=subword)
             new_node.pos_tracking = start_of_span
-            new_span.append([each_tups[1], start + self.global_offset, start + self.global_offset + len(each_tups[1])])
+            new_span.append(TokenInfo(token=each_tups[1], start_of_span=start + self.global_offset,
+                                      end_of_span=start + self.global_offset + len(each_tups[1])))
             if token_dict.get(each_tups[1], None) == None:
                 token_dict[each_tups[1]] = {}
             token_dict[each_tups[1]][start + self.global_offset] = new_node
@@ -61,22 +62,26 @@ class TextSpanDiscovery:
     is properly initialized then we proceed to track the changes in text position"""
     def track_the_changes_in_text(self, token_dict, text_span) -> tuple:
         new_span = []
-        for index, (key, start_of_span, end_of_span) in enumerate(text_span):
+        for index, token_ob in enumerate(text_span):
+            key = token_ob.token
+            start_of_span = token_ob.start_of_span
+            end_of_span = token_ob.end_of_span
             corrected_key = self.dictionary.get(key, None)
             if corrected_key != None:
                 self.get_new_nodes(key, corrected_key, start_of_span, new_span, token_dict)
             else:
-                new_span.append([key, start_of_span + self.global_offset, end_of_span + self.global_offset])
+                new_span.append(TokenInfo(token=key, start_of_span=start_of_span + self.global_offset,
+                                          end_of_span=end_of_span + self.global_offset))
         return (token_dict, new_span)
 
     def improved_text_reconstruction(self, new_text: list) -> str:
         new_token_list = [""]*len(new_text)
         for index in range(len(new_text) - 1):
-            if new_text[index + 1][0] not in set([':', ';', '!', '?', '.', ',']):
-                new_token_list[index] = new_text[index][0] + " "
+            if new_text[index + 1].token not in set([':', ';', '!', '?', '.', ',']):
+                new_token_list[index] = new_text[index].token + " "
             else:
-                new_token_list[index] = new_text[index][0]
-        new_token_list[-1] = new_text[-1][0]
+                new_token_list[index] = new_text[index].token
+        new_token_list[-1] = new_text[-1].token
         return "".join([each_elem for each_elem in new_token_list])
 
     """This is the function externally visible. It takes graph dictionary and text span information as parameter and return

@@ -21,15 +21,15 @@ class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
     the utility of this information is indespensible"""
     def process_token_to_create_graph(self, spanned_info: list) -> TokenNode:
         for each_span in spanned_info:
-            punctuation_list = re.findall("[" + string.punctuation + "]+", each_span[0])
-            if len(punctuation_list) > 0 and len( each_span[0]) == 1:
+            punctuation_list = re.findall("[" + string.punctuation + "]+", each_span.token)
+            if len(punctuation_list) > 0 and len( each_span.token) == 1:
                 continue
-            node = self.get_new_node_for_token(pos_list=[Span(each_span[1], each_span[2], 0)],
-                                                   length=len(each_span[0]))
-            node.pos_tracking = each_span[1]
-            if self.token_dict.get(each_span[0], None) is None:
-                self.token_dict[each_span[0]] = {}
-            self.token_dict[each_span[0]][each_span[1]] = node
+            node = self.get_new_node_for_token(pos_list=[Span(each_span.start_of_span, each_span.end_of_span, 0)],
+                                                   length=len(each_span.token))
+            node.pos_tracking = each_span.start_of_span
+            if self.token_dict.get(each_span.token, None) is None:
+                self.token_dict[each_span.token] = {}
+            self.token_dict[each_span.token][each_span.start_of_span] = node
         return self.token_dict
     """Following function helps to create a new object of type TokenNode and initialize it with differetn 
     type of information. It helps to create data structure"""

@@ -12,15 +12,15 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
                "Does the patient currently smoke? Smoking: Patient has never smoked - (1/21/2020).\n"
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
-        count = sum([1 if actual_test_result1[i][0] == '?' else 0 for i in range(len(actual_test_result1))])
-        count_paren = sum([1 if actual_test_result1[i][0] == '(' else 0 for i in range(len(actual_test_result1))])
-        count_colon = sum([1 if actual_test_result1[i][0] == ':' else 0 for i in range(len(actual_test_result1))])
+        count = sum([1 if actual_test_result1[i].token == '?' else 0 for i in range(len(actual_test_result1))])
+        count_paren = sum([1 if actual_test_result1[i].token == '(' else 0 for i in range(len(actual_test_result1))])
+        count_colon = sum([1 if actual_test_result1[i].token == ':' else 0 for i in range(len(actual_test_result1))])
         assert count == 2
         assert count_paren == 1
         assert count_colon == 1
-        assert actual_test_result1[2][1] == 7
-        assert actual_test_result1[2][2] == 14
-        assert actual_test_result1[6][0] == "behavior"
+        assert actual_test_result1[2].start_of_span == 7
+        assert actual_test_result1[2].end_of_span == 14
+        assert actual_test_result1[6].token == "behavior"
 
     def test__get_text_tokenized_and_span_should_return_proper_data_second_set(self) -> None:
         self.icd10TextTokenGenerator = ICD10TextAndSpanGenerationServiceImpl()
@@ -32,13 +32,13 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
            "he also chronic diarrheafrom time to time,  the absence of recurrent leg cramps is obvious"
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
-        count = sum([1 if actual_test_result1[i][0] == ',' else 0 for i in range(len(actual_test_result1))])
-        assert actual_test_result1[2][1] == 7
-        assert actual_test_result1[2][2] == 11
-        assert actual_test_result1[7][0] == "continues"
-        assert  actual_test_result1[11][0] == "daily"
-        assert actual_test_result1[21][0] == 'fall'
-        assert actual_test_result1[50][0] == 'incontinent'
+        count = sum([1 if actual_test_result1[i].token == ',' else 0 for i in range(len(actual_test_result1))])
+        assert actual_test_result1[2].start_of_span == 7
+        assert actual_test_result1[2].end_of_span == 11
+        assert actual_test_result1[7].token == "continues"
+        assert  actual_test_result1[11].token == "daily"
+        assert actual_test_result1[21].token == 'fall'
+        assert actual_test_result1[50].token == 'incontinent'
         assert count == 14
 
     def test__get_text_tokenized_and_span_should_return_proper_data_third_set(self):
@@ -47,8 +47,8 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
         " His abdominal pain, N / V comes and goes; sometiomessevere."
         test_result2 = self.icd10TextTokenGenerator.get_token_with_span(test_text2)
         actual_test_result2 = self.icd10TextTokenGenerator.process_each_token(test_result2)
-        count = sum([1 if actual_test_result2[i][0] == '/' else 0 for i in range(len(actual_test_result2))])
-        assert actual_test_result2[2][1] == 8
-        assert actual_test_result2[2][2] == 11
-        assert actual_test_result2[30][0] == ";"
+        count = sum([1 if actual_test_result2[i].token == '/' else 0 for i in range(len(actual_test_result2))])
+        assert actual_test_result2[2].start_of_span == 8
+        assert actual_test_result2[2].end_of_span == 11
+        assert actual_test_result2[30].token == ";"
         assert count == 1

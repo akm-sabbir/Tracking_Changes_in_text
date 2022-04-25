@@ -18,6 +18,7 @@ from app.service.icd10_negation_service import ICD10NegationService
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.util.icd_exclusions import ICDExclusions
 
@@ -26,6 +27,7 @@ class CodeExclusionHandlingComponent(BasePipelineComponent):
     DEPENDS_ON = [PatientSmokingConditionDetectionComponent,
                                       SectionExclusionServiceComponent,
                                       SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
+                                      TextTokenizationComponent,
                                       NegationHandlingComponent, NotePreprocessingComponent,
                                       ACMSciMetamapICD10AnnotationComponent,
                                        ICD10ToHccAnnotationComponent]
