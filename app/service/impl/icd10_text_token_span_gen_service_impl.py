@@ -15,7 +15,7 @@ class ICD10TextAndSpanGenerationServiceImpl(ICD10TextTokenAndSpanGeneration):
         self.__tokenizer = TreebankWordTokenizer()
 
     def _tokenize_with_span(self, text):
-        ts = [TokenInfo(token=text[start:end], start_of_span=start, end_of_span=end)
+        ts = [TokenInfo(token=text[start:end], start_of_span=start, end_of_span=end, offset=0)
               for start, end in self.__tokenizer.span_tokenize(text)]
         return ts
 
@@ -29,7 +29,8 @@ class ICD10TextAndSpanGenerationServiceImpl(ICD10TextTokenAndSpanGeneration):
                                             else (each_span.token, each_span.end_of_span, None)
             new_spanned_info.append(each_span)
             if new_comp is not None:
-                new_span = TokenInfo(token=new_comp, start_of_span=each_span.end_of_span, end_of_span=each_span.end_of_span + len(new_comp))
+                new_span = TokenInfo(token=new_comp, start_of_span=each_span.end_of_span, end_of_span=each_span.end_of_span +
+                                                                                                      len(new_comp), offset=0)
                 new_spanned_info.append(new_span)
 
         return new_spanned_info

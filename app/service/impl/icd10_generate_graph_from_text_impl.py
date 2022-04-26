@@ -38,7 +38,6 @@ class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
         new_node.pos_tracking = ICD10GenerateGraphFromTextImpl.ROOT_LOCATION
         new_node.pos_list = pos_list
         new_node.is_root = is_root
-        new_node.track_pos = 0
         new_node.length = length
         new_node.parent_token = parent_key
         return new_node

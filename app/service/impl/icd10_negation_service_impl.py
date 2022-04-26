@@ -43,10 +43,10 @@ class Icd10NegationServiceImpl(ICD10NegationService):
         if text.strip() in self.medical_terms:
             return text
         self.dict = Settings.get_settings_dictionary() if self.dict is None else self.dict
+        results = [(text, text)]
         if text.lower().find("no") == 0 and not self.utilize_dict.is_valid_word(text.lower(), self.dict, 0) \
                 and len(text) > 3:
             results = self.build_one_edit_distance(text[2:].lower(), index=0)
-            results = ["no " + word for word in results] if len(results) != 0 else [text.lower()]
-            text = ", ".join(results)
+            results = [("no ", word) for word in results] if len(results) != 0 else [text.lower()]
 
-        return text
+        return results

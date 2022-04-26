@@ -16,6 +16,7 @@ from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.util.pipeline_util import PipelineUtil
 from app.dto.pipeline.negation_component_result import NegationResult
+from app.util.text_span_discovery import TextSpanDiscovery
 
 
 class NegationHandlingComponent(BasePipelineComponent):
@@ -25,6 +26,7 @@ class NegationHandlingComponent(BasePipelineComponent):
         super().__init__()
         self.__icd10_negation_fixing_service: ICD10NegationService = DependencyInjector.get_instance(
             Icd10NegationServiceImpl)
+        self.__text_span_discovery: TextSpanDiscovery = TextSpanDiscovery()
 
     def run(self, annotation_results: dict) -> List[NegationResult]:
         if annotation_results['acm_cached_result'] is not None:
@@ -36,6 +38,7 @@ class NegationHandlingComponent(BasePipelineComponent):
                                                                             TextTokenizationComponent][
                                                                             0].token_container,
                                                                          annotation_results)
+
 
         medication_section_text_tokens = self.__fix_negation_for_section(
                                                                          annotation_results[
@@ -49,13 +52,14 @@ class NegationHandlingComponent(BasePipelineComponent):
                 NegationResult(text=medication_section_text)]
 
     def __fix_negation_for_section(self, token_container: List[TokenInfo], annotation_results: dict):
-
+        changed_token_dict = {}
         for index, token in enumerate(token_container):
             each_token = token.token.lower()
+            token_container[index].token = each_token
             if each_token.lower().find("no") == 0:
                 fixed_token = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
-                text_tokens[index] = fixed_token
-                self._track_text_change(fixed_token, each_token, token, annotation_results)
+                changed_token_dict[each_token] = fixed_token
+
 
         return (" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
                 for each_token in text_tokens)
