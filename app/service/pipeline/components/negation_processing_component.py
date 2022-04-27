@@ -56,20 +56,14 @@ class NegationHandlingComponent(BasePipelineComponent):
         for index, token in enumerate(token_container):
             each_token = token.token.lower()
             token_container[index].token = each_token
-            if each_token.lower().find("no") == 0:
+            if each_token.find("no") == 0:
                 fixed_token = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
                 changed_token_dict[each_token] = fixed_token
-
+        self._track_text_change_part(changed_token_dict, token_container)
 
         return (" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
                 for each_token in text_tokens)
 
-    def _track_text_change(self, fixed_token: str, each_token: str, token: Token, annotation_results: Dict):
-        fixed_words = re.sub(r"[^\w]", " ", fixed_token).split()
-        if len(fixed_words) < 2:
-            return
-        original_word = each_token.replace("no", "").strip()
-        changed_word = fixed_words[1]
-        start = token.idx + each_token.find(original_word)
-        end = token.idx + len(original_word)
-        PipelineUtil.track_changed_words(original_word, changed_word, start, end, annotation_results)
+    def _track_text_change_part(self,dictionary: dict, token_container):
+        self.__text_span_discovery.set_changed_text_dictionary(dictionary)
+        self.__text_span_discovery.generate_metainfo_for_changed_text()
