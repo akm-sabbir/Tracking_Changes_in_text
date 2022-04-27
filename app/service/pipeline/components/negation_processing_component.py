@@ -53,9 +53,8 @@ class NegationHandlingComponent(BasePipelineComponent):
             if each_token.find("no") == 0:
                 fixed_token = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
                 changed_token_dict[each_token] = fixed_token
-        updated_graphs, new_text_span = self._track_text_change_part(changed_token_dict, token_container, token_graphs)
+        return self._track_text_change_part(changed_token_dict, token_container, token_graphs)
 
-        return
 
     def _track_text_change_part(self,dictionary: dict, token_container: List[TokenInfo], token_graphs):
         self.__text_span_discovery.set_changed_text_dictionary(dictionary)

@@ -114,6 +114,7 @@ class TestSpanDiscovery(TestCase):
         assert start_of_span_info == -1
         assert root == None
         (start_of_span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "numbness", 253, "")
+        print(updated_token_dict["numbness"])
         assert start_of_span_info == 257
         assert root == "numbness"
         assert len([each for each in new_text_span if each.token == 'butock']) == 2
