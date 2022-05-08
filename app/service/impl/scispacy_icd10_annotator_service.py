@@ -26,7 +26,7 @@ class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
                                                      "linker_name": self.__umls_linker_name})
 
         # For negation
-        self.nlp.add_pipe('set_custom_boundaries', before="parser")
+        self.nlp.add_pipe('set_custom_boundaries', first=True)
 
         self.__clinical_termset = termset("en_clinical")
         self.__clinical_termset.add_patterns({
