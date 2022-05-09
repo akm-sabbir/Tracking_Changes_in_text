@@ -11,16 +11,16 @@ from app.dto.pipeline.dummy_component_one_result import DummyComponentOneResult
 from app.dto.pipeline.dummy_component_two_result import DummyComponentTwoResult
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.pipeline.smoker_condition import PatientSmokingCondition
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
+from app.service.pipeline.components.acm_rxnorm_annotation_component import ACMRxNormAnnotationComponent
 from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import \
     ACMSciMetamapICD10AnnotationComponent
-from app.service.pipeline.components.acm_rxnorm_annotation_component import ACMRxNormAnnotationComponent
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
-from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
-from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
-from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
+from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
+from app.service.pipeline.components.icd10_token_to_graph_generation_component import TextToGraphGenerationComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
@@ -28,10 +28,9 @@ from app.service.pipeline.components.section_exclusion_service_component import 
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
 from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
+from app.settings import Settings
 from tests.service.pipeline.components.dummy_component_one import DummyComponentOne
 from tests.service.pipeline.components.dummy_component_two import DummyComponentTwo
-from app.settings import Settings
-from app.dto.pipeline.smoker_condition import PatientSmokingCondition
 
 
 class TestICD10PipelineServiceImpl(TestCase):
@@ -105,12 +104,11 @@ class TestICD10PipelineServiceImpl(TestCase):
                                       SectionExclusionServiceComponent,
                                       SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
                                       TextTokenizationComponent,
+                                      TextToGraphGenerationComponent,
                                       NegationHandlingComponent, NotePreprocessingComponent,
                                       ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
-                                      ICD10ToHccAnnotationComponent,
-                                      CodeExclusionHandlingComponent,
-                                      ICD10AnnotationAlgoComponent,
                                       FilteredICD10ToHccAnnotationComponent]
+
 
         for idx, type in enumerate(component_serial):
             assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[idx], type)
@@ -185,12 +183,11 @@ class TestICD10PipelineServiceImpl(TestCase):
                                       SectionExclusionServiceComponent,
                                       SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
                                       TextTokenizationComponent,
+                                      TextToGraphGenerationComponent,
                                       NegationHandlingComponent, NotePreprocessingComponent,
                                       ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
-                                      ICD10ToHccAnnotationComponent,
-                                      CodeExclusionHandlingComponent,
-                                      ICD10AnnotationAlgoComponent,
                                       FilteredICD10ToHccAnnotationComponent]
+
 
         for idx, type in enumerate(component_serial):
             assert isinstance(icd10_annotator_service._ICD10PipelineServiceImpl__pipeline_components[idx], type)

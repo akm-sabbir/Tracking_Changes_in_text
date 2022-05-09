@@ -46,8 +46,8 @@ class Icd10NegationServiceImpl(ICD10NegationService):
         results = [(text, text)]
         if text.lower().find("no") == 0 and not self.utilize_dict.is_valid_word(text.lower(), self.dict, 0) \
                 and len(text) > 3:
-            results = self.build_one_edit_distance(text[2:].lower(), index=0)
-            if len(results) == 1:
-                results = [("no", "no"), (text[2:], results[0])]
+            curr_results = self.build_one_edit_distance(text[2:].lower(), index=0)
+            if len(curr_results) == 1:
+                results = [("no", "no"), (text[2:], curr_results[0])]
 
         return results
