@@ -17,7 +17,6 @@ from app.service.pipeline.components.icd10_tokenizing_text_component import Text
 class TestTextTokenizationComponent(TestCase):
 
     def test__run__should_return_correct_response__given_correct_input(self, ):
-        start_time = time.time()
         word = ["new", "dizziness", "anxiety", "appropriate", "breathlessness", "normal", "nothing", "pain"]
         root = Trie()
         eng_dict = EnglishDictionary()
@@ -26,7 +25,6 @@ class TestTextTokenizationComponent(TestCase):
         Settings.set_settings_dictionary(root)
         Settings.set_settings_tokenizer(English())
         component = TextTokenizationComponent()
-        start_time = time.time()
         test_data2 = "Meds : Vyvanse 50 mgs po at breakfast daily," \
                      "Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs nopain"
 
