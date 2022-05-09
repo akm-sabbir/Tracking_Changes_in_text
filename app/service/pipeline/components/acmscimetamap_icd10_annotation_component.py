@@ -21,7 +21,6 @@ from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
 from app.util.icd_10_filter_util import ICD10FilterUtil
 from app.util.span_merger_util import SpanMergerUtil
-from app.util.text_preprocessor_util import TextPreprocessorUtil
 
 
 class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
@@ -54,13 +53,11 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
             if not paragraph.text == "":
-                preprocessed_text = TextPreprocessorUtil.get_preprocessed_text(paragraph.text)
-
-                acm_data, acm_annotations = self.__acm_icd10_annotation_service.get_icd_10_codes(preprocessed_text)
+                acm_data, acm_annotations = self.__acm_icd10_annotation_service.get_icd_10_codes(paragraph.text)
                 raw_acm_data.extend(acm_data)
 
-                scispacy_predictions = self.__scispacy_annotation_service.get_icd_10_codes(preprocessed_text)
-                metamap_predictions = self.__metamap_annotation_service.get_icd_10_codes(preprocessed_text)
+                scispacy_predictions = self.__scispacy_annotation_service.get_icd_10_codes(paragraph.text)
+                metamap_predictions = self.__metamap_annotation_service.get_icd_10_codes(paragraph.text)
 
                 annotations = acm_annotations + scispacy_predictions + metamap_predictions
 
