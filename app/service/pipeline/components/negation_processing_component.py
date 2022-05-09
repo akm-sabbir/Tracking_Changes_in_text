@@ -30,16 +30,16 @@ class NegationHandlingComponent(BasePipelineComponent):
         tokenizer = Settings.get_settings_tokenizer()
 
         updated_graph, new_subjective_section_text_tokens = self.__fix_negation_for_section(
-                                                                         annotation_results[
-                                                                            TextTokenizationComponent][
-                                                                            0].token_container,
-                                                                         annotation_results[GraphTokenResult][0])
+            annotation_results[
+                TextTokenizationComponent][
+                0].token_container,
+            annotation_results[GraphTokenResult][0])
         annotation_results[GraphTokenResult][0] = updated_graph
         updated_graph, new_medication_section_text_tokens = self.__fix_negation_for_section(
-                                                                         annotation_results[
-                                                                            TextTokenizationComponent][
-                                                                            1].token_container,
-                                                                         annotation_results[GraphTokenResult][1])
+            annotation_results[
+                TextTokenizationComponent][
+                1].token_container,
+            annotation_results[GraphTokenResult][1])
         annotation_results[GraphTokenResult][1] = updated_graph
 
         return [NegationResult(token_info_with_span=new_subjective_section_text_tokens),
@@ -55,8 +55,8 @@ class NegationHandlingComponent(BasePipelineComponent):
                 changed_token_dict[each_token] = fixed_token
         return self._track_text_change_part(changed_token_dict, token_container, token_graphs)
 
-
-    def _track_text_change_part(self,dictionary: dict, token_container: List[TokenInfo], token_graphs):
+    def _track_text_change_part(self, dictionary: dict, token_container: List[TokenInfo], token_graphs):
         self.__text_span_discovery.set_changed_text_dictionary(dictionary)
-        updated_graphs, new_text_span = self.__text_span_discovery.generate_metainfo_for_changed_text(token_graphs, token_container)
+        updated_graphs, new_text_span = self.__text_span_discovery.generate_metainfo_for_changed_text(token_graphs,
+                                                                                                      token_container)
         return updated_graphs, new_text_span

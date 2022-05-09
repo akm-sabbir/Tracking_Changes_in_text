@@ -27,7 +27,20 @@ class TestTextTokenizationComponent(TestCase):
         Settings.set_settings_tokenizer(English())
         component = TextTokenizationComponent()
         start_time = time.time()
-        """
+        test_data2 = "Meds : Vyvanse 50 mgs po at breakfast daily," \
+                     "Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs nopain"
+
+        first_test_result = component.run({"text": test_data2,
+                                "acm_cached_result": None, "changed_words": {},
+                                SubjectiveSectionExtractorComponent: [SubjectiveText(test_data2, [])],
+                                MedicationSectionExtractorComponent: [MedicationText(test_data2, [])],
+                                })
+        assert first_test_result[0].token_container[4].token == 'mgs'
+        assert first_test_result[0].token_container[10].token == 'Clonidine'
+        assert first_test_result[0].token_container[10].start_of_span == 44
+        assert first_test_result[0].token_container[10].end_of_span == 53
+        assert first_test_result[0].token_container[10].offset == 0
+        assert first_test_result[0].token_container[17].token == '1'
         test_data = "46-year-old male presenting for follow up of his blood pressure. Since his last visit a month ago," \
                     "he has been exercising, going out for walks every other day, compliant with medications. " \
                     " Nonew complaints for today. PAST MEDICAL HISTORY: Obesity, Hypertension, " \
@@ -37,13 +50,21 @@ class TestTextTokenizationComponent(TestCase):
                     "Hypertension. Outpatient readings support todays reading as the patient as an " \
                     "automatic blood pressure machine. " \
                     "Will add hydrochlorothiazide 25 mg q.d. and come back in 4 days."
-        """
-        test_data2 = "Meds : Vyvanse 50 mgs po at breakfast daily," \
-                     "Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs nopain"
 
-        result = component.run({"text": test_data2,
+        second_test_result = component.run({"text": test_data,
                                 "acm_cached_result": None, "changed_words": {},
-                                SubjectiveSectionExtractorComponent: [SubjectiveText(test_data2, [])],
-                                MedicationSectionExtractorComponent: [MedicationText(test_data2, [])],
-                                })
-        assert result[0].token_container[4].token =='mgs'
+                                SubjectiveSectionExtractorComponent:[SubjectiveText(test_data, [])],
+                                MedicationSectionExtractorComponent:[MedicationText(test_data,[])]})
+
+        assert second_test_result[0].token_container[0].token == '46-year-old'
+        assert second_test_result[0].token_container[0].start_of_span == 0
+        assert second_test_result[0].token_container[0].end_of_span == 11
+        assert second_test_result[0].token_container[0].offset == 0
+        assert second_test_result[0].token_container[1].token == 'male'
+        assert second_test_result[0].token_container[1].start_of_span == 12
+        assert second_test_result[0].token_container[1].end_of_span == 16
+        assert second_test_result[0].token_container[1].offset == 0
+        assert second_test_result[0].token_container[11].start_of_span == 65
+        assert second_test_result[0].token_container[11].end_of_span == 70
+        assert second_test_result[0].token_container[11].offset == 0
+        assert second_test_result[0].token_container[11].token == "Since"

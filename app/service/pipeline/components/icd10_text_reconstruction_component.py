@@ -34,4 +34,4 @@ class TextReconstructionComponent(BasePipelineComponent):
         medication_section_text = self.reconstruct_text(medication_section_text_span)
         return [SubjectiveText(subjective_section_text,
                                annotation_results[SubjectiveSectionExtractorComponent][0].subjective_sections),
-                MedicationText(medication_section_text,annotation_results[MedicationSectionExtractorComponent][0].medication_sections)]
+                MedicationText(medication_section_text, annotation_results[MedicationSectionExtractorComponent][0].medication_sections)]

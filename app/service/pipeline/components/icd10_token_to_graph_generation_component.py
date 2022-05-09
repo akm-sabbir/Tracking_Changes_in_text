@@ -8,13 +8,13 @@ from app.service.impl.icd10_text_token_span_gen_service_impl import ICD10TextAnd
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
-from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.dto.pipeline.token_graph_component import GraphTokenResult
 from app.service.impl.icd10_generate_graph_from_text_impl import ICD10GenerateGraphFromTextImpl
 from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 
-class TextTokenizationComponent(BasePipelineComponent):
+
+class TextToGraphGenerationComponent(BasePipelineComponent):
     DEPENDS_ON = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent, TextTokenizationComponent
                   ]
 

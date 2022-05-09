@@ -36,7 +36,7 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
         assert actual_test_result1[2].start_of_span == 7
         assert actual_test_result1[2].end_of_span == 11
         assert actual_test_result1[7].token == "continues"
-        assert  actual_test_result1[11].token == "daily"
+        assert actual_test_result1[11].token == "daily"
         assert actual_test_result1[21].token == 'fall'
         assert actual_test_result1[50].token == 'incontinent'
         assert count == 14
