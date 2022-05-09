@@ -21,15 +21,15 @@ class TextReconstructionComponent(BasePipelineComponent):
     def reconstruct_text(self, span_information: NegationResult):
         array_size = span_information.tokens_with_span[-1].start_of_span
         text_container = [" "]*(array_size + 1)
-        for each_tuple in span_information:
-            text_container[each_tuple[1]] = each_tuple[0]
-        return "".join(text_container).strip()
+        for each_tuple in span_information.tokens_with_span:
+            text_container[each_tuple.start_of_span:len(each_tuple.token)] = each_tuple.token[:]
+        return "".join(text_container)
 
     def run(self, annotation_results: dict) -> List[Paragraph]:
         if annotation_results['acm_cached_result'] is not None:
             return []
         subjective_section_text_span: NegationResult = annotation_results[NegationHandlingComponent][0]
-        medication_section_text_span: NegationResult = annotation_results[NegationHandlingComponent][0]
+        medication_section_text_span: NegationResult = annotation_results[NegationHandlingComponent][1]
         subjective_section_text = self.reconstruct_text(subjective_section_text_span)
         medication_section_text = self.reconstruct_text(medication_section_text_span)
         return [SubjectiveText(subjective_section_text,

@@ -24,8 +24,8 @@ class TestTokenToGraphGenerationComponent(TestCase):
                      "he stil has urinary incontinent, he has been confirmed to have colon cancer, " \
                      "he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent, " \
                      "he also chronic"
-        test_text_span_set_one_subjective_secion = [TokenInfo(token="He",start_of_span= 0,end_of_span= 2,offset= 0),
-                                                    TokenInfo(token="has",start_of_span= 3,end_of_span= 6, offset=0),
+        test_text_span_set_one_subjective_secion = [TokenInfo(token="He", start_of_span= 0,end_of_span= 2,offset= 0),
+                                                    TokenInfo(token="has", start_of_span= 3,end_of_span= 6, offset=0),
                                                     TokenInfo(token="alot", start_of_span= 7, end_of_span=11, offset= 0),
                                                     TokenInfo(token="going", start_of_span=12, end_of_span=17, offset=0),
                                                     TokenInfo(token="on", start_of_span=18, end_of_span=20, offset=0 ),

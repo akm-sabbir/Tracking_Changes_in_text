@@ -1,49 +1,83 @@
-import time
 from unittest import TestCase
-
-from spacy.lang.en import English
-
 from app.dto.core.trie_structure import Trie
 from app.dto.pipeline.medication_section import MedicationText
 from app.dto.pipeline.subjective_section import SubjectiveText
+from app.service.impl.icd10_generate_graph_from_text_impl import ICD10GenerateGraphFromTextImpl
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
+from app.service.pipeline.components.icd10_token_to_graph_generation_component import TextToGraphGenerationComponent
+from app.dto.core.service.Tokens import TokenInfo
+from app.dto.core.util.TokenNode import TokenNode
+from app.dto.pipeline.tokenization_component_result import TokenizationResult
+from app.dto.pipeline.token_graph_component import GraphTokenResult
 from app.settings import Settings
 from app.util.english_dictionary import EnglishDictionary
 
 
 class TestNegationProcesingComponent(TestCase):
+    word = ["dizziness", "anxiety", "appropriate", "breathlessness", "pain", "groom", "groot"]
+    eng_dict = EnglishDictionary()
+    root = Trie()
+    for each_word in word:
+        eng_dict.insert_in(each_word, root)
+    Settings.set_settings_dictionary(root)
+
+    def get_new_node_for_token(self, parent_key: str = "", is_root=True, pos_list: list = [], length: int = 0):
+        new_node = TokenNode()
+        new_node.pos_tracking = ICD10GenerateGraphFromTextImpl.ROOT_LOCATION
+        new_node.pos_list = pos_list
+        new_node.is_root = is_root
+        new_node.length = length
+        new_node.parent_token = parent_key
+        return new_node
 
     def test__run__should_return_correct_response__given_correct_input(self, ):
-        start_time = time.time()
-        word = ["new", "dizziness", "anxiety", "appropriate", "breathlessness", "normal", "nothing", "pain"]
-        root = Trie()
-        eng_dict = EnglishDictionary()
-        for each_word in word:
-            eng_dict.insert_in(each_word, root)
-        Settings.set_settings_dictionary(root)
-        Settings.set_settings_tokenizer(English())
-        component = NegationHandlingComponent()
-        start_time = time.time()
-        """
-        test_data = "46-year-old male presenting for follow up of his blood pressure. Since his last visit a month ago," \
-                    "he has been exercising, going out for walks every other day, compliant with medications. " \
-                    " Nonew complaints for today. PAST MEDICAL HISTORY: Obesity, Hypertension, " \
-                    "History of glucose intolerance ,Mild hyperlipidemia. MEDICATIONS: Lisinopril 40 mg q.d., " \
-                    "Procardia XL 90 mg q.d. PHYSICAL EXAMINATION: Blood pressure today initially 190/108. Subsequently," \
-                    " 170/110. Rest of exam was deferred as he had an exam a month ago. ASSESSMENT & PLAN: (1) " \
-                    "Hypertension. Outpatient readings support todays reading as the patient as an " \
-                    "automatic blood pressure machine. " \
-                    "Will add hydrochlorothiazide 25 mg q.d. and come back in 4 days."
-        """
-        test_data2 = "Meds : Vyvanse 50 mgs po at breakfast daily," \
-                     "Clonidine 0.2 mgs -- 1 and 1 / 2 tabs po qhs nopain"
-
-        result = component.run({"text": test_data2,
-                                "acm_cached_result": None, "changed_words": {},
-                                SubjectiveSectionExtractorComponent: [SubjectiveText(test_data2, [])],
-                                MedicationSectionExtractorComponent: [MedicationText(test_data2, [])],
-                                })
-
-        assert result[0].text.lower().find("no pain") != -1
+        negation_testing_component = NegationHandlingComponent()
+        test_text_set_one = "He has alot going on, he continues to drinks, daily, nopain, nobreathlessness, " \
+                                    "and he has been feeling dizzy with some fall,he was in the er recently " \
+                                    "and he had a head CT, he still smokes, coughing wheezying breathless, withsputum, " \
+                                    "he stil has urinary incontinent, he has been confirmed to have colon cancer, " \
+                                    "he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent, " \
+                                    "he also chronic"
+        test_text_span_set_one_subjective_secion = [
+                    TokenInfo(token="He", start_of_span=0, end_of_span=2, offset=0),
+                    TokenInfo(token="has", start_of_span=3, end_of_span=6, offset=0),
+                    TokenInfo(token="alot", start_of_span=7, end_of_span=11, offset=0),
+                    TokenInfo(token="going", start_of_span=12, end_of_span=17, offset=0),
+                    TokenInfo(token="on", start_of_span=18, end_of_span=20, offset=0),
+                    TokenInfo(token=",", start_of_span=20, end_of_span=21, offset=0),
+                    TokenInfo(token="he", start_of_span=22, end_of_span=24, offset=0)]
+        test_text_span_set_one_medication_secion = [
+                TokenInfo(token="continues", start_of_span=25, end_of_span=34, offset=0),
+                TokenInfo(token="to", start_of_span=35, end_of_span=37, offset=0),
+                TokenInfo(token="drinks", start_of_span=38, end_of_span=44, offset=0),
+                TokenInfo(token="daily", start_of_span=46, end_of_span=51, offset=0),
+                TokenInfo(token="nopain", start_of_span=52, end_of_span=58, offset=0),
+                TokenInfo(token="nobreathlessness", start_of_span=59, end_of_span=75, offset=0)
+                    ]
+        dict_for_subjective_section = {}
+        dict_for_medication_section = {}
+        dict_for_subjective_section["has"] = {}
+        dict_for_subjective_section["has"][3] = self.get_new_node_for_token(length=len("has"))
+        dict_for_medication_section["nopain"] = {}
+        dict_for_medication_section["nopain"][46] = self.get_new_node_for_token(length=len("nopain"))
+        dict_for_medication_section["nobreathlessness"] = {}
+        dict_for_medication_section["nobreathlessness"][54] = self.get_new_node_for_token(length=len("nobreathlessness"))
+        test_results = negation_testing_component.run({"text": test_text_set_one,
+                                        "acm_cached_result": None, "changed_words": {},
+                                        TextTokenizationComponent: [TokenizationResult(complex_container=test_text_span_set_one_subjective_secion),
+                                                                    TokenizationResult(complex_container=test_text_span_set_one_medication_secion)],
+                                        TextToGraphGenerationComponent: [GraphTokenResult(graph_container=dict_for_subjective_section),
+                                                                         GraphTokenResult(graph_container=dict_for_medication_section)],
+                                        SubjectiveSectionExtractorComponent: [SubjectiveText(test_text_set_one, [])],
+                                        MedicationSectionExtractorComponent: [MedicationText(test_text_set_one, [])]
+                                        })
+        assert test_results[1].tokens_with_span[5].token == 'pain'
+        assert test_results[1].tokens_with_span[5].start_of_span == 55
+        assert test_results[1].tokens_with_span[5].end_of_span == 59
+        assert test_results[1].tokens_with_span[5].offset == 0
+        assert test_results[1].tokens_with_span[7].token == "breathlessness"
+        assert test_results[1].tokens_with_span[7].start_of_span == 63
+        assert test_results[1].tokens_with_span[7].end_of_span == 77

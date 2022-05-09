@@ -12,7 +12,8 @@ from app.util.dependency_injector import DependencyInjector
 from app.util.pipeline_util import PipelineUtil
 from app.dto.pipeline.negation_component_result import NegationResult
 from app.util.text_span_discovery import TextSpanDiscovery
-from app.service.pipeline.components.icd10_token_to_graph_generation_component import GraphTokenResult
+from app.service.pipeline.components.icd10_token_to_graph_generation_component import GraphTokenResult, \
+    TextToGraphGenerationComponent
 
 
 class NegationHandlingComponent(BasePipelineComponent):
@@ -27,20 +28,19 @@ class NegationHandlingComponent(BasePipelineComponent):
     def run(self, annotation_results: dict) -> List[NegationResult]:
         if annotation_results['acm_cached_result'] is not None:
             return []
-        tokenizer = Settings.get_settings_tokenizer()
 
         updated_graph, new_subjective_section_text_tokens = self.__fix_negation_for_section(
             annotation_results[
                 TextTokenizationComponent][
                 0].token_container,
-            annotation_results[GraphTokenResult][0])
-        annotation_results[GraphTokenResult][0] = updated_graph
+            annotation_results[TextToGraphGenerationComponent][0].graph_token_container)
+        annotation_results[TextToGraphGenerationComponent][0] = updated_graph
         updated_graph, new_medication_section_text_tokens = self.__fix_negation_for_section(
             annotation_results[
                 TextTokenizationComponent][
                 1].token_container,
-            annotation_results[GraphTokenResult][1])
-        annotation_results[GraphTokenResult][1] = updated_graph
+            annotation_results[TextToGraphGenerationComponent][1].graph_token_container)
+        annotation_results[TextToGraphGenerationComponent][1] = updated_graph
 
         return [NegationResult(token_info_with_span=new_subjective_section_text_tokens),
                 NegationResult(token_info_with_span=new_medication_section_text_tokens)]
