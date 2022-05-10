@@ -20,6 +20,7 @@ from app.service.pipeline.components.acmscimetamap_icd10_annotation_component im
     ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
+from app.service.pipeline.components.icd10_text_reconstruction_component import TextReconstructionComponent
 from app.service.pipeline.components.icd10_token_to_graph_generation_component import TextToGraphGenerationComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
@@ -105,7 +106,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                                       SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
                                       TextTokenizationComponent,
                                       TextToGraphGenerationComponent,
-                                      NegationHandlingComponent, NotePreprocessingComponent,
+                                      NegationHandlingComponent, TextReconstructionComponent, NotePreprocessingComponent,
                                       ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
                                       FilteredICD10ToHccAnnotationComponent]
 
@@ -184,7 +185,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                                       SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
                                       TextTokenizationComponent,
                                       TextToGraphGenerationComponent,
-                                      NegationHandlingComponent, NotePreprocessingComponent,
+                                      NegationHandlingComponent,TextReconstructionComponent, NotePreprocessingComponent,
                                       ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
                                       FilteredICD10ToHccAnnotationComponent]
 
