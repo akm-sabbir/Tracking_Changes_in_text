@@ -70,6 +70,7 @@ class TestTextReconstructionComponent(TestCase):
                                         MedicationSectionExtractorComponent: [MedicationText(test_text_set_one, [])],
                                         NegationHandlingComponent: [NegationResult(token_info_with_span=test_text_span_set_one_subjective_section),
                 NegationResult(token_info_with_span=test_text_span_set_one_medication_section)]})
-
+        print(results[1].text + " " + str(len(results[1].text)))
+        print(results[0].text + " " + str(len(results[0].text)))
         assert results[1].text[52:58] =='nopain'
         assert results[1].text[59:75] =='nobreathlessness'

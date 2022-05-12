@@ -54,6 +54,7 @@ class TestTextTokenizationComponent(TestCase):
                                 SubjectiveSectionExtractorComponent:[SubjectiveText(test_data, [])],
                                 MedicationSectionExtractorComponent:[MedicationText(test_data,[])]})
 
+        print(second_test_result[1].token_container[0].token)
         assert second_test_result[0].token_container[0].token == '46-year-old'
         assert second_test_result[0].token_container[0].start_of_span == 0
         assert second_test_result[0].token_container[0].end_of_span == 11

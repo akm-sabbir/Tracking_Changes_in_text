@@ -19,10 +19,12 @@ class TextReconstructionComponent(BasePipelineComponent):
                   ]
 
     def reconstruct_text(self, span_information: NegationResult):
-        array_size = span_information.tokens_with_span[-1].start_of_span
-        text_container = [" "]*(array_size + 1)
+        array_size = span_information.tokens_with_span[-1].end_of_span
+        text_container = [" "]*(array_size)
+
         for each_tuple in span_information.tokens_with_span:
-            text_container[each_tuple.start_of_span:len(each_tuple.token)] = each_tuple.token[:]
+            text_container[each_tuple.start_of_span:each_tuple.start_of_span + len(each_tuple.token)] = each_tuple.token
+
         return "".join(text_container)
 
     def run(self, annotation_results: dict) -> List[Paragraph]:

@@ -18,20 +18,27 @@ class NotePreprocessingComponent(BasePipelineComponent):
     DEPENDS_ON = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent, TextTokenizationComponent,
                   NegationHandlingComponent]
 
-    def reconstruct_text(self, span_information: NegationResult):
-        array_size = span_information.tokens_with_span[-1].start_of_span
-        text_container = [" "]*(array_size + 1)
+    def reconstruct_text(self, span_information: NegationResult, previous_text : str, prev_start: int):
+        array_size = span_information.tokens_with_span[-1].end_of_span
+        text_container = [" "] * (array_size)
+
         for each_tuple in span_information.tokens_with_span:
-            text_container[each_tuple.start_of_span:len(each_tuple.token)] = each_tuple.token[:]
-        return "".join(text_container)
+            text_container[each_tuple.start_of_span:each_tuple.start_of_span + len(each_tuple.token)] = each_tuple.token
+        if previous_text != None:
+            text_container[prev_start: prev_start + len(previous_text)] = previous_text
+        return "".join(text_container), span_information.tokens_with_span[0].start_of_span
 
     def run(self, annotation_results: dict) -> List[Paragraph]:
         if annotation_results['acm_cached_result'] is not None:
             return []
         subjective_section_text_span: NegationResult = annotation_results[NegationHandlingComponent][0]
         medication_section_text_span: NegationResult = annotation_results[NegationHandlingComponent][1]
-        subjective_section_text = self.reconstruct_text(subjective_section_text_span)
-        medication_section_text = self.reconstruct_text(medication_section_text_span)
+        subjective_section_, prev_start = self.reconstruct_text(subjective_section_text_span, None, 0)
+        medication_section_, prev_start = self.reconstruct_text(medication_section_text_span, subjective_section_, prev_start)
+        subjective_section_text = annotation_results[SubjectiveSectionExtractorComponent][0]
+        subjective_section_text.text = subjective_section_
+        medication_section_text = annotation_results[MedicationSectionExtractorComponent][0]
+        medication_section_text.text = medication_section_[prev_start:]
 
         return [EncounterNoteUtil.break_note_into_paragraphs(subjective_section_text.text,
                                                              int(ConfigManager.get_specific_config("acm",
