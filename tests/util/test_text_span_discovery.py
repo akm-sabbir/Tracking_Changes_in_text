@@ -114,7 +114,6 @@ class TestSpanDiscovery(TestCase):
         assert start_of_span_info == -1
         assert root == None
         (start_of_span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "numbness", 253, "")
-        print(updated_token_dict["numbness"])
         assert start_of_span_info == 257
         assert root == "numbness"
         assert len([each for each in new_text_span if each.token == 'butock']) == 2
@@ -136,11 +135,11 @@ class TestSpanDiscovery(TestCase):
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
         assert text.find("buttock") == 97
-        assert  text.find('swolling') == 202
+        assert text.find('swolling') == 202
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(updated_token_dict, new_ts)
         text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
         assert text.find("swell") != -1
         assert text.find("butox")
-        assert  text.count(',') == 12
-        assert  text.count("lowbuttock") == 0
+        assert text.count(',') == 12
+        assert text.count("lowbuttock") == 0
         assert text.find("no swell,") != -1

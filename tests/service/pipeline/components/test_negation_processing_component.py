@@ -41,7 +41,7 @@ class TestNegationProcesingComponent(TestCase):
                                     "he stil has urinary incontinent, he has been confirmed to have colon cancer, " \
                                     "he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent, " \
                                     "he also chronic"
-        test_text_span_set_one_subjective_secion = [
+        test_text_span_set_one_subjective_section = [
                     TokenInfo(token="He", start_of_span=0, end_of_span=2, offset=0),
                     TokenInfo(token="has", start_of_span=3, end_of_span=6, offset=0),
                     TokenInfo(token="alot", start_of_span=7, end_of_span=11, offset=0),
@@ -49,7 +49,7 @@ class TestNegationProcesingComponent(TestCase):
                     TokenInfo(token="on", start_of_span=18, end_of_span=20, offset=0),
                     TokenInfo(token=",", start_of_span=20, end_of_span=21, offset=0),
                     TokenInfo(token="he", start_of_span=22, end_of_span=24, offset=0)]
-        test_text_span_set_one_medication_secion = [
+        test_text_span_set_one_medication_section = [
                 TokenInfo(token="continues", start_of_span=25, end_of_span=34, offset=0),
                 TokenInfo(token="to", start_of_span=35, end_of_span=37, offset=0),
                 TokenInfo(token="drinks", start_of_span=38, end_of_span=44, offset=0),
@@ -67,8 +67,8 @@ class TestNegationProcesingComponent(TestCase):
         dict_for_medication_section["nobreathlessness"][54] = self.get_new_node_for_token(length=len("nobreathlessness"))
         test_results = negation_testing_component.run({"text": test_text_set_one,
                                         "acm_cached_result": None, "changed_words": {},
-                                        TextTokenizationComponent: [TokenizationResult(complex_container=test_text_span_set_one_subjective_secion),
-                                                                    TokenizationResult(complex_container=test_text_span_set_one_medication_secion)],
+                                        TextTokenizationComponent: [TokenizationResult(complex_container=test_text_span_set_one_subjective_section),
+                                                                    TokenizationResult(complex_container=test_text_span_set_one_medication_section)],
                                         TextToGraphGenerationComponent: [GraphTokenResult(graph_container=dict_for_subjective_section),
                                                                          GraphTokenResult(graph_container=dict_for_medication_section)],
                                         SubjectiveSectionExtractorComponent: [SubjectiveText(test_text_set_one, [])],

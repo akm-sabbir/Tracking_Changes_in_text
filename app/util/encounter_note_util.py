@@ -18,7 +18,7 @@ class EncounterNoteUtil:
         return paragraphs
 
     @staticmethod
-    def __get_paragraphs(sentences: List[Sentence], note: str, limit: int) -> List[Paragraph]:
+    def __get_paragraphs(sentences: List[Sentence], note: str, limit: int, relative_position: int=0) -> List[Paragraph]:
         text = ""
         start = 0
         end = 0
@@ -32,7 +32,7 @@ class EncounterNoteUtil:
                 text = note[start:curr_end]
                 end = sentence.end
             else:
-                paragraphs.append(Paragraph(text, start, end))
+                paragraphs.append(Paragraph(text, start, end, relative_position))
                 start = sentence.start
                 text = note[start:curr_end]
                 end = curr_end
