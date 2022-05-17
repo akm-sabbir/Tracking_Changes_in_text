@@ -42,8 +42,8 @@ class NotePreprocessingComponent(BasePipelineComponent):
 
         return [EncounterNoteUtil.break_note_into_paragraphs(subjective_section_text.text,
                                                              int(ConfigManager.get_specific_config("acm",
-                                                                                                   "char_limit"))),
+                                                                                                   "char_limit")), 0),
                 EncounterNoteUtil.break_note_into_paragraphs(medication_section_text.text,
                                                              int(ConfigManager.get_specific_config("acm",
-                                                                                                   "char_limit")))
+                                                                                                   "char_limit")), prev_start)
                 ]

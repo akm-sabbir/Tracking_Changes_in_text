@@ -10,11 +10,11 @@ from app.dto.core.pipeline.sentence import Sentence
 class EncounterNoteUtil:
 
     @staticmethod
-    def break_note_into_paragraphs(note: str, limit: int) -> []:
+    def break_note_into_paragraphs(note: str, limit: int, relative_start_point: int) -> []:
         if len(note) <= limit:
             return [Paragraph(note, 0, len(note))]
         sentences: List[Sentence] = EncounterNoteUtil.break_note_into_sentences(note, limit)
-        paragraphs: List[Paragraph] = EncounterNoteUtil.__get_paragraphs(sentences, note, limit)
+        paragraphs: List[Paragraph] = EncounterNoteUtil.__get_paragraphs(sentences, note, limit, relative_start_point)
         return paragraphs
 
     @staticmethod
