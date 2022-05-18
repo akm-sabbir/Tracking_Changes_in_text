@@ -51,5 +51,6 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
 
         result = ACMRxNormResult(annotation_results["id"], rxnorm_annotation_results, raw_acm_data)
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
-                                                                           annotation_results)
+                                                                           annotation_results, token_nodes_in_graph,
+                                                                           )
         return [result]
