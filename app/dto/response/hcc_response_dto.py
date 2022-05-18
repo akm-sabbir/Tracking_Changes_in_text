@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, List
 
 from app.dto.base_dto import BaseDto
 from app.dto.core.service.hcc_code import HCCCode
@@ -11,3 +11,5 @@ class HCCResponseDto(BasePipelineComponentResult, BaseDto):
     disease_interactions_score: dict
     aggregated_risk_score: float
     demographics_details: dict
+    hcc_categories: dict
+    default_selection: List[str]
