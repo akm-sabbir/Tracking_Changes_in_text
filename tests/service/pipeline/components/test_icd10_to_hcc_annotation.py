@@ -1,18 +1,24 @@
 from unittest import TestCase
 from unittest.mock import Mock, patch
+
 from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
-from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import \
+    ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
 from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
-from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
+from app.settings import Settings
 
 
 class TestICD10ToHccAnnotationComponent(TestCase):
+    Settings.exclusion_dict = {}
+
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
-    def test__run__should_return_correct_response__given_correct_input(self, mock_boto3):
+    @patch("app.service.pipeline.components.icd10_to_hcc_annotation.HCCServiceImpl")
+    def test__run__should_return_correct_response__given_correct_input(self, mock_hcc_service, mock_boto3):
         icd10_annotation_filter_component = ICD10AnnotationAlgoComponent()
         icd10_to_hcc_annotation_component = ICD10ToHccAnnotationComponent()
         icd10_annotation_filter_component._ICD10AnnotationAlgoComponent__icd10_annotation_service_with_filters = \

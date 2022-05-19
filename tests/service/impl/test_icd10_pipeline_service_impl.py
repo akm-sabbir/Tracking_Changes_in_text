@@ -31,6 +31,9 @@ from tests.service.pipeline.components.dummy_component_two import DummyComponent
 
 
 class TestICD10PipelineServiceImpl(TestCase):
+    tuberculosis_text = "Tuberculosis of lung"
+    resp_tuberculosis_text_text = "Respiratory tuberculosis unspecified"
+
     __loop: AbstractEventLoop
 
     @classmethod
@@ -49,9 +52,9 @@ class TestICD10PipelineServiceImpl(TestCase):
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
     def test__annotate_icd_10__should_return_correct_response__given_correct_input(self,
                                                                                    mock_get_config: Mock):
-        mock_get_config.return_value = "table_name"
-        icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
-        icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
+        mock_get_config.return_value = "23"
+        icd10_annotation_1 = ICD10Annotation(code="A15.0", description=self.tuberculosis_text, score=0.7)
+        icd10_annotation_2 = ICD10Annotation(code="A15.9", description=self.resp_tuberculosis_text_text,
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,
@@ -67,7 +70,9 @@ class TestICD10PipelineServiceImpl(TestCase):
                                        demographics_score={},
                                        disease_interactions_score={},
                                        aggregated_risk_score=0.0,
-                                       demographics_details={})
+                                       demographics_details={},
+                                       hcc_categories={},
+                                       default_selection=[])
 
         mock_acm_response = Mock(ICD10Result)
         mock_acm_response.raw_acm_data = [{"acm_data": "data"}]
@@ -127,9 +132,9 @@ class TestICD10PipelineServiceImpl(TestCase):
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
     def test__annotate_icd_10__should_return_correct_response__given_correct_input_and_no_cache(self,
                                                                                                 mock_get_config: Mock):
-        mock_get_config.return_value = "table_name"
-        icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
-        icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
+        mock_get_config.return_value = "23"
+        icd10_annotation_1 = ICD10Annotation(code="A15.0", description=self.tuberculosis_text, score=0.7)
+        icd10_annotation_2 = ICD10Annotation(code="A15.9", description=self.resp_tuberculosis_text_text,
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,
@@ -144,7 +149,9 @@ class TestICD10PipelineServiceImpl(TestCase):
                                        demographics_score={},
                                        disease_interactions_score={},
                                        aggregated_risk_score=0.0,
-                                       demographics_details={})
+                                       demographics_details={},
+                                       hcc_categories={},
+                                       default_selection=[])
 
         mock_acm_response = Mock(ICD10Result)
         mock_acm_response.raw_acm_data = [{"acm_data": "data"}]
@@ -193,8 +200,8 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert pipeline_args["acm_cached_result"] is None
 
     def __get_dummy_icd10_data(self):
-        icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
-        icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
+        icd10_annotation_1 = ICD10Annotation(code="A15.0", description=self.tuberculosis_text, score=0.7)
+        icd10_annotation_2 = ICD10Annotation(code="A15.9", description=self.resp_tuberculosis_text_text,
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,
