@@ -44,7 +44,7 @@ class TestNotePreprocessingComponent(TestCase):
 
         mock_return_value = [[Paragraph("some text.", 0, 10), Paragraph("Some other text.", 11, 27)],
                              [Paragraph("medication text.", 28, 43), Paragraph("Some other medication.", 45, 67)]]
-        mock_break_note_into_paragraphs.return_value = mock_return_value
+        mock_break_note_into_paragraphs.side_effect = mock_return_value
         result = component.run({"text": "some text. Some other text. medication text. Some other medication.",
                                 'acm_cached_result': None,
                                 SubjectiveSectionExtractorComponent: [SubjectiveText("some text. Some other text.", [])],
@@ -53,8 +53,8 @@ class TestNotePreprocessingComponent(TestCase):
                                     NegationResult(token_info_with_span=test_text_span_set_one_subjective_section),
                                     NegationResult(token_info_with_span=test_text_span_set_one_medication_section)]
                                 })
-        assert result[0] == mock_return_value
-        assert result[1] == mock_return_value
+        assert result[0] == mock_return_value[0]
+        assert result[1] == mock_return_value[1]
 
         calls = [call("some text. Some other text.", 10), call("medication text. Some other medication.", 10)]
 

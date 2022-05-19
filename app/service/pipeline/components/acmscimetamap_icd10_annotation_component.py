@@ -79,8 +79,8 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         result = ICD10Result(annotation_results["id"], filtered_icd10_annotations_from_excluded_sections,
                              raw_acm_data)
         
-        #AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
-        #                                                                   annotation_results)
+        AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
+                                                                           annotation_results, token_nodes_in_graph)
 
 
         # exclude negated

@@ -35,9 +35,7 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
             return []
 
         paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent][1]
-        medication_section: MedicationText = annotation_results[MedicationSectionExtractorComponent][0]
         token_nodes_in_graph: GraphTokenResult = annotation_results[TextToGraphGenerationComponent][1].graph_token_container
-        start_of_medication_section: int = medication_section.medication_sections[0].start
         rxnorm_annotation_results: List[RxNormAnnotationResult] = []
         raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
