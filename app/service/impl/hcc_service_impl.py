@@ -15,9 +15,11 @@ from app.util.hcc.hcc_regex_pattern_util import HCCRegexPatternUtil
 
 @singleton
 class HCCServiceImpl(HCCService):
-    __logger = logging.getLogger(__name__)
-    __hcc_version = ConfigManager.get_specific_config(section="hcc", key="version")
-    __hcc = HCCEngine(version=__hcc_version)
+    def __init__(self):
+        self.__logger = logging.getLogger(__name__)
+        __hcc_version = ConfigManager.get_specific_config(section="hcc", key="version")
+        self.__hcc = HCCEngine(version=__hcc_version)
+        self.hcc_util = HCCCategoryUtil()
 
     def get_hcc_risk_scores(self, hcc_request_dto: HCCRequestDto) -> HCCResponseDto:
         self.__logger.debug("hcc risk score calculated")
@@ -122,8 +124,8 @@ class HCCServiceImpl(HCCService):
             already_added.update(children_present)
             children_list = list(children_present)
             children_list.sort()
-            hcc_category = HCCCategoryUtil.get_hcc_category(hcc)
+            hcc_category = self.hcc_util.get_hcc_category(hcc)
             if hcc_category != "N/A":
-                hcc_hierarchies[HCCCategoryUtil.get_hcc_category(hcc)] = children_list
+                hcc_hierarchies[hcc_category] = children_list
 
         return hcc_hierarchies

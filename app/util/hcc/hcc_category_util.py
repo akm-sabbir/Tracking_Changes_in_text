@@ -9,8 +9,12 @@ from data import data_base_path
 
 class HCCCategoryUtil:
     data = None
-    __hcc_version = ConfigManager.get_specific_config(section="hcc", key="version")
-    hcc_engine = HCCEngine(version=__hcc_version)
+    hcc_engine = None
+
+    def __init__(self):
+        HCCCategoryUtil.data = None
+        __hcc_version = ConfigManager.get_specific_config(section="hcc", key="version")
+        HCCCategoryUtil.hcc_engine = HCCEngine(version=__hcc_version)
 
     @classmethod
     def get_hcc_category(cls, hcc: str) -> str:
