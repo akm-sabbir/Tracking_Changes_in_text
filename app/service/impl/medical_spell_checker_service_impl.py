@@ -1,8 +1,10 @@
 import pkg_resources
 from symspellpy import SymSpell
 
+from app.service.spell_checker_service import SpellCheckerService
 
-class MedicalSpellCheckerServiceImpl:
+
+class MedicalSpellCheckerServiceImpl(SpellCheckerService):
     def __init__(self, edit_distance_max: int = 0, prefix_length: int = 7):
         self.dictionary_path = pkg_resources.resource_filename("symspellpy"
                                                                , "frequency_dictionary_en_82_765.txt")
