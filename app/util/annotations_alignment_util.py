@@ -61,12 +61,18 @@ class AnnotationAlignmentUtil:
             token_list: List[TokenInfo] = AnnotationAlignmentUtil.tokenize_and_span_gen.get_token_with_span(annotation_text)
             pos, root_word = AnnotationAlignmentUtil.text_span_discoverer.get_start_end_pos_span(token_node_graph,
                                                                 token_list[0].token, token_list[0].start_of_span, "")
+
             if pos != -1 and root_word != None:
                 if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
                     annotation.medication = root_word
                 else:
                     annotation.medical_condition = root_word
                 annotation.begin_offset = pos
+                annotation.end_offset = pos + len(root_word)
+            if len(token_list) > 1:
+                pos, root_word = AnnotationAlignmentUtil.text_span_discoverer.get_start_end_pos_span(token_node_graph,
+                                                                                token_list[-1].token,
+                                                                                token_list[-1].start_of_span, "")
                 annotation.end_offset = pos + len(root_word)
 
     @staticmethod
