@@ -32,7 +32,7 @@ class TestSubjectiveSectionExtractorComponent(TestCase):
 
         subjective_section = extractor_component.run(annotation_results={"text": "some text"})[0]
 
-        assert subjective_section.text == "section 1 section 2"
+        assert subjective_section.text == "section 1section 2"
 
         assert subjective_section.subjective_sections[0].text == "section 1"
         assert subjective_section.subjective_sections[0].start == 20

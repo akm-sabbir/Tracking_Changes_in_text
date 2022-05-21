@@ -1,6 +1,6 @@
 from typing import List
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 
 from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.core.service.Tokens import TokenInfo
@@ -48,24 +48,25 @@ class TestAnnotationsAlignmentUtil(TestCase):
         eng_dict.insert_in(each_word, root)
     Settings.set_settings_dictionary(root)
 
-
-    def test__align_start_and_end_notes_from_annotations__given_correct_ontology__should_align_notes(self):
+    @patch('app.util.config_manager.ConfigManager.get_specific_config')
+    def test__align_start_and_end_notes_from_annotations__given_correct_ontology__should_align_notes(self, mock_get_config: Mock):
         negation_testing_component = NegationHandlingComponent()
-        paragraph1 = Paragraph("He has alot going on, he continues to drinks, daily, nopain, nobreathlessness", 0, 77)
-        paragraph2 = Paragraph("he has been feeling dizzy with some fall,he was in the er recently", 91, 157)
+        mock_get_config.return_value = "10"
+        paragraph1 = Paragraph("He has alot going on, he continues to drinks, daily, no tuberculosis and no pneumonia", 0, 62)
+        paragraph2 = Paragraph(" he has been feeling dizzy with some fall,he was in the er recently", 91, 157)
 
-        paragraph3 = Paragraph("he stil has urinary incontinent, he has been confirmed to have colon cancer", 21, 30)
-        paragraph4 = Paragraph("he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent", 31, 40)
+        paragraph3 = Paragraph("continues to  drinks daily no clonidine no flurosemide", 25, 79)
+        paragraph4 = Paragraph(" he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent", 131, 40)
 
         text = paragraph1.text + paragraph2.text
-        section_1 = SubjectiveSection(paragraph1.text, 90, 100, 0, 30)
-        section_2 = SubjectiveSection(paragraph2.text, 200, 209, 60, 100)
+        section_1 = SubjectiveSection(paragraph1.text, 90, 100, 0, 60)
+        section_2 = SubjectiveSection(paragraph2.text, 200, 209, 91, 157)
 
         subjective_text = SubjectiveText(text, [section_1, section_2])
 
         text = paragraph3.text + paragraph4.text
-        section_3 = MedicationSection(paragraph3.text, 90, 100, 0, 30)
-        section_4 = MedicationSection(paragraph4.text, 200, 209, 60, 100)
+        section_3 = MedicationSection(paragraph3.text, 90, 100, 25, 77)
+        section_4 = MedicationSection(paragraph4.text, 200, 209, 131, 40)
 
         medication_text = MedicationText(text, [section_3, section_4])
         ###############################################################################################################
@@ -88,7 +89,7 @@ class TestAnnotationsAlignmentUtil(TestCase):
             TokenInfo(token="has", start_of_span=26, end_of_span=29, offset=0),
             TokenInfo(token="notuberculosis", start_of_span=30, end_of_span=44, offset=0),
             TokenInfo(token="and", start_of_span=45, end_of_span=48, offset=0),
-            TokenInfo(token="nopneumonia", start_of_span=49, end_of_span=58, offset=0)]
+            TokenInfo(token="nopneumonia", start_of_span=49, end_of_span=60, offset=0)]
         test_text_span_set_one_medication_section = [
             TokenInfo(token="continues", start_of_span=25, end_of_span=34, offset=0),
             TokenInfo(token="to", start_of_span=35, end_of_span=37, offset=0),
@@ -104,9 +105,9 @@ class TestAnnotationsAlignmentUtil(TestCase):
         dict_for_subjective_section["notuberculosis"] = {}
         dict_for_subjective_section["notuberculosis"][30] = self.get_new_node_for_token(length=len("notuberculosis"))
         dict_for_medication_section["noclonidine"] = {}
-        dict_for_medication_section["noclonidine"][46] = self.get_new_node_for_token(length=len("noclonidine"))
+        dict_for_medication_section["noclonidine"][52] = self.get_new_node_for_token(length=len("noclonidine"))
         dict_for_medication_section["noflurosemide"] = {}
-        dict_for_medication_section["noflurosemide"][54] = self.get_new_node_for_token(
+        dict_for_medication_section["noflurosemide"][64] = self.get_new_node_for_token(
             length=len("noflurosemide"))
         annotation_results = {"text": test_text_set_one,
                                                        "acm_cached_result": None, "changed_words": {},
@@ -159,20 +160,20 @@ class TestAnnotationsAlignmentUtil(TestCase):
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations("ICD10-CM", mock_acm_result,
                                                                            mock_annotation_results,
                                                                            annotation_results[TextToGraphGenerationComponent][0].graph_token_container)
-
+        print(annotation_results[TextToGraphGenerationComponent][1].graph_token_container)
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations("RxNorm", mock_acm_result,
                                                                            mock_annotation_results,
                                                                            annotation_results[TextToGraphGenerationComponent][1].graph_token_container)
 
-        assert mock_acm_result.rxnorm_annotations[0].begin_offset == 101
-        assert mock_acm_result.rxnorm_annotations[0].end_offset == 110
-        assert mock_acm_result.rxnorm_annotations[1].begin_offset == 102
-        assert mock_acm_result.rxnorm_annotations[1].end_offset == 114
+        assert mock_acm_result.rxnorm_annotations[0].begin_offset == 119
+        assert mock_acm_result.rxnorm_annotations[0].end_offset == 128
+        assert mock_acm_result.rxnorm_annotations[1].begin_offset == 131
+        assert mock_acm_result.rxnorm_annotations[1].end_offset == 142
 
-        assert mock_acm_result.icd10_annotations[0].begin_offset == 99
-        assert mock_acm_result.icd10_annotations[0].end_offset == 108
-        assert mock_acm_result.icd10_annotations[1].begin_offset == 210
-        assert mock_acm_result.icd10_annotations[1].end_offset == 240
+        assert mock_acm_result.icd10_annotations[0].begin_offset == 122
+        assert mock_acm_result.icd10_annotations[0].end_offset == 134
+        assert mock_acm_result.icd10_annotations[1].begin_offset == 141
+        assert mock_acm_result.icd10_annotations[1].end_offset == 150
 
     def test__set_annotation_condition__given_correct_ontology__should_assign_condition(self):
         rxnorm_annotation = Mock(RxNormAnnotationResult)
@@ -201,8 +202,8 @@ class TestAnnotationsAlignmentUtil(TestCase):
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
         icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
                                              score=0.54)
-        icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=70,
-                                                          end_offset=100, is_negated=False,
+        icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=33,
+                                                          end_offset=45, is_negated=False,
                                                           suggested_codes=[icd10_annotation_1, icd10_annotation_2],
                                                           raw_acm_response={"data": "data"})
 
@@ -210,7 +211,7 @@ class TestAnnotationsAlignmentUtil(TestCase):
         icd10_annotation_4 = ICD10Annotation(code="J12.89", description="Other viral pneumonia",
                                              score=0.45)
 
-        icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="Pneumonia", begin_offset=11, end_offset=20,
+        icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="Pneumonia", begin_offset=53, end_offset=62,
                                                           is_negated=False,
                                                           suggested_codes=[icd10_annotation_3, icd10_annotation_4],
                                                           raw_acm_response={"data": "data"})
@@ -233,8 +234,8 @@ class TestAnnotationsAlignmentUtil(TestCase):
                                                                 end_offset=31,
                                                                 text="topical"
                                                             )],
-                                                            begin_offset=12,
-                                                            end_offset=24, is_negated=False,
+                                                            begin_offset=55,
+                                                            end_offset=64, is_negated=False,
                                                             suggested_codes=[rxnorm_annotation_1, rxnorm_annotation_2],
                                                             raw_acm_response={"data": "data"})
 
@@ -245,7 +246,7 @@ class TestAnnotationsAlignmentUtil(TestCase):
                                                description="lisdexamfetamine dimesylate 50 MG Chewable Tablet [Vyvanse]",
                                                score=0.45)
 
-        rxnorm_annotation_result_2 = RxNormAnnotationResult(medication="Flurosemide", begin_offset=11,
+        rxnorm_annotation_result_2 = RxNormAnnotationResult(medication="Flurosemide", begin_offset=68,
                                                             rxnorm_type="BRAND_NAME",
                                                             attributes=[RxNormAttributeAnnotation(
                                                                 attribute_type="ROUTE_OR_MODE",
@@ -256,7 +257,7 @@ class TestAnnotationsAlignmentUtil(TestCase):
                                                                 end_offset=31,
                                                                 text="topical"
                                                             )],
-                                                            end_offset=20,
+                                                            end_offset=79,
                                                             is_negated=False,
                                                             suggested_codes=[rxnorm_annotation_3, rxnorm_annotation_4],
                                                             raw_acm_response={"data": "data"})
