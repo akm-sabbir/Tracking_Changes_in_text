@@ -160,7 +160,6 @@ class TestAnnotationsAlignmentUtil(TestCase):
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations("ICD10-CM", mock_acm_result,
                                                                            mock_annotation_results,
                                                                            annotation_results[TextToGraphGenerationComponent][0].graph_token_container)
-        print(annotation_results[TextToGraphGenerationComponent][1].graph_token_container)
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations("RxNorm", mock_acm_result,
                                                                            mock_annotation_results,
                                                                            annotation_results[TextToGraphGenerationComponent][1].graph_token_container)
