@@ -64,21 +64,20 @@ class AnnotationAlignmentUtil:
             old_begin_offset = annotation.begin_offset
             if pos != -1 and root_word != None:
                 if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
-                    annotation.medication = root_word
+                    annotation.medication = root_word + annotation.medication[len(token_list[0].token):]
                 else:
-                    annotation.medical_condition = root_word
+                    annotation.medical_condition = root_word + annotation.medical_condition[len(token_list[0].token):]
                 annotation.begin_offset = pos
                 annotation.end_offset = pos + len(root_word)
             if len(token_list) > 1:
-                for index in range(1, len(token_list)):
-                    pos, root_word = AnnotationAlignmentUtil.text_span_discoverer.get_start_end_pos_span(token_node_graph,
-                                                                                token_list[index].token.lower(),
-                                                                                old_begin_offset + token_list[index].start_of_span, "")
-                    if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
-                        annotation.medication += (" " + root_word)
-                    else:
-                        annotation.medical_condition += (" " + root_word)
-                    annotation.end_offset = pos + len(root_word)
+                pos, root_word = AnnotationAlignmentUtil.text_span_discoverer.get_start_end_pos_span(token_node_graph,
+                                                                                token_list[-1].token.lower(),
+                                                                                old_begin_offset + token_list[-1].start_of_span, "")
+                if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
+                    annotation.medication = annotation.medication[:annotation.medication.find(token_list[-1].token) ] + root_word
+                else:
+                    annotation.medical_condition = annotation.medical_condition[:annotation.medical_condition.find(token_list[-1].token)] + root_word
+                annotation.end_offset = pos + len(root_word)
 
     @staticmethod
     def __align_start_end_for_medical_part(acm_annotations: List, medical_sections):

@@ -192,7 +192,7 @@ class TestICD10AnnotationComponent(TestCase):
         assert icd10_result[0].suggested_codes[1].code == "J12.89"
         assert icd10_result[0].suggested_codes[1].description == "Other viral pneumonia"
         assert icd10_result[0].suggested_codes[1].score == 0.45
-        print(icd10_result[1])
+        print(icd10_result[1].medical_condition)
         assert icd10_result[1].begin_offset == 122
         assert icd10_result[1].end_offset == 142
         assert icd10_result[1].medical_condition == "tuberculosis of lung"
