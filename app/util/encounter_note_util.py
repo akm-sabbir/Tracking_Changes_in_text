@@ -10,15 +10,15 @@ from app.dto.core.pipeline.sentence import Sentence
 class EncounterNoteUtil:
 
     @staticmethod
-    def break_note_into_paragraphs(note: str, limit: int, relative_start_point: int) -> []:
+    def break_note_into_paragraphs(note: str, limit: int) -> []:
         if len(note) <= limit:
             return [Paragraph(note, 0, len(note))]
         sentences: List[Sentence] = EncounterNoteUtil.break_note_into_sentences(note, limit)
-        paragraphs: List[Paragraph] = EncounterNoteUtil.__get_paragraphs(sentences, note, limit, relative_start_point)
+        paragraphs: List[Paragraph] = EncounterNoteUtil.__get_paragraphs(sentences, note, limit)
         return paragraphs
 
     @staticmethod
-    def __get_paragraphs(sentences: List[Sentence], note: str, limit: int, relative_position: int=0) -> List[Paragraph]:
+    def __get_paragraphs(sentences: List[Sentence], note: str, limit: int) -> List[Paragraph]:
         text = ""
         start = 0
         end = 0
@@ -32,7 +32,7 @@ class EncounterNoteUtil:
                 text = note[start:curr_end]
                 end = sentence.end
             else:
-                paragraphs.append(Paragraph(text, start, end, relative_position))
+                paragraphs.append(Paragraph(text, start, end))
                 start = sentence.start
                 text = note[start:curr_end]
                 end = curr_end

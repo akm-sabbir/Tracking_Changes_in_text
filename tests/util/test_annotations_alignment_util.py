@@ -21,7 +21,6 @@ from app.service.impl.icd10_generate_graph_from_text_impl import ICD10GenerateGr
 from app.service.pipeline.components.icd10_token_to_graph_generation_component import TextToGraphGenerationComponent
 from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
-from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
 from app.settings import Settings
 from app.util.annotations_alignment_util import AnnotationAlignmentUtil
@@ -40,16 +39,15 @@ class TestAnnotationsAlignmentUtil(TestCase):
         new_node.parent_token = parent_key
         return new_node
 
-    word = ["dizziness", "anxiety", "appropriate", "breathlessness", "pain", "groom", "groot", "flurosemide",
-            "clonidine", "tuberculosis", "pneumonia"]
-    eng_dict = EnglishDictionary()
-    root = Trie()
-    for each_word in word:
-        eng_dict.insert_in(each_word, root)
-    Settings.set_settings_dictionary(root)
-
     @patch('app.util.config_manager.ConfigManager.get_specific_config')
     def test__align_start_and_end_notes_from_annotations__given_correct_ontology__should_align_notes(self, mock_get_config: Mock):
+        word = ["dizziness", "anxiety", "appropriate", "breathlessness", "pain", "groom", "groot", "flurosemide",
+                "clonidine", "tuberculosis", "pneumonia"]
+        eng_dict = EnglishDictionary()
+        root = Trie()
+        for each_word in word:
+            eng_dict.insert_in(each_word, root)
+        Settings.set_settings_dictionary(root)
         negation_testing_component = NegationHandlingComponent()
         mock_get_config.return_value = "10"
         paragraph1 = Paragraph("He has alot going on, he continues to drinks, daily, no tuberculosis and no pneumonia", 0, 62)

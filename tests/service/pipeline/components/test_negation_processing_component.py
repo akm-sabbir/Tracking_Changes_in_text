@@ -17,7 +17,8 @@ from app.util.english_dictionary import EnglishDictionary
 
 
 class TestNegationProcesingComponent(TestCase):
-    word = ["dizziness", "anxiety", "appropriate", "breathlessness", "pain", "groom", "groot"]
+    word = ["dizziness", "anxiety", "appropriate", "breathlessness", "pain", "groom", "groot", "flurosemide",
+            "clonidine", "tuberculosis", "pneumonia"]
     eng_dict = EnglishDictionary()
     root = Trie()
     for each_word in word:
