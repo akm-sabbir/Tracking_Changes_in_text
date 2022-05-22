@@ -26,9 +26,13 @@ class TestICD10AnnotationComponent(TestCase):
     @patch('app.service.impl.scispacy_icd10_annotator_service.termset', Mock())
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
+    @patch("app.util.text_postprocessor_util.TextPostProcessorUtil.get_icd10_annotations_with_post_processed_text")
+    @patch("app.service.pipeline.components.acmscimetamap_icd10_annotation_component.TextPreProcessorUtil.get_preprocessed_text")
     @patch("app.service.pipeline.components.acmscimetamap_icd10_annotation_component"
            ".SpanMergerUtil.get_icd_10_codes_with_relevant_spans")
-    def test__run__should_return_correct_response__given_correct_input(self, mock_span_util: Mock):
+    def test__run__should_return_correct_response__given_correct_input(self, mock_span_util: Mock,
+                                                                       mock_text_preprocessor: Mock,
+                                                                       mock_text_postprocessor: Mock):
         paragraph1 = Paragraph("Some TEXT", 0, 10)
         paragraph2 = Paragraph("pneumonia some other text", 11, 20)
 
@@ -66,6 +70,8 @@ class TestICD10AnnotationComponent(TestCase):
             dummy_icd10_result[0][0], dummy_icd10_result[1][0]]
 
         mock_span_util.side_effect = self.__mock_span_util_side_effect
+        mock_text_preprocessor.side_effect = self.__mock_text_preprocessor_util_side_effect
+        mock_text_postprocessor.side_effect = self.__mock_text_postprocessor_util_side_effect
 
         text = paragraph1.text + paragraph2.text
         section_1 = SubjectiveSection(paragraph1.text, 90, 100, 0, 30)
@@ -84,7 +90,7 @@ class TestICD10AnnotationComponent(TestCase):
              ],
              "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)],
                                "Flurosemide": [ChangedWordAnnotation("flurosemide", "Flurosemide", 31, 40)]}})[0]
-        calls = [call("Some TEXT"), call("pneumonia some other text")]
+        calls = [call("Some TEXT,"), call("pneumonia some other text,")]
 
         mock_acm_icd10_service.get_icd_10_codes.assert_has_calls(calls)
 
@@ -236,3 +242,12 @@ class TestICD10AnnotationComponent(TestCase):
     @staticmethod
     def __mock_span_util_side_effect(icd10_annotations, no_of_components_in_algorithm, medant_note):
         return icd10_annotations
+
+    @staticmethod
+    def __mock_text_preprocessor_util_side_effect(text):
+        return text + ","
+
+    @staticmethod
+    def __mock_text_postprocessor_util_side_effect(icd10_annotations, text_length):
+        return icd10_annotations
+

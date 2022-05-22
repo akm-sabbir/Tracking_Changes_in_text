@@ -1,6 +1,7 @@
-class TextPreprocessorUtil:
+class TextPreProcessorUtil:
     @staticmethod
     def get_preprocessed_text(text: str) -> str:
-        preprocessed_text = text + "."
+        if text[-1].isalnum():
+            return text + ","
 
-        return preprocessed_text
+        return text
