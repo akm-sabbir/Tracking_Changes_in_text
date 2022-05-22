@@ -52,7 +52,6 @@ class TestAnnotationsAlignmentUtil(TestCase):
         mock_get_config.return_value = "10"
         paragraph1 = Paragraph("He has alot going on, he continues to drinks, daily, no tuberculosis and no pneumonia", 0, 62)
         paragraph2 = Paragraph(" he has been feeling dizzy with some fall,he was in the er recently", 91, 157)
-
         paragraph3 = Paragraph("continues to  drinks daily no clonidine no flurosemide", 25, 79)
         paragraph4 = Paragraph(" he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent", 131, 40)
 
