@@ -26,8 +26,11 @@ class TestHCCCategoryUtil(TestCase):
         mock_read.read = Mock()
         mock_read.read.return_value = '{"HCC1": "Some category"}'
         mock_file_open.return_value = mock_read
+
         category = hcc_util.get_hcc_category("HCC1")
         assert category == "Some category"
+        mock_file_open.assert_called()
 
         category = hcc_util.get_hcc_category("HCC2")
         assert category == "Some other category"
+        mock_hcc_object.describe_hcc.assert_called_with("HCC2")
