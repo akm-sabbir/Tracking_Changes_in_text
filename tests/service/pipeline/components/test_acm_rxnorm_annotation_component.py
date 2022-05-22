@@ -7,15 +7,20 @@ from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.core.service.Tokens import TokenInfo
 from app.dto.core.util.TokenNode import TokenNode
 from app.dto.pipeline.changed_word_annotation import ChangedWordAnnotation
+from app.dto.pipeline.medication_section import MedicationSection, MedicationText
 from app.dto.pipeline.negation_component_result import NegationResult
 from app.dto.pipeline.rxnorm_annotation import RxNormAnnotation
 from app.dto.pipeline.rxnorm_annotation_result import RxNormAnnotationResult
 from app.dto.pipeline.rxnorm_attribute_annotation import RxNormAttributeAnnotation
+from app.dto.pipeline.subjective_section import SubjectiveSection
 from app.dto.pipeline.token_graph_component import GraphTokenResult
+from app.dto.pipeline.tokenization_component_result import TokenizationResult
 from app.service.impl.amazon_rxnorm_annotator_service import AmazonRxNormAnnotatorServiceImpl
 from app.service.impl.icd10_generate_graph_from_text_impl import ICD10GenerateGraphFromTextImpl
 from app.service.pipeline.components.acm_rxnorm_annotation_component import ACMRxNormAnnotationComponent
 from app.service.pipeline.components.icd10_token_to_graph_generation_component import TextToGraphGenerationComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
+from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 
@@ -42,8 +47,9 @@ class TestACMRxNormAnnotationComponent(TestCase):
         paragraph1 = Paragraph("some text", 0, 10)
         paragraph2 = Paragraph("pneumonia some other text", 11, 20)
 
-        paragraph3 = Paragraph("medication text", 21, 30)
-        paragraph4 = Paragraph("flurosemide some other text", 31, 40)
+        paragraph3 = Paragraph("continues to  drinks daily no clonidine no flurosemide", 25, 79)
+        paragraph4 = Paragraph(" he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent",
+            131, 40)
 
         mock_rxnorm_service = Mock(AmazonRxNormAnnotatorServiceImpl)
         rxnorm_annotation_component = ACMRxNormAnnotationComponent()
@@ -63,6 +69,8 @@ class TestACMRxNormAnnotationComponent(TestCase):
         test_text_set_one = "He has alot going on, he continues to drinks, daily, nopain, nobreathlessness, " \
                             "and he has been feeling dizzy with some fall,he was in the er recently " \
                             "and he had a head CT, he still smokes, coughing wheezying breathless, withsputum, " \
+                            "" \
+                            "" \
                             "he stil has urinary incontinent, he has been confirmed to have colon cancer, " \
                             "he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent, " \
                             "he also chronic"
@@ -73,30 +81,53 @@ class TestACMRxNormAnnotationComponent(TestCase):
             TokenInfo(token="going", start_of_span=12, end_of_span=17, offset=0),
             TokenInfo(token="on", start_of_span=18, end_of_span=20, offset=0),
             TokenInfo(token=",", start_of_span=20, end_of_span=21, offset=0),
-            TokenInfo(token="he", start_of_span=22, end_of_span=24, offset=0)]
+            TokenInfo(token="he", start_of_span=22, end_of_span=24, offset=0),
+            TokenInfo(token="has", start_of_span=26, end_of_span=29, offset=0),
+            TokenInfo(token="notuberculosis", start_of_span=30, end_of_span=44, offset=0),
+            TokenInfo(token="of", start_of_span=45, end_of_span=47, offset=0),
+            TokenInfo(token="lung", start_of_span=48, end_of_span=52, offset=0),
+            TokenInfo(token="and", start_of_span=53, end_of_span=56, offset=0),
+            TokenInfo(token="nopneumonia", start_of_span=57, end_of_span=66, offset=0)]
         test_text_span_set_one_medication_section = [
             TokenInfo(token="continues", start_of_span=25, end_of_span=34, offset=0),
             TokenInfo(token="to", start_of_span=35, end_of_span=37, offset=0),
             TokenInfo(token="drinks", start_of_span=38, end_of_span=44, offset=0),
             TokenInfo(token="daily", start_of_span=46, end_of_span=51, offset=0),
-            TokenInfo(token="nopain", start_of_span=52, end_of_span=58, offset=0),
-            TokenInfo(token="nobreathlessness", start_of_span=59, end_of_span=75, offset=0)
+            TokenInfo(token="noclonidine", start_of_span=52, end_of_span=63, offset=0),
+            TokenInfo(token="noflurosemide", start_of_span=64, end_of_span=77, offset=0)
         ]
         dict_for_subjective_section = {}
         dict_for_medication_section = {}
-        dict_for_subjective_section["has"] = {}
-        dict_for_subjective_section["has"][3] = self.get_new_node_for_token(length=len("has"))
-        dict_for_medication_section["nopain"] = {}
-        dict_for_medication_section["nopain"][46] = self.get_new_node_for_token(length=len("nopain"))
-        dict_for_medication_section["nobreathlessness"] = {}
-        dict_for_medication_section["nobreathlessness"][54] = self.get_new_node_for_token(
-            length=len("nobreathlessness"))
+        dict_for_subjective_section["nopneumonia"] = {}
+        dict_for_subjective_section["nopneumonia"][49] = self.get_new_node_for_token(length=len("nopneumonia"))
+        dict_for_subjective_section["notuberculosis"] = {}
+        dict_for_subjective_section["notuberculosis"][30] = self.get_new_node_for_token(length=len("notuberculosis"))
+        dict_for_subjective_section["lung"] = {}
+        dict_for_subjective_section["lung"][48] = self.get_new_node_for_token(length=len("lung"))
+        dict_for_subjective_section["of"] = {}
+        dict_for_subjective_section["of"][45] = self.get_new_node_for_token(length=len("of"))
+        dict_for_medication_section["noclonidine"] = {}
+        dict_for_medication_section["noclonidine"][52] = self.get_new_node_for_token(length=len("noclonidine"))
+        dict_for_medication_section["noflurosemide"] = {}
+        dict_for_medication_section["noflurosemide"][64] = self.get_new_node_for_token(
+            length=len("noflurosemide"))
+        text = paragraph1.text + paragraph2.text
+        section_1 = MedicationSection(paragraph1.text, 90, 100, 0, 68)
+        section_2 = MedicationSection(paragraph2.text, 200, 209, 91, 157)
+        medication_text = MedicationText(text, [section_1, section_2])
         ###############################################################################################################
 
         mock_align_start_and_end_notes_from_annotations.return_value = self.__get_aligned_dummy_rxnorm_annotation_result()
 
         acm_result: ACMRxNormResult = rxnorm_annotation_component.run(
-            {NotePreprocessingComponent: [[paragraph1, paragraph2], [paragraph3, paragraph4]],
+            {
+                MedicationSectionExtractorComponent: [medication_text],
+                NotePreprocessingComponent: [[paragraph1, paragraph2], [paragraph3, paragraph4]],
+                TextTokenizationComponent: [TokenizationResult(
+                    complex_container=test_text_span_set_one_subjective_section),
+                    TokenizationResult(
+                        complex_container=test_text_span_set_one_medication_section)]
+                ,
              "acm_cached_result": None,
              "id": "123",
              NegationHandlingComponent: [
@@ -105,9 +136,11 @@ class TestACMRxNormAnnotationComponent(TestCase):
              ],
              "changed_words": {"Pneumonia": [ChangedWordAnnotation("pneumonia", "Pneumonia", 11, 20)],
                                "Flurosemide": [ChangedWordAnnotation("flurosemide", "Flurosemide", 31, 40)]}
-             , TextToGraphGenerationComponent: [GraphTokenResult(dict_for_subjective_section), GraphTokenResult(dict_for_medication_section)]})[0]
+             , TextToGraphGenerationComponent: [GraphTokenResult(graph_container=dict_for_subjective_section),
+                                                GraphTokenResult(graph_container=dict_for_medication_section)]})[0]
 
-        calls = [call("medication text"), call("flurosemide some other text")]
+        calls = [call("continues to  drinks daily no clonidine no flurosemide"),
+                 call(" he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent")]
 
         mock_rxnorm_service.get_rxnorm_codes.assert_has_calls(calls)
         mock_align_start_and_end_notes_from_annotations.assert_called()
