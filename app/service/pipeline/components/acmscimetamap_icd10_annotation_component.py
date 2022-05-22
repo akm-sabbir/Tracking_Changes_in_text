@@ -23,6 +23,8 @@ from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
 from app.util.icd_10_filter_util import ICD10FilterUtil
 from app.util.span_merger_util import SpanMergerUtil
+from app.util.text_postprocessor_util import TextPostProcessorUtil
+from app.util.text_preprocessor_util import TextPreProcessorUtil
 
 
 class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
@@ -56,18 +58,24 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
             if not paragraph.text == "":
-                acm_data, acm_annotations = self.__acm_icd10_annotation_service.get_icd_10_codes(paragraph.text)
+                preprocessed_text = TextPreProcessorUtil.get_preprocessed_text(paragraph.text)
+
+                acm_data, acm_annotations = self.__acm_icd10_annotation_service.get_icd_10_codes(preprocessed_text)
                 raw_acm_data.extend(acm_data)
 
-                scispacy_predictions = self.__scispacy_annotation_service.get_icd_10_codes(paragraph.text)
-                metamap_predictions = self.__metamap_annotation_service.get_icd_10_codes(paragraph.text)
+                scispacy_predictions = self.__scispacy_annotation_service.get_icd_10_codes(preprocessed_text)
+                metamap_predictions = self.__metamap_annotation_service.get_icd_10_codes(preprocessed_text)
 
                 annotations = acm_annotations + scispacy_predictions + metamap_predictions
 
-                for annotation in annotations:
+                post_processed_annotations = TextPostProcessorUtil.get_icd10_annotations_with_post_processed_text(
+                    annotations,
+                    len(paragraph.text))
+
+                for annotation in post_processed_annotations:
                     annotation.begin_offset += paragraph.start_index
                     annotation.end_offset += paragraph.start_index
-                icd10_annotation_results += annotations
+                icd10_annotation_results += post_processed_annotations
 
         filtered_icd10_annotations_from_sentiment = self.__icd10_positive_sentiment_exclusion_service.get_filtered_annotations_based_on_positive_sentiment(
             icd10_annotation_results)
