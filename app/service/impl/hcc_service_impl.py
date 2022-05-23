@@ -52,7 +52,8 @@ class HCCServiceImpl(HCCService):
         temp_hcc_map = hcc_to_icd10
         for hcc in list(hcc_to_icd10.keys()):
             parent_hcc = self.__hcc.describe_hcc(hcc)['parents']
-            if not parent_hcc:
+            # if no parent is present in the current hcc codes, no need to generate new scores.
+            if len(set(parent_hcc).intersection(set(temp_hcc_map.keys()))):
                 continue
             for parent in parent_hcc:
                 if parent in temp_hcc_map:
@@ -126,18 +127,16 @@ class HCCServiceImpl(HCCService):
         hcc_hierarchies = {}
         hcc_set = set(hcc_list)
         already_added = set()
-        hcc_list.sort()
         for hcc in hcc_list:
             if hcc in already_added:
                 continue
             hcc_description = self.__hcc.describe_hcc(hcc)
-            children_set = set([hcc] + hcc_description['children'])
-            children_present = hcc_set.intersection(children_set)
-            already_added.update(children_present)
-            children_list = list(children_present)
-            children_list.sort()
+            hcc_category_codes = set(hcc_description['parents'] + [hcc] + hcc_description['children'])
+            hcc_category_codes_present = hcc_set.intersection(hcc_category_codes)
+            already_added.update(hcc_category_codes_present)
+            hcc_category_codes_list = list(hcc_category_codes_present)
+            hcc_category_codes_list.sort()
             hcc_category = self.hcc_util.get_hcc_category(hcc)
             if hcc_category != "N/A":
-                hcc_hierarchies[hcc_category] = children_list
-
+                hcc_hierarchies[hcc_category] = hcc_category_codes_list
         return hcc_hierarchies
