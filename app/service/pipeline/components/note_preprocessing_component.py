@@ -24,7 +24,7 @@ class NotePreprocessingComponent(BasePipelineComponent):
 
         for each_tuple in span_information.tokens_with_span:
             text_container[each_tuple.start_of_span:each_tuple.start_of_span + len(each_tuple.token)] = each_tuple.token
-        if previous_text != None:
+        if len(previous_text) != 0:
             text_container[prev_start: prev_start + len(previous_text)] = previous_text
         return "".join(text_container), span_information.tokens_with_span[0].start_of_span
 
@@ -33,7 +33,7 @@ class NotePreprocessingComponent(BasePipelineComponent):
             return []
         subjective_section_text_span: NegationResult = annotation_results[NegationHandlingComponent][0]
         medication_section_text_span: NegationResult = annotation_results[NegationHandlingComponent][1]
-        subjective_section_, prev_start = self.reconstruct_text(subjective_section_text_span, None, 0)
+        subjective_section_, prev_start = self.reconstruct_text(subjective_section_text_span, "", 0)
         medication_section_, prev_start = self.reconstruct_text(medication_section_text_span, subjective_section_, prev_start)
         subjective_section_text = annotation_results[SubjectiveSectionExtractorComponent][0]
         subjective_section_text.text = subjective_section_

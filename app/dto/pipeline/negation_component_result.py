@@ -4,5 +4,7 @@ from typing import List
 
 
 class NegationResult(BasePipelineComponentResult):
+    tokens_with_span: List[TokenInfo]
+
     def __init__(self, token_info_with_span: List[TokenInfo]):
-        self.tokens_with_span: str = token_info_with_span
+        self.tokens_with_span = token_info_with_span

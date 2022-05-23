@@ -112,7 +112,7 @@ class TestACMRxNormAnnotationComponent(TestCase):
         dict_for_medication_section["noflurosemide"][64] = self.get_new_node_for_token(
             length=len("noflurosemide"))
         text = paragraph1.text + paragraph2.text
-        section_1 = MedicationSection(paragraph1.text, 90, 100, 0, 68)
+        section_1 = MedicationSection(paragraph1.text, 90, 100, 25, 77)
         section_2 = MedicationSection(paragraph2.text, 200, 209, 91, 157)
         medication_text = MedicationText(text, [section_1, section_2])
         ###############################################################################################################

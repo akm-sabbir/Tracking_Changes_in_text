@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from app.settings import Settings
 from app.service.icd10_negation_service import ICD10NegationService
 from app.util.english_dictionary import EnglishDictionary
@@ -39,7 +41,7 @@ class Icd10NegationServiceImpl(ICD10NegationService):
                                          index + 1, one_edit_words, form_strings, 0)
         return list(one_edit_words)
 
-    def get_icd_10_text_negation_fixed(self, text: str) -> str:
+    def get_icd_10_text_negation_fixed(self, text: str) -> List[Tuple]:
         if text.strip() in self.medical_terms:
             return text
         self.dict = Settings.get_settings_dictionary() if self.dict is None else self.dict
