@@ -52,6 +52,8 @@ class HCCServiceImpl(HCCService):
         temp_hcc_map = hcc_to_icd10
         for hcc in list(hcc_to_icd10.keys()):
             parent_hcc = self.__hcc.describe_hcc(hcc)['parents']
+            if not parent_hcc:
+                continue
             for parent in parent_hcc:
                 if parent in temp_hcc_map:
                     temp_hcc_map.pop(parent)
