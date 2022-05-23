@@ -71,8 +71,6 @@ class TextSpanDiscovery:
         for index, token_ob in enumerate(text_span):
             key = token_ob.token
             start_of_span = token_ob.start_of_span
-            end_of_span = token_ob.end_of_span
-            offset = token_ob.offset
             corrected_key = self.dictionary.get(key, None)
             if corrected_key != None:
                 self.get_new_nodes(key, corrected_key, start_of_span, new_span, token_dict)
