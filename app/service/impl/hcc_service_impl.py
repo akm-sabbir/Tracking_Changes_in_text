@@ -49,11 +49,11 @@ class HCCServiceImpl(HCCService):
             3. Update the response object with the new RAF scores generated
             4. The final response dictionary at the end of iteration contains RAF scores for all HCC codes.
          """
-        temp_hcc_map = hcc_to_icd10
+        temp_hcc_map = hcc_to_icd10.copy()
         for hcc in list(hcc_to_icd10.keys()):
             parent_hcc = self.__hcc.describe_hcc(hcc)['parents']
             # if no parent is present in the current hcc codes, no need to generate new scores.
-            if len(set(parent_hcc).intersection(set(temp_hcc_map.keys()))):
+            if not len(set(parent_hcc).intersection(set(temp_hcc_map.keys()))):
                 continue
             for parent in parent_hcc:
                 if parent in temp_hcc_map:
@@ -71,7 +71,7 @@ class HCCServiceImpl(HCCService):
             response['hcc_lst'] = list(hcc_set)
             response['hcc_map'].update(current_response['hcc_map'])
             response['parameters'].update(current_response['parameters'])
-            temp_hcc_map = hcc_to_icd10
+            temp_hcc_map = hcc_to_icd10.copy()
 
         hcc_categories = self.__get_hcc_categories(response['hcc_lst'])
         return self.__map_to_hcc_response_dto(response, default_selection, hcc_categories)
