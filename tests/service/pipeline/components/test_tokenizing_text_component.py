@@ -67,3 +67,8 @@ class TestTextTokenizationComponent(TestCase):
         assert second_test_result[0].token_container[11].end_of_span == 70
         assert second_test_result[0].token_container[11].offset == 0
         assert second_test_result[0].token_container[11].token == "Since"
+
+    def test__run__should_return_empty__given_cache_present(self):
+        component = TextTokenizationComponent()
+        result = component.run({"text": "some text.\n\nSome other text", 'acm_cached_result': ["some data"]})
+        assert result == []

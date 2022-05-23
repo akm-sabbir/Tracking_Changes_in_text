@@ -74,3 +74,8 @@ class TestTextReconstructionComponent(TestCase):
         print(results[0].text + " " + str(len(results[0].text)))
         assert results[1].text[52:58] =='nopain'
         assert results[1].text[59:75] =='nobreathlessness'
+
+    def test__run__should_return_empty__given_cache_present(self):
+        component = TextReconstructionComponent()
+        result = component.run({"text": "some text.\n\nSome other text", 'acm_cached_result': ["some data"]})
+        assert result == []

@@ -45,13 +45,6 @@ class AnnotationAlignmentUtil:
         raise ValueError("Unknown note to align!")
 
     @staticmethod
-    def __set_annotation_condition(medical_ontology_to_align_on_note: str, annotation, matched_value):
-        if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
-            annotation.medication = matched_value
-        elif medical_ontology_to_align_on_note == MedicalOntology.ICD10_CM.value:
-            annotation.medical_condition = matched_value
-
-    @staticmethod
     def __align_start_and_text(medical_ontology_to_align_on_note: str, medical_annotations: List, token_node_graph: dict):
 
         for annotation in medical_annotations:

@@ -171,24 +171,6 @@ class TestAnnotationsAlignmentUtil(TestCase):
         assert mock_acm_result.icd10_annotations[1].begin_offset == 141
         assert mock_acm_result.icd10_annotations[1].end_offset == 150
 
-    def test__set_annotation_condition__given_correct_ontology__should_assign_condition(self):
-        rxnorm_annotation = Mock(RxNormAnnotationResult)
-        rxnorm_annotation.medication = "clonidine"
-
-        icd10_annotation = Mock(ICD10AnnotationResult)
-        icd10_annotation.medical_condition = "pneumonia"
-
-        mock_rxnorm_matched_value = "Clonidine"
-        mock_icd10_matched_value = "Pneumonia"
-
-        AnnotationAlignmentUtil._AnnotationAlignmentUtil__set_annotation_condition("RxNorm", rxnorm_annotation,
-                                                                                   mock_rxnorm_matched_value)
-        AnnotationAlignmentUtil._AnnotationAlignmentUtil__set_annotation_condition("ICD10-CM", icd10_annotation,
-                                                                                   mock_icd10_matched_value)
-
-        assert rxnorm_annotation.medication == mock_rxnorm_matched_value
-        assert icd10_annotation.medical_condition == mock_icd10_matched_value
-
     def test__get_annotation_text__given_incorrect_ontology__should_raise_exception(self):
         with self.assertRaises(ValueError) as error:
             AnnotationAlignmentUtil._AnnotationAlignmentUtil__get_annotation_text("some text", [])
