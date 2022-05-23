@@ -17,8 +17,8 @@ from app.util.hcc.hcc_regex_pattern_util import HCCRegexPatternUtil
 class HCCServiceImpl(HCCService):
     def __init__(self):
         self.__logger = logging.getLogger(__name__)
-        __hcc_version = ConfigManager.get_specific_config(section="hcc", key="version")
-        self.__hcc = HCCEngine(version=__hcc_version)
+        hcc_version = ConfigManager.get_specific_config(section="hcc", key="version")
+        self.__hcc = HCCEngine(version=hcc_version)
         self.hcc_util = HCCCategoryUtil()
 
     def get_hcc_risk_scores(self, hcc_request_dto: HCCRequestDto) -> HCCResponseDto:
@@ -32,6 +32,9 @@ class HCCServiceImpl(HCCService):
         default_selection = response["hcc_lst"]
         hcc_to_icd10 = {}
         hcc_maps = response["hcc_map"]
+
+        # creates a dictionary of list of ICD-10 codes with HCC codes as keys,
+        # e.g. {"HCC12":["A0.2", "A30.2"]}
         for icd10 in hcc_maps:
             hcc = hcc_maps[icd10]
             if hcc in hcc_to_icd10:
@@ -39,6 +42,13 @@ class HCCServiceImpl(HCCService):
             else:
                 hcc_to_icd10[hcc] = [icd10]
 
+        # this block of code creates a dictionary with RAF score for all HCC codes present in for all ICD-10 codes
+        """ Algorithm - short explanation
+            1. For each hcc code, generate a list of HCC codes excluding it's parents from the current list
+            2. Generate the RAF score for the list of HCC codes
+            3. Update the response object with the new RAF scores generated
+            4. The final response dictionary at the end of iteration contains RAF scores for all HCC codes.
+         """
         temp_hcc_map = hcc_to_icd10
         for hcc in list(hcc_to_icd10.keys()):
             parent_hcc = self.__hcc.describe_hcc(hcc)['parents']
