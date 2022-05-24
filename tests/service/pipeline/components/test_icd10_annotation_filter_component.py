@@ -5,18 +5,21 @@ from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.impl.icd10_annotation_service_with_filters_impl import ICD10AnnotatorServiceWithFilterImpl
-from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import ACMSciMetamapICD10AnnotationComponent
+from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import \
+    ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.icd10_annotation_filter_component import ICD10AnnotationAlgoComponent
-from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_exclusion_list_processing_component import CodeExclusionHandlingComponent
-from app.dto.pipeline.icd10_hcc_meta_info import Icd10HccMeta
+from app.service.pipeline.components.icd10_to_hcc_annotation import ICD10ToHccAnnotationComponent
+from app.settings import Settings
 
 
 class TestICD10AnnotationAlgoComponent(TestCase):
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
     def test__run__should_return_correct_response__given_correct_input(self, mock_boto3):
+        Settings.exclusion_dict = {}
         icd10_annotation_filter_component = ICD10AnnotationAlgoComponent()
         icd10_annotation_filter_component._ICD10AnnotationAlgoComponent____icd10_annotation_service_with_filters = \
             Mock(ICD10AnnotatorServiceWithFilterImpl)
@@ -38,12 +41,6 @@ class TestICD10AnnotationAlgoComponent(TestCase):
         assert results[0].suggested_codes[0].code == "A15.0"
         assert results[0].suggested_codes[0].description == "Tuberculosis of lung"
         assert results[0].suggested_codes[0].score == 0.7
-
-        #assert results[1].medical_condition == "pneumonia"
-
-        #assert results[1].suggested_codes[0].code == "J12.0"
-        #assert results[1].suggested_codes[0].description == "Adenoviral pneumonia"
-        #assert results[1].suggested_codes[0].score == 0.89
 
     def __get_dummy_icd10_data(self):
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
