@@ -37,7 +37,6 @@ class TextSpanDiscovery:
         node.pos_tracking = TextSpanDiscovery.ROOT_LOCATION
         node.sub_word = sub_word
         node.is_root = is_root
-        node.track_pos = 0
         node.length = length
         node.parent_token = parent_
         return node

@@ -20,10 +20,18 @@ class SubjectiveSectionExtractorComponent(BasePipelineComponent):
         subjective_sections = []
         current_section_relative_start = 0
 
-        for section in subjective_section_matches:
+        for index, section in enumerate(subjective_section_matches):
             relative_start = current_section_relative_start
             relative_end = current_section_relative_start + len(section.group())
-            current_section = SubjectiveSection(section.group(), section.start(), section.end(), relative_start,
+            text = section.group()
+            if section.group()[-1] not in set(['.', ',', ';']):
+                text += '. ' if index != len(subjective_section_matches) - 1 else '.'
+                relative_end += (2 if index != len(subjective_section_matches) - 1 else 1)
+            else:
+                text += ' ' if index != len(subjective_section_matches) - 1 else ''
+                relative_end += (1 if index != len(subjective_section_matches) - 1 else 0)
+
+            current_section = SubjectiveSection(text, section.start(), section.end(), relative_start,
                                                 relative_end)
             current_section_relative_start = current_section.relative_end
             subjective_sections.append(current_section)
