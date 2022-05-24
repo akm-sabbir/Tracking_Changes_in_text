@@ -8,6 +8,10 @@ from app.service.pipeline.components.icd10_smoking_pattern_detection import Pati
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 
 
+def get_modified_text(source: str, modifier: str):
+    return source + modifier
+
+
 class SubjectiveSectionExtractorComponent(BasePipelineComponent):
 
     DEPENDS_ON = [PatientSmokingConditionDetectionComponent, SectionExclusionServiceComponent]
@@ -25,11 +29,11 @@ class SubjectiveSectionExtractorComponent(BasePipelineComponent):
             relative_end = current_section_relative_start + len(section.group())
             text = section.group()
             if section.group()[-1] not in set(['.', ',', ';']):
-                text += '. ' if index != len(subjective_section_matches) - 1 else '.'
-                relative_end += (2 if index != len(subjective_section_matches) - 1 else 1)
+                text = get_modified_text(text, '. ' if index != len(subjective_section_matches) - 1 else '.')
+                relative_end = relative_end + (2 if index != len(subjective_section_matches) - 1 else 1)
             else:
-                text += ' ' if index != len(subjective_section_matches) - 1 else ''
-                relative_end += (1 if index != len(subjective_section_matches) - 1 else 0)
+                text += get_modified_text(text, ' ' if index != len(subjective_section_matches) - 1 else '')
+                relative_end = relative_end + (1 if index != len(subjective_section_matches) - 1 else 0)
 
             current_section = SubjectiveSection(text, section.start(), section.end(), relative_start,
                                                 relative_end)
