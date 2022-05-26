@@ -1,5 +1,7 @@
 import logging
-from typing import Dict, List, Set
+import math
+import re
+from typing import Dict, List
 
 from hccpy.hcc import HCCEngine
 from injector import singleton
@@ -9,7 +11,6 @@ from app.dto.request.hcc_request_dto import HCCRequestDto
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.hcc_service import HCCService
 from app.util.config_manager import ConfigManager
-from app.util.hcc.hcc_category_util import HCCCategoryUtil
 from app.util.hcc.hcc_regex_pattern_util import HCCRegexPatternUtil
 
 
@@ -19,7 +20,6 @@ class HCCServiceImpl(HCCService):
         self.__logger = logging.getLogger(__name__)
         hcc_version = ConfigManager.get_specific_config(section="hcc", key="version")
         self.__hcc = HCCEngine(version=hcc_version)
-        self.hcc_util = HCCCategoryUtil()
 
     def get_hcc_risk_scores(self, hcc_request_dto: HCCRequestDto) -> HCCResponseDto:
         self.__logger.debug("hcc risk score calculated")
@@ -73,6 +73,7 @@ class HCCServiceImpl(HCCService):
             response['parameters'].update(current_response['parameters'])
             temp_hcc_map = hcc_to_icd10.copy()
 
+        response['risk_score'] = math.trunc(response['risk_score'] * 100.0) / 100.0
         hcc_categories = self.__get_hcc_categories(response['hcc_lst'])
         return self.__map_to_hcc_response_dto(response, default_selection, hcc_categories)
 
@@ -127,7 +128,10 @@ class HCCServiceImpl(HCCService):
         hcc_hierarchies = {}
         hcc_set = set(hcc_list)
         already_added = set()
-        for hcc in hcc_list:
+
+        filtered_hcc_list = [hcc_code for hcc_code in hcc_list if re.match(r"^HCC\d+$", hcc_code)]
+        filtered_hcc_list = sorted(filtered_hcc_list, key=lambda x: int(x.replace("HCC", "")))
+        for hcc in filtered_hcc_list:
             if hcc in already_added:
                 continue
             hcc_description = self.__hcc.describe_hcc(hcc)
@@ -135,8 +139,8 @@ class HCCServiceImpl(HCCService):
             hcc_category_codes_present = hcc_set.intersection(hcc_category_codes)
             already_added.update(hcc_category_codes_present)
             hcc_category_codes_list = list(hcc_category_codes_present)
-            hcc_category_codes_list.sort()
-            hcc_category = self.hcc_util.get_hcc_category(hcc)
+            hcc_category_codes_list = sorted(hcc_category_codes_list, key=lambda x: int(x.replace("HCC", "")))
+            hcc_category = self.__hcc.describe_hcc(hcc)['description']
             if hcc_category != "N/A":
                 hcc_hierarchies[hcc_category] = hcc_category_codes_list
         return hcc_hierarchies
