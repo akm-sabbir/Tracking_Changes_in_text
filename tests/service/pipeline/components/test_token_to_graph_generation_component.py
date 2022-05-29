@@ -4,6 +4,7 @@ from unittest import TestCase
 from app.dto.core.trie_structure import Trie
 from app.dto.pipeline.medication_section import MedicationText
 from app.dto.pipeline.subjective_section import SubjectiveText
+from app.dto.pipeline.tokenization_component_result import TokenizationResult
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
@@ -40,8 +41,8 @@ class TestTokenToGraphGenerationComponent(TestCase):
                                                                           "acm_cached_result": None,
                                                                           "changed_words": {},
                                                                           TextTokenizationComponent: [
-                                                                              test_text_span_set_one_subjective_section,
-                                                                              test_text_span_set_one_medication_section],
+                                                                              TokenizationResult(test_text_span_set_one_subjective_section),
+                                                                              TokenizationResult(test_text_span_set_one_medication_section)],
                                                                           SubjectiveSectionExtractorComponent: [
                                                                               SubjectiveText(test_text_set_one, [])],
                                                                           MedicationSectionExtractorComponent: [

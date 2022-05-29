@@ -1,5 +1,7 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock
+
+from app.dto.pipeline.tokenization_component_result import TokenizationResult
 from app.service.impl.icd10_generate_graph_from_text_impl import ICD10GenerateGraphFromTextImpl
 from app.service.impl.icd10_text_token_span_gen_service_impl import ICD10TextAndSpanGenerationServiceImpl
 
@@ -15,7 +17,7 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
                      "Does the patient currently smoke? Smoking: Patient has never smoked - (1/21/2020).\n"
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
-        graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
+        graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(TokenizationResult(actual_test_result1))
         assert graph_nodes['patient'][7].pos_tracking == 7
         assert graph_nodes['patient'][63].pos_tracking == 63
         assert graph_nodes['patient'][63].length == 7
@@ -36,7 +38,7 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
                      "he also chronic diarrheafrom time to time,  the absence of recurrent leg cramps is obvious"
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
-        graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
+        graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(TokenizationResult(actual_test_result1))
         assert graph_nodes['he'][22].pos_tracking == 22
         assert graph_nodes['he'][57].pos_tracking == 57
         assert  graph_nodes['he'][22].length == 2
@@ -51,7 +53,7 @@ class TestICD10GenerateGraphFromTextServiceImplTest(TestCase):
         " His abdominal pain, N / V comes and goes; sometiomessevere."
         test_result1 = self.icd10TextTokenGenerator.get_token_with_span(test_text1)
         actual_test_result1 = self.icd10TextTokenGenerator.process_each_token(test_result1)
-        graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(actual_test_result1)
+        graph_nodes = self.icd10TextGraphGenerator.process_token_to_create_graph(TokenizationResult(actual_test_result1))
         assert graph_nodes['work'][82].pos_tracking == 82
         assert graph_nodes['work'][94].pos_tracking == 94
         assert graph_nodes['work'][94].parent_token == ""

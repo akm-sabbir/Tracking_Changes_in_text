@@ -1,5 +1,6 @@
 from unittest import TestCase
 
+from app.dto.pipeline.tokenization_component_result import TokenizationResult
 from app.service.icd10_text_token_span_gen_service import ICD10TextTokenAndSpanGeneration
 from app.util.text_span_discovery import TextSpanDiscovery
 from app.service.impl.icd10_text_token_span_gen_service_impl import ICD10TextAndSpanGenerationServiceImpl
@@ -34,7 +35,7 @@ class TestSpanDiscovery(TestCase):
         text = "this is a wellwriten? sentence? we are going to analyz it. this was wellwriten policy. " \
            "so thanks. we have a broadview on this topic."
         ts = token_generator_with_span.get_token_with_span(text)
-        nodes = graph_generator.process_token_to_create_graph(ts)
+        nodes = graph_generator.process_token_to_create_graph(TokenizationResult(ts))
         updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["broadview"].get(108, None) != None
         assert updated_token_dict["broadview"][108].parent_token == ""
@@ -53,7 +54,7 @@ class TestSpanDiscovery(TestCase):
                 "he am not sure he has hallucinations, he not sleeping well, he has chronic urinary and bowel incontinent, " \
                 "he also chronic diarrheafrom time to time,  the absence of recurrent leg cramps is obvious"
         ts = token_generator_with_span.get_token_with_span(text3)
-        nodes = graph_generator.process_token_to_create_graph(ts)
+        nodes = graph_generator.process_token_to_create_graph(TokenizationResult(ts))
         updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["diarrhea"][407].parent_token == "diarrheafrom"
         assert updated_token_dict["diarrhea"][407].pos_tracking == 405
@@ -82,7 +83,7 @@ class TestSpanDiscovery(TestCase):
                 "this medication is helping him.He has no CP, SOB, coughing and wheezing." \
                 "Hehas no other issues reported. Schzophrenia, Hypothyroidism"
         ts = token_generator_with_span.get_token_with_span(text4)
-        nodes = graph_generator.process_token_to_create_graph(ts)
+        nodes = graph_generator.process_token_to_create_graph(TokenizationResult(ts))
         updated_token_dict, _ = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         assert updated_token_dict["swolling"][202].parent_token == "noswolling"
         assert updated_token_dict["swolling"][202].pos_tracking == 199
@@ -95,7 +96,7 @@ class TestSpanDiscovery(TestCase):
             "the pain is worse at night, she cant seat or put pressure on her buttock, " \
             "there has been noswolling, lowbuttock, it is hard to work to tingling no numbness, duration month, "
         text_span = token_generator_with_span.get_token_with_span(text5)
-        nodes = graph_generator.process_token_to_create_graph(text_span)
+        nodes = graph_generator.process_token_to_create_graph(TokenizationResult(text_span))
         updated_token_dict, new_text_span = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, text_span)
         assert updated_token_dict["buttock"].__contains__(175) is True
         assert updated_token_dict["buttock"][97].parent_token == "lowbuttock"
@@ -131,7 +132,7 @@ class TestSpanDiscovery(TestCase):
                 "the pain is worse at night, she cant seat or put pressure on her buttock, " \
                 "there has been noswolling, lowbuttock, it is hard to work to tingling no numbness, duration month, "
         ts = token_generator_with_span.get_token_with_span(text5)
-        nodes = graph_generator.process_token_to_create_graph(ts)
+        nodes = graph_generator.process_token_to_create_graph(TokenizationResult(ts))
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
         text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
         assert text.find("buttock") == 97

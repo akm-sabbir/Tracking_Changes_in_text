@@ -66,7 +66,7 @@ class TestICD10AnnotationComponent(TestCase):
         negation_testing_component = NegationHandlingComponent()
         paragraph1 = Paragraph("He has alot going on, he continues to drinks, daily, no tuberculosis of lung and "
                                "no pneumonia", 0, 68)
-        paragraph2 = Paragraph(" he has been feeling dizzy with some fall,he was in the er recently", 91, 157)
+        paragraph2 = Paragraph("he has been feeling dizzy with some fall,he was in the er recently", 91, 157)
 
         paragraph3 = Paragraph("medication text", 21, 30)
         paragraph4 = Paragraph("flurosemide some other text", 31, 40)
@@ -176,7 +176,7 @@ class TestICD10AnnotationComponent(TestCase):
 
         acm_result: ICD10Result = icd10_annotation_component.run(annotation_results)[0]
         calls = [call("He has alot going on, he continues to drinks, daily, no tuberculosis of lung and no pneumonia,"),
-                 call(" he has been feeling dizzy with some fall,he was in the er recently,")]
+                 call("he has been feeling dizzy with some fall,he was in the er recently,")]
 
 
         mock_acm_icd10_service.get_icd_10_codes.assert_has_calls(calls)

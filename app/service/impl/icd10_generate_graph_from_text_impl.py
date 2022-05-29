@@ -1,11 +1,12 @@
 import re
 
+from app.dto.pipeline.tokenization_component_result import TokenizationResult
 from app.service.icd10_generate_graph_from_text import ICD10GenerateGraphFromText
 from collections import OrderedDict
 import string
 from app.dto.core.util.Span import Span
 from app.dto.core.util.TokenNode import TokenNode
-from typing import Optional
+from typing import Optional, List
 
 """ Following class helps to track the changes in text by keeping the relationship between original text and extrapolated
 text."""
@@ -19,8 +20,8 @@ class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
         self.token_dict = OrderedDict()
     """ Following function takes a list of token along with its span and generate all form of meta data.
     the utility of this information is indespensible"""
-    def process_token_to_create_graph(self, spanned_info: list) -> TokenNode:
-        for each_span in spanned_info:
+    def process_token_to_create_graph(self, spanned_info: TokenizationResult) -> TokenNode:
+        for each_span in spanned_info.token_container:
             punctuation_list = re.findall("[" + string.punctuation + "]+", each_span.token)
             if len(punctuation_list) > 0 and len( each_span.token) == 1:
                 continue

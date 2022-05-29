@@ -39,6 +39,7 @@ class TestTextTokenizationComponent(TestCase):
         assert first_test_result[0].token_container[10].end_of_span == 53
         assert first_test_result[0].token_container[10].offset == 0
         assert first_test_result[0].token_container[17].token == '1'
+        assert first_test_result[0].token_container[17].token == '1'
         test_data = "46-year-old male presenting for follow up of his blood pressure. Since his last visit a month ago," \
                     "he has been exercising, going out for walks every other day, compliant with medications. " \
                     " Nonew complaints for today. PAST MEDICAL HISTORY: Obesity, Hypertension, " \
