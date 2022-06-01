@@ -31,4 +31,4 @@ class ICD10FilterUtil:
     def is_icd10_term_valid(annotation: ICD10AnnotationResult, dx_threshold: float):
         return annotation.is_negated is False \
                and annotation.score > dx_threshold \
-               and not annotation.medical_condition.lower().strip() in ICD10FilterUtil.excluded_terms
+               and annotation.medical_condition.lower().strip() not in ICD10FilterUtil.excluded_terms
