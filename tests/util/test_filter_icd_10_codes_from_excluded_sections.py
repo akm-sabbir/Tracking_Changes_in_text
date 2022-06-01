@@ -23,6 +23,36 @@ class TestFilterICD10CodesServiceFromExcludedSections(TestCase):
 
         return [section1, section2]
 
+    def test_is_icd10_term_valid__given_correct_input__should_return_correct_response(self):
+        mock_icd10_annotation_result = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=11,
+                                                             end_offset=15, is_negated=False, score=0.7,
+                                                             suggested_codes=[],
+                                                             raw_acm_response={"data": "data"})
+
+        assert ICD10FilterUtil.is_icd10_term_valid(mock_icd10_annotation_result, 0.85) is False
+
+        mock_icd10_annotation_result.medical_condition = "sick"
+        mock_icd10_annotation_result.score = 1.0
+
+        assert ICD10FilterUtil.is_icd10_term_valid(mock_icd10_annotation_result, 0.85) is False
+
+        mock_icd10_annotation_result.medical_condition = "SICK"
+        mock_icd10_annotation_result.score = 0.7
+
+        assert ICD10FilterUtil.is_icd10_term_valid(mock_icd10_annotation_result, 0.85) is False
+
+        mock_icd10_annotation_result.medical_condition = "Tuberculosis"
+        mock_icd10_annotation_result.score = 0.7
+        mock_icd10_annotation_result.is_negated = True
+
+        assert ICD10FilterUtil.is_icd10_term_valid(mock_icd10_annotation_result, 0.85) is False
+
+        mock_icd10_annotation_result.medical_condition = "Tuberculosis"
+        mock_icd10_annotation_result.score = 0.9
+        mock_icd10_annotation_result.is_negated = False
+
+        assert ICD10FilterUtil.is_icd10_term_valid(mock_icd10_annotation_result, 0.85) is True
+
     def __get_dummy_icd10_data(self):
         icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
         icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
