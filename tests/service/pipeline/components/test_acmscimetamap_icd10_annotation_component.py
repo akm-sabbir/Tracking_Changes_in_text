@@ -27,7 +27,8 @@ class TestICD10AnnotationComponent(TestCase):
     @patch("app.service.impl.dynamo_db_service.boto3", Mock())
     @patch("app.util.config_manager.ConfigManager.get_specific_config", Mock())
     @patch("app.util.text_postprocessor_util.TextPostProcessorUtil.get_icd10_annotations_with_post_processed_text")
-    @patch("app.service.pipeline.components.acmscimetamap_icd10_annotation_component.TextPreProcessorUtil.get_preprocessed_text")
+    @patch("app.service.pipeline.components.acmscimetamap_icd10_annotation_component"
+           ".TextPreProcessorUtil.get_preprocessed_text")
     @patch("app.service.pipeline.components.acmscimetamap_icd10_annotation_component"
            ".SpanMergerUtil.get_icd_10_codes_with_relevant_spans")
     def test__run__should_return_correct_response__given_correct_input(self, mock_span_util: Mock,
@@ -83,6 +84,7 @@ class TestICD10AnnotationComponent(TestCase):
             {SectionExclusionServiceComponent: [],  # need to modify
              SubjectiveSectionExtractorComponent: [subjective_text],
              NotePreprocessingComponent: [[paragraph1, paragraph2], [paragraph3, paragraph4]],
+             'dx_threshold': 0,
              "acm_cached_result": None, "id": "123", "text": "abcd",
              NegationHandlingComponent: [
                  NegationResult(paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia")),
@@ -203,7 +205,7 @@ class TestICD10AnnotationComponent(TestCase):
         icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=11,
-                                                          end_offset=15, is_negated=False,
+                                                          end_offset=15, is_negated=False, score=0.9,
                                                           suggested_codes=[icd10_annotation_1, icd10_annotation_2],
                                                           raw_acm_response={"data": "data"})
 
@@ -212,7 +214,7 @@ class TestICD10AnnotationComponent(TestCase):
                                              score=0.45)
 
         icd10_annotation_result_2 = ICD10AnnotationResult(medical_condition="pneumonia", begin_offset=0, end_offset=7,
-                                                          is_negated=False,
+                                                          is_negated=False, score=0.9,
                                                           suggested_codes=[icd10_annotation_3, icd10_annotation_4],
                                                           raw_acm_response={"data": "data"})
 
@@ -250,4 +252,3 @@ class TestICD10AnnotationComponent(TestCase):
     @staticmethod
     def __mock_text_postprocessor_util_side_effect(icd10_annotations, text_length):
         return icd10_annotations
-

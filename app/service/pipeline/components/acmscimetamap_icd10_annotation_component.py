@@ -86,9 +86,10 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
                                                                            annotation_results)
 
-        # exclude negated
-        result.icd10_annotations = [annotation for annotation in result.icd10_annotations if
-                                    annotation.is_negated is False]
+        # exclude negated, less than dx_threshold and terms in exclusion list, e.g. "sick"
+        result.icd10_annotations = [annotation for annotation in result.icd10_annotations
+                                    if ICD10FilterUtil.is_icd10_term_valid(annotation,
+                                                                           annotation_results["dx_threshold"])]
 
         # merge the spans
         result.icd10_annotations = SpanMergerUtil.get_icd_10_codes_with_relevant_spans(
