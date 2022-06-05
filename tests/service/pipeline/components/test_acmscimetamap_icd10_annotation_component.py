@@ -85,6 +85,7 @@ class TestICD10AnnotationComponent(TestCase):
              SubjectiveSectionExtractorComponent: [subjective_text],
              NotePreprocessingComponent: [[paragraph1, paragraph2], [paragraph3, paragraph4]],
              'dx_threshold': 0,
+             'icd10_threshold': 0,
              "acm_cached_result": None, "id": "123", "text": "abcd",
              NegationHandlingComponent: [
                  NegationResult(paragraph1.text + "\n\n" + paragraph2.text.replace("pneumonia", "Pneumonia")),
