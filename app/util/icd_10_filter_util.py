@@ -5,7 +5,7 @@ from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 
 
 class ICD10FilterUtil:
-    excluded_terms = ["sick", "fever", "weak", "coughing"]
+    excluded_terms = ["sick", "fever", "weak", "coughing", "hypertension"]
 
     @staticmethod
     def __is_icd_10_codes_not_in_excluded_sections(icd10_annotation: ICD10AnnotationResult,
