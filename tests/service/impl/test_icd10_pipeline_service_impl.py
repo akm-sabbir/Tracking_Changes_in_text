@@ -106,7 +106,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                             SectionExclusionServiceComponent,
                             SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
                             NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                            ACMSciMetamapICD10AnnotationComponent,
                             FilteredICD10ToHccAnnotationComponent]
 
         for idx, type in enumerate(component_serial):
@@ -184,7 +184,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                             SectionExclusionServiceComponent,
                             SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
                             NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                            ACMSciMetamapICD10AnnotationComponent,
                             FilteredICD10ToHccAnnotationComponent]
 
         for idx, type in enumerate(component_serial):

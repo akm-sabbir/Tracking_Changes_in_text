@@ -32,19 +32,19 @@ class TestSubjectiveSectionExtractorComponent(TestCase):
 
         subjective_section = extractor_component.run(annotation_results={"text": "some text"})[0]
 
-        assert subjective_section.text == "section 1section 2"
+        assert subjective_section.text == "section 1.\nsection 2.\n"
 
-        assert subjective_section.subjective_sections[0].text == "section 1"
+        assert subjective_section.subjective_sections[0].text == "section 1.\n"
         assert subjective_section.subjective_sections[0].start == 20
-        assert subjective_section.subjective_sections[0].end == 29
+        assert subjective_section.subjective_sections[0].end == 31
         assert subjective_section.subjective_sections[0].relative_start == 0
-        assert subjective_section.subjective_sections[0].relative_end == 9
+        assert subjective_section.subjective_sections[0].relative_end == 11
 
-        assert subjective_section.subjective_sections[1].text == "section 2"
+        assert subjective_section.subjective_sections[1].text == "section 2.\n"
         assert subjective_section.subjective_sections[1].start == 100
-        assert subjective_section.subjective_sections[1].end == 109
-        assert subjective_section.subjective_sections[1].relative_start == 9
-        assert subjective_section.subjective_sections[1].relative_end == 18
+        assert subjective_section.subjective_sections[1].end == 111
+        assert subjective_section.subjective_sections[1].relative_start == 11
+        assert subjective_section.subjective_sections[1].relative_end == 22
 
     def test__run__should_return_correct_response__given_input_with_no_subjective_part(self):
         extractor_component = SubjectiveSectionExtractorComponent()
