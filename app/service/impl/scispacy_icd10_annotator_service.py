@@ -12,7 +12,7 @@ from app.service.impl.cui_to_icd10_service_impl import CUItoICD10ServiceImpl
 from app.util.config_manager import ConfigManager
 from app.util.dependency_injector import DependencyInjector
 from scispacy.linking import EntityLinker  # do not remove
-from app.util.negation_sentence_segmentation import set_custom_boundaries # do not remove
+from app.util.negation_sentence_segmentation import set_custom_boundaries  # do not remove
 
 
 class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
@@ -44,10 +44,10 @@ class ScispacyICD10AnnotatorService(ICD10AnnotatorService):
         return self._map_to_annotation_result_dto(entities)
 
     def _map_cui_to_icd10_code(self, umls_ents: list) -> List[ICD10Annotation]:
-        return [ICD10Annotation(code=self.icd10_mapper_service.get_icd10_from_cui(cui_id),
+        return [ICD10Annotation(code=icd10,
                                 description=self.icd10_mapper_service.get_umls_data_from_cui(cui_id).concept,
                                 score=cui_score)
-                for cui_id, cui_score in umls_ents]
+                for cui_id, cui_score in umls_ents if (icd10 := self.icd10_mapper_service.get_icd10_from_cui(cui_id))]
 
     def _map_to_annotation_result_dto(self, entities: tuple) -> List[ICD10AnnotationResult]:
         return [ICD10AnnotationResult(medical_condition=entity.text,
