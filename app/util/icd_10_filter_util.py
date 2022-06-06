@@ -5,7 +5,7 @@ from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 
 
 class ICD10FilterUtil:
-    excluded_terms = ["sick"]
+    excluded_terms = ["sick", "fever", "weak", "coughing", "hypertension", "htn"]
 
     @staticmethod
     def __is_icd_10_codes_not_in_excluded_sections(icd10_annotation: ICD10AnnotationResult,
@@ -28,7 +28,9 @@ class ICD10FilterUtil:
                                                                            family_history_excluded_sections)]
 
     @staticmethod
-    def is_icd10_term_valid(annotation: ICD10AnnotationResult, dx_threshold: float):
+    def is_icd10_term_valid(annotation: ICD10AnnotationResult, dx_threshold: float, icd10_threshold: float):
+        annotation.suggested_codes = [code for code in annotation.suggested_codes if code.score > icd10_threshold]
+
         return annotation.is_negated is False \
                and annotation.score > dx_threshold \
                and annotation.medical_condition.lower().strip() not in ICD10FilterUtil.excluded_terms

@@ -9,7 +9,6 @@ from app.service.pipeline.components.section_exclusion_service_component import 
 
 
 class SubjectiveSectionExtractorComponent(BasePipelineComponent):
-
     DEPENDS_ON = [PatientSmokingConditionDetectionComponent, SectionExclusionServiceComponent]
     note_section_service: MedantNoteSectionService = DependencyInjector.get_instance(MedantNoteSectionService)
 
@@ -22,9 +21,15 @@ class SubjectiveSectionExtractorComponent(BasePipelineComponent):
 
         for section in subjective_section_matches:
             relative_start = current_section_relative_start
-            relative_end = current_section_relative_start + len(section.group())
-            current_section = SubjectiveSection(section.group(), section.start(), section.end(), relative_start,
+            section_text = section.group().replace("\n", " ").rstrip() + ".\n"
+            relative_end = current_section_relative_start + len(section_text)
+
+            current_section = SubjectiveSection(section_text, section.start(),
+                                                section.start() +
+                                                len(section_text),
+                                                relative_start,
                                                 relative_end)
+
             current_section_relative_start = current_section.relative_end
             subjective_sections.append(current_section)
 
