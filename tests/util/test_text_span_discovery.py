@@ -69,7 +69,7 @@ class TestSpanDiscovery(TestCase):
                 "the pain is worse at night, she cant seat or put pressure on her buttock, " \
                 "there has been noswolling, it is hard to work to tingling no numbness, duration month, " \
                 "she also lost her job during covid, she was very depressed but she is feeling better now, " \
-                "but she is still smoking, coughing, with sputum inthe morining, with some wheezing, " \
+                "but she is still smoking, coughing, with sputum inthe morining, witfgfgfe wheezing, " \
                 "although she did loss alot of weight, but over covid she has gained13lbs, " \
                 "no tingling no numbness in her feet, no foot ulcers, " \
                 "she also stoppd alot of medication hermedication becuase of financial issues He is here for " \
