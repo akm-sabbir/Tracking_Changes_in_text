@@ -52,3 +52,9 @@ class TestICD10TextAndSpanGenerationServiceImplTest(TestCase):
         assert actual_test_result2[2].end_of_span == 11
         assert actual_test_result2[30].token == ";"
         assert count == 1
+
+    def test__get_text_replaced_with_or(self):
+        self.icd10TextTokenGenerator = ICD10TextAndSpanGenerationServiceImpl()
+        test_text = ": Sulfamethoxazole/Trimethoprim/ DS 800-160 mg\n. : Florastor 250 mg 1 by mouth twice a day"
+        results = self.icd10TextTokenGenerator.replace_slash_with_or(test_text)
+        assert results[18:22] == ' or '

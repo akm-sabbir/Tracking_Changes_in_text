@@ -59,7 +59,8 @@ class TextSpanDiscovery:
                                       end_of_span=start + self.global_offset + len(each_tups[1])))
             if token_dict.get(each_tups[1], None) is None:
                 token_dict[each_tups[1]] = {}
-            token_dict[each_tups[1]][start + self.global_offset] = new_node
+            if token_dict[each_tups[1]].get(start + self.global_offset, None) is None:
+                token_dict[each_tups[1]][start + self.global_offset] = new_node
             self.global_offset += (len(each_tups[1]) - len(each_tups[0]))
 
     """In The following function we first check whether the dictionary base is initialzied or not. If it is not initialized

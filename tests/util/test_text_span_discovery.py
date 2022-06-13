@@ -6,6 +6,7 @@ from app.util.text_span_discovery import TextSpanDiscovery
 from app.service.impl.icd10_text_token_span_gen_service_impl import ICD10TextAndSpanGenerationServiceImpl
 from app.service.impl.icd10_generate_graph_from_text_impl import ICD10GenerateGraphFromTextImpl
 
+
 class TestSpanDiscovery(TestCase):
     get_dummy_dictionary = {
                             "this": [("this", "these")],
@@ -24,7 +25,9 @@ class TestSpanDiscovery(TestCase):
                             "giveshim": [("gives", "gives"), ("him", "him")],
                             "lowbuttock": [("low", "low"), ("buttock", "buttock")],
                             "buttock": [("buttock", "butock")],
-                            "butock": [("butock", "butox")]
+                            "butock": [("butock", "butox")],
+                            "surgial": [("surgial", "surgical")],
+                            "suppurative" : [("suppurative", "supportive")]
                           }
     text_span_discovery_tool: TextSpanDiscovery
 
@@ -144,3 +147,61 @@ class TestSpanDiscovery(TestCase):
         assert text.count(',') == 12
         assert text.count("lowbuttock") == 0
         assert text.find("no swell,") != -1
+
+    def test__icd_10_text_reconstruction_response__given_correct_output_set_six(self):
+        test_text1 = "CC: Patient presents for a Transitional Care Management exam." \
+                     "Date Admitted: **********\n" \
+                     "Date Discharged: **********\n" \
+                     "Living Environment: Patient lives with relatives her mum is currently home here with ***\n" \
+        "Limitations: Patient has physical de-condition No. Is the patient's hearing okay? Yes. Is the patient's\n" \
+        "vision okay? Yes. Is the patient's mental status okay? Yes. Does the patient have any dementia? No" \
+        "Home Care Services: none\n" \
+        "Physical/Occupational therapy:\n" \
+        "Ambulation Status:\n" \
+        "Continence:\n\n" \
+        "HPI: s/p elective excisiion og bilateral suppurative hydradenitis, surgery was complicated by sepsis from" \
+        "c diffle she was admited for 3 days, she now feels much , no more fever, no diarrhea, no\n" \
+        "breathlessness and the surgial side is healing , but the rt side is leaking some, clear liquid with no smell\n" \
+        "ROS:\n" \
+        "Const: Denies chills, fever and sweats.\n" \
+        "Eyes: Denies a recent change in visual acuity and watery or itching eyes.\n" \
+        "ENMT: Denies congestion, excessive sneezing and postnasal drip.\n" \
+        "CV: Denies chest pain, orthopnea, palpitations and swelling of ankles.\n" \
+        "Resp: Denies cough, PND, SOB, sputum production and wheezing.\n" \
+        "GI: Denies abdominal pain, constipation, diarrhea, hematemesis, melena, nausea and vomiting.\n" \
+        "GU: Urinary: denies dysuria, frequency, hematuria and change in urine odor.\n" \
+        "Skin: Denies rashes.\n" \
+        "Neuro: Denies headache, loss of consciousness and vertigo.\n\n." \
+        "Const: Appears moderately overweight. No signs of apparent distress present.\n" \
+        "Head/Face: Normal on inspection.\n" \
+        "ENMT: External Ears: Inspection reveals normal ears. Canals WNL. Nasopharynx: Normal to\n" \
+        "inspection. Dentition is normal. Gums appear healthy. Palate normal in appearance.\n" \
+        "Neck: Normal to inspection. Normal to palpation. No masses appreciated. No JVD. Carotids: no\n" \
+        "bruits.\n" \
+        "Resp: Inspection of chest reveals no chest wall deformity. Percussion is resonant and equal. Lungs\n" \
+        "are clear bilaterally. Chest is normal to inspection and palpation.\n" \
+        "CV: No lifts or thrills. PMI is not displaced. S1 is normal. S2 is normal. No extra sounds. No heart\n" \
+        "murmur appreciated. Extremities: No clubbing, cyanosis or edema.\n" \
+        "Abdomen: Abdomen is soft, nontender, and nondistended without guarding, rigidity or rebound\n" \
+        "tenderness. No abdominal masses. No pulsatile masses present. Abdominal wall is soft. No\n" \
+        "palpable hernias. No palpable hepatosplenomegaly. Kidneys are not palpable.\n" \
+        "Musculo: Walks with a normal gait. Upper Extremities: Normal to inspection and palpation. Lower\n" \
+        "Extremities: Normal to inspection and palpation.\n" \
+        "Skin: Skin is warm and dry. Hair appears normal. healing axilla\n\n."
+
+        self.text_span_discovery_tool = TextSpanDiscovery(self.get_dummy_dictionary)
+        token_generator_with_span = ICD10TextAndSpanGenerationServiceImpl()
+        graph_generator = ICD10GenerateGraphFromTextImpl()
+        ts = token_generator_with_span.get_token_with_span(test_text1)
+        print(len(ts))
+
+        nodes = graph_generator.process_token_to_create_graph(TokenizationResult(ts))
+        updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
+
+        text = self.text_span_discovery_tool.improved_text_reconstruction(new_ts)
+        updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(
+            updated_token_dict, new_ts)
+        (start_of_span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "surgical", 717, "")
+        assert updated_token_dict["surgical"][716].pos_tracking == 717
+        assert updated_token_dict["surgial"][717].parent_token == ""
+        assert updated_token_dict["supportive"][541].parent_token == "suppurative"
