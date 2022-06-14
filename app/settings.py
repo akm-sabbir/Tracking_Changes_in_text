@@ -23,7 +23,7 @@ class Settings:
     eng_dict: Trie
     nltk_tokenizer: nltk.TreebankWordTokenizer
     exclusion_list_path: str
-    exclusion_dict: dict
+    exclusion_dict: dict = {}
     positive_sentiments_path: str = ""
     positive_sentiments_set: set = set()
     nlp_smoker_detector: spacy
