@@ -53,7 +53,7 @@ class TestTokenToGraphGenerationComponent(TestCase):
         assert set_one_graph_generation_result[1].graph_token_container['he'][22].pos_tracking == 22
         assert set_one_graph_generation_result[1].graph_token_container['he'][22].is_root is True
         assert set_one_graph_generation_result[1].graph_token_container['he'][22].parent_token == ""
-        assert set_one_graph_generation_result[1].graph_token_container.get(",", None) is None
+        #assert set_one_graph_generation_result[1].graph_token_container.get(",", None) is None
 
     def test__run__should_return_empty__given_cache_present(self):
         component = TextToGraphGenerationComponent()

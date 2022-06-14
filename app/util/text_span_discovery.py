@@ -53,14 +53,15 @@ class TextSpanDiscovery:
             is_space_needed = 1 if index > 0 else 0
             self.global_offset += is_space_needed
             subword = each_tups[0] if len(key) != len(each_tups[0]) else ""
-            new_node = self.get_new_node_(key, is_root=False, length=len(each_tups[1]), sub_word=subword)
+            new_node = self.get_new_node_(key, is_root=True if key == "" else False, length=len(each_tups[1]),
+                                          sub_word=subword)
             new_node.pos_tracking = start_of_span
             new_span.append(TokenInfo(token=each_tups[1], start_of_span=start + self.global_offset,
                                       end_of_span=start + self.global_offset + len(each_tups[1])))
             if token_dict.get(each_tups[1], None) is None:
                 token_dict[each_tups[1]] = {}
             if token_dict[each_tups[1]].get(start + self.global_offset, None) is None:
-                token_dict[each_tups[1]][start + self.global_offset] = new_node
+                 token_dict[each_tups[1]][start + self.global_offset] = new_node
             self.global_offset += (len(each_tups[1]) - len(each_tups[0]))
 
     """In The following function we first check whether the dictionary base is initialzied or not. If it is not initialized

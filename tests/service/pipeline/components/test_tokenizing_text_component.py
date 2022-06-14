@@ -33,7 +33,7 @@ class TestTextTokenizationComponent(TestCase):
                                 MedicationSectionExtractorComponent: [MedicationText(test_data2, [])],
                                 })
         assert first_test_result[0].token_container[4].token == 'mgs'
-        assert first_test_result[0].token_container[10].token == 'Clonidine'
+        assert first_test_result[0].token_container[10].token == 'clonidine'
         assert first_test_result[0].token_container[10].start_of_span == 44
         assert first_test_result[0].token_container[10].end_of_span == 53
         assert first_test_result[0].token_container[10].offset == 0
@@ -47,7 +47,7 @@ class TestTextTokenizationComponent(TestCase):
                                            MedicationSectionExtractorComponent: [MedicationText(test_data3, [])],
                                            })
         assert third_test_result[0].token_container[2].token == 'or'
-        assert third_test_result[0].token_container[3].token == 'Trimethoprim'
+        assert third_test_result[0].token_container[3].token == 'trimethoprim'
         test_data = "46-year-old male presenting for follow up of his blood pressure. Since his last visit a month ago," \
                     "he has been exercising, going out for walks every other day, compliant with medications. " \
                     " Nonew complaints for today. PAST MEDICAL HISTORY: Obesity, Hypertension, " \
@@ -74,7 +74,7 @@ class TestTextTokenizationComponent(TestCase):
         assert second_test_result[0].token_container[11].start_of_span == 65
         assert second_test_result[0].token_container[11].end_of_span == 70
         assert second_test_result[0].token_container[11].offset == 0
-        assert second_test_result[0].token_container[11].token == "Since"
+        assert second_test_result[0].token_container[11].token == "since"
 
         test_data4 = "CC: Patient presents for a Transitional Care Management exam." \
                      "Date Admitted: **********\n" \

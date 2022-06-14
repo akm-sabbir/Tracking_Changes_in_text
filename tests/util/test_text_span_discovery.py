@@ -187,7 +187,8 @@ class TestSpanDiscovery(TestCase):
         "palpable hernias. No palpable hepatosplenomegaly. Kidneys are not palpable.\n" \
         "Musculo: Walks with a normal gait. Upper Extremities: Normal to inspection and palpation. Lower\n" \
         "Extremities: Normal to inspection and palpation.\n" \
-        "Skin: Skin is warm and dry. Hair appears normal. healing axilla\n\n."
+        "Skin: Skin is warm and dry. Hair appears normal. healing axilla\n\n." \
+        ": Sulfamethoxazole/Trimethoprim/ DS 800-160 mg\n. : Florastor 250 mg 1 by mouth twice a day"
 
         self.text_span_discovery_tool = TextSpanDiscovery(self.get_dummy_dictionary)
         token_generator_with_span = ICD10TextAndSpanGenerationServiceImpl()
@@ -205,3 +206,8 @@ class TestSpanDiscovery(TestCase):
         assert updated_token_dict["surgical"][716].pos_tracking == 717
         assert updated_token_dict["surgial"][717].parent_token == ""
         assert updated_token_dict["supportive"][541].parent_token == "suppurative"
+        for key, value in updated_token_dict.items():
+            for sub_key, sub_value in updated_token_dict[key].items():
+                if key == sub_value.parent_token and sub_value.pos_tracking == sub_key:
+
+                    print(str(key) + " " + str(updated_token_dict[key]))

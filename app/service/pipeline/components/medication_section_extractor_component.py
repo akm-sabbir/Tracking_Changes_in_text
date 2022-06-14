@@ -25,7 +25,7 @@ class MedicationSectionExtractorComponent(BasePipelineComponent):
             relative_start = current_section_relative_start
             relative_end = current_section_relative_start + len(section.group())
             text = section.group()
-            if section.group()[-1] not in set(['.', ',', ';']):
+            if section.group()[-1] not in set(['.', ',', ';', "?"]):
                 text = get_modified_text(text, '. ' if index != len(medication_section_matches) - 1 else '.')
                 relative_end = relative_end + (2 if index != len(medication_section_matches) - 1 else 1)
             else:

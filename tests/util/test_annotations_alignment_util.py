@@ -121,7 +121,9 @@ class TestAnnotationsAlignmentUtil(TestCase):
                                                        MedicationSectionExtractorComponent: [
                                                            MedicationText(test_text_set_one, [])]
                                                        }
+
         test_results: List[NegationResult] = negation_testing_component.run(annotation_results)
+        print(test_results[0].tokens_with_span[9])
         assert test_results[1].tokens_with_span[5].token == 'clonidine'
         assert test_results[1].tokens_with_span[5].start_of_span == 55
         assert test_results[1].tokens_with_span[5].end_of_span == 64
@@ -160,6 +162,7 @@ class TestAnnotationsAlignmentUtil(TestCase):
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations("RxNorm", mock_acm_result,
                                                                            mock_annotation_results,
                                                                            annotation_results[TextToGraphGenerationComponent][1].graph_token_container)
+
 
         assert mock_acm_result.rxnorm_annotations[0].begin_offset == 119
         assert mock_acm_result.rxnorm_annotations[0].end_offset == 128

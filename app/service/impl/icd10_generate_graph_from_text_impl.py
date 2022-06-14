@@ -23,8 +23,8 @@ class ICD10GenerateGraphFromTextImpl(ICD10GenerateGraphFromText):
     def process_token_to_create_graph(self, spanned_info: TokenizationResult) -> TokenNode:
         for each_span in spanned_info.token_container:
             punctuation_list = re.findall("[" + string.punctuation + "]+", each_span.token)
-            if len(punctuation_list) > 0 and len( each_span.token) == 1:
-                continue
+            #if len(punctuation_list) > 0 and len( each_span.token) == 1:
+            #    continue
             node = self.get_new_node_for_token(pos_list=[Span(each_span.start_of_span, each_span.end_of_span, 0)],
                                                    length=len(each_span.token))
             node.pos_tracking = each_span.start_of_span
