@@ -13,7 +13,13 @@ class MedantNoteSectionService:
 
     subjective_section_regex = r"(?<=subjective\n).*?(?=current[^\w]*meds[^\w]*prior[^\w]*to[^\w]*visit)|" \
                                r"(?<=subjective\n).*?(?=\n{2})"
+    hpi_section_regex = r"(?<=HPI:).*?(?=ROS:)"
     exam_section_regex = r"(?<=exam:).*?((?=medication[^\w]*review[^\w]completed))|(?<=exam:).*?(?=\n{2})"
+
+    medical_problems_regex = r"(medical[^\w]problems:).*?(?=\(accidents[^\w]*injuries\))"
+    problems_list_regex = r"(problem[^\w]list:).*?(?=\(health[^\w]*maintenance\))"
+    personal_habit_regex = r"(personal[^\w]habits:).*?(?=reviewed[^\w]*and[^\w]*updated)"
+
     session_notes_regex = r"(?<=session[^\w]notes:).*?(?=progress[^\w]notes)|(?<=session[^\w]notes:).*?(?=\n{2})"
     progress_notes_regex = r"(?<=progress[^\w]notes:).*?(?=progress[^\w]notes:\n|time[^\w]out:)|" \
                            r"(?<=progress[^\w]notes:).*?(?=\n{2})"
@@ -34,24 +40,22 @@ class MedantNoteSectionService:
                                 r"|".join(ending_pattern_for_med_current_section) + r")"
 
     def get_subjective_sections(self, note: str) -> List[Match]:
-        subjective_section_patten = re.compile(self.subjective_section_regex, flags=re.DOTALL | re.IGNORECASE)
-        exam_section_pattern = re.compile(self.exam_section_regex, flags=re.DOTALL | re.IGNORECASE)
 
-        subjective_sections = [section for section in subjective_section_patten.finditer(note)]
-        if subjective_sections:
-            exam_sections = [section for section in exam_section_pattern.finditer(note)]
-            return subjective_sections + exam_sections
+        matches = []
 
-        session_notes_section_patten = re.compile(self.session_notes_regex, flags=re.DOTALL | re.IGNORECASE)
-        progress_notes_section_pattern = re.compile(self.progress_notes_regex, flags=re.DOTALL | re.IGNORECASE)
+        medical_problems_patten = re.compile(self.medical_problems_regex, flags=re.DOTALL | re.IGNORECASE)
+        problems_list_patten = re.compile(self.problems_list_regex, flags=re.DOTALL | re.IGNORECASE)
+        personal_habit_patten = re.compile(self.personal_habit_regex, flags=re.DOTALL | re.IGNORECASE)
+        hpi_section_patten = re.compile(self.hpi_section_regex, flags=re.DOTALL | re.IGNORECASE)
 
-        session_notes_sections = [section for section in session_notes_section_patten.finditer(note)]
+        hpi_section_sections = [section for section in hpi_section_patten.finditer(note)]
+        medical_problems_sections = [section for section in medical_problems_patten.finditer(note)]
+        problems_list_sections = [section for section in problems_list_patten.finditer(note)]
+        personal_habit_sections = [section for section in personal_habit_patten.finditer(note)]
 
-        if session_notes_sections:
-            progress_notes_sections = [section for section in progress_notes_section_pattern.finditer(note)]
-            return session_notes_sections + progress_notes_sections
+        matches.extend(medical_problems_sections+problems_list_sections+personal_habit_sections+hpi_section_sections)
 
-        return []
+        return matches
 
     def get_family_history_sections(self, note: str) -> List[FamilyHistorySection]:
         family_history_section_pattern = re.compile(self.__family_history_section_regex,

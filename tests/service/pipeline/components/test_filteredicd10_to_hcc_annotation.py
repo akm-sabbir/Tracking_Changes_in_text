@@ -3,8 +3,10 @@ from unittest.mock import patch, Mock
 
 from app.dto.core.patient_info import PatientInfo
 from app.dto.core.pipeline.icd10_result import ICD10Result
+from app.dto.core.service.hcc_code import HCCCode
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
+from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import \
     ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
@@ -12,7 +14,17 @@ from app.service.pipeline.components.filtericd10_to_hcc_annotation import Filter
 
 class TestFilteredICD10ToHccAnnotationComponent(TestCase):
     @patch("app.service.impl.amazon_icd10_annotator_service.boto3")
-    def test__run__should_return_correct_response__given_correct_input(self, mock_boto3):
+    @patch("app.service.pipeline.components.filtericd10_to_hcc_annotation.HCCServiceImpl")
+    def test__run__should_return_correct_response__given_correct_input(self, mock_hcc_service: Mock, mock_boto3: Mock):
+        hcc_service_mock = Mock()
+        mock_hcc_service.return_value = hcc_service_mock
+        hcc_service_mock.get_hcc_risk_scores = Mock()
+        mock_hcc_response = Mock(HCCResponseDto)
+        mock_hcc_response.hcc_maps = {
+            "J449": HCCCode(code="HCC111", score=0.335),
+            "E109": HCCCode(code="HCC19", score=0.106),
+        }
+        hcc_service_mock.get_hcc_risk_scores.return_value = mock_hcc_response
         icd10_to_hcc_annotation_component = FilteredICD10ToHccAnnotationComponent()
         params = {"patient_info": PatientInfo(70, "M"),
                   ACMSciMetamapICD10AnnotationComponent: self.__get_dummy_icd10_data()}

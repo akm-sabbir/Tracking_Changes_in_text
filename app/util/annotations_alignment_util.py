@@ -87,3 +87,7 @@ class AnnotationAlignmentUtil:
                 annotation_index = annotation_index + 1
             else:
                 section_index = section_index + 1
+                if section_index == len(medical_sections):
+                    annotation.begin_offset = annotation.begin_offset - 3
+                    annotation.end_offset = annotation.end_offset - 3
+                    section_index = section_index - 1
