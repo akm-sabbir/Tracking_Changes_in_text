@@ -40,7 +40,7 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
                                       TextTokenizationComponent(),
                                       TextToGraphGenerationComponent(),
                                       NegationHandlingComponent(), TextReconstructionComponent(),NotePreprocessingComponent(),
-                                      ACMSciMetamapICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
+                                      ACMSciMetamapICD10AnnotationComponent(),
                                       FilteredICD10ToHccAnnotationComponent()]
 
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)

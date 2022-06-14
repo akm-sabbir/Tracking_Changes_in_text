@@ -87,4 +87,3 @@ class AnnotationAlignmentUtil:
                 annotation_index = annotation_index + 1
             else:
                 section_index = section_index + 1
-                print("section index " + str(section_index))

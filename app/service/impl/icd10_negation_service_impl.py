@@ -42,8 +42,6 @@ class Icd10NegationServiceImpl(ICD10NegationService):
         return list(one_edit_words)
 
     def get_icd_10_text_negation_fixed(self, text: str) -> List[Tuple]:
-        if text.strip() in self.medical_terms:
-            return text
         self.dict = Settings.get_settings_dictionary() if self.dict is None else self.dict
         results = [(text, text)]
         if text.lower().find("no") == 0 and not self.utilize_dict.is_valid_word(text.lower(), self.dict, 0) \
