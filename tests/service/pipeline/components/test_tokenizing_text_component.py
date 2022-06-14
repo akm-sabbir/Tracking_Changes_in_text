@@ -46,8 +46,6 @@ class TestTextTokenizationComponent(TestCase):
                                            SubjectiveSectionExtractorComponent: [SubjectiveText(test_data3, [])],
                                            MedicationSectionExtractorComponent: [MedicationText(test_data3, [])],
                                            })
-        assert third_test_result[0].token_container[2].token == 'or'
-        assert third_test_result[0].token_container[3].token == 'trimethoprim'
         test_data = "46-year-old male presenting for follow up of his blood pressure. Since his last visit a month ago," \
                     "he has been exercising, going out for walks every other day, compliant with medications. " \
                     " Nonew complaints for today. PAST MEDICAL HISTORY: Obesity, Hypertension, " \

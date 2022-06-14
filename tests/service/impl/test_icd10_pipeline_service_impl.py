@@ -107,7 +107,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                                       TextTokenizationComponent,
                                       TextToGraphGenerationComponent,
                                       NegationHandlingComponent, TextReconstructionComponent, NotePreprocessingComponent,
-                                      ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                                      ACMSciMetamapICD10AnnotationComponent,
                                       FilteredICD10ToHccAnnotationComponent]
 
 
@@ -186,7 +186,7 @@ class TestICD10PipelineServiceImpl(TestCase):
                                       TextTokenizationComponent,
                                       TextToGraphGenerationComponent,
                                       NegationHandlingComponent,TextReconstructionComponent, NotePreprocessingComponent,
-                                      ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                                      ACMSciMetamapICD10AnnotationComponent,
                                       FilteredICD10ToHccAnnotationComponent]
 
 

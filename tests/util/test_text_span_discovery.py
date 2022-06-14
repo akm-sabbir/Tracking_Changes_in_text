@@ -194,8 +194,6 @@ class TestSpanDiscovery(TestCase):
         token_generator_with_span = ICD10TextAndSpanGenerationServiceImpl()
         graph_generator = ICD10GenerateGraphFromTextImpl()
         ts = token_generator_with_span.get_token_with_span(test_text1)
-        print(len(ts))
-
         nodes = graph_generator.process_token_to_create_graph(TokenizationResult(ts))
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(nodes, ts)
 
@@ -203,11 +201,6 @@ class TestSpanDiscovery(TestCase):
         updated_token_dict, new_ts = self.text_span_discovery_tool.generate_metainfo_for_changed_text(
             updated_token_dict, new_ts)
         (start_of_span_info, root) = self.text_span_discovery_tool.get_start_end_pos_span(updated_token_dict, "surgical", 717, "")
-        assert updated_token_dict["surgical"][716].pos_tracking == 717
-        assert updated_token_dict["surgial"][717].parent_token == ""
-        assert updated_token_dict["supportive"][541].parent_token == "suppurative"
-        for key, value in updated_token_dict.items():
-            for sub_key, sub_value in updated_token_dict[key].items():
-                if key == sub_value.parent_token and sub_value.pos_tracking == sub_key:
-
-                    print(str(key) + " " + str(updated_token_dict[key]))
+        assert updated_token_dict["surgical"][710].pos_tracking == 711
+        assert updated_token_dict["surgial"][711].parent_token == ""
+        assert updated_token_dict["supportive"][535].parent_token == "suppurative"
