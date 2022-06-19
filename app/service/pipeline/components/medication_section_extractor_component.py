@@ -6,10 +6,6 @@ from app.service.pipeline.components.base_pipeline_component import BasePipeline
 from app.util.dependency_injector import DependencyInjector
 
 
-def get_modified_text(source_text: str, modifier: str):
-    return source_text + modifier
-
-
 class MedicationSectionExtractorComponent(BasePipelineComponent):
     DEPENDS_ON = []
     note_section_service: MedantNoteSectionService = DependencyInjector.get_instance(MedantNoteSectionService)
@@ -25,11 +21,11 @@ class MedicationSectionExtractorComponent(BasePipelineComponent):
             relative_start = current_section_relative_start
             relative_end = current_section_relative_start + len(section.group())
             text = section.group()
-            if section.group()[-1] not in set(['.', ',', ';', "?"]):
-                text = get_modified_text(text, '. ' if index != len(medication_section_matches) - 1 else '.')
+            if section.group()[-1] not in {'.', ',', ';', "?"}:
+                text = self.__get_modified_text(text, index, medication_section_matches, '.')
                 relative_end = relative_end + (2 if index != len(medication_section_matches) - 1 else 1)
             else:
-                text = get_modified_text(text, ' ' if index != len(medication_section_matches) - 1 else '')
+                text = self.__get_modified_text(text, index, medication_section_matches, '')
                 relative_end = relative_end + (1 if index != len(medication_section_matches) - 1 else 0)
 
             current_section = MedicationSection(text, section.start(), section.end(), relative_start,
@@ -46,3 +42,8 @@ class MedicationSectionExtractorComponent(BasePipelineComponent):
 
         return [MedicationText(medication_text, medication_sections)]
 
+    def __get_modified_text(self, source_text: str, index, medication_section_matches, modifier: str):
+        if index != len(medication_section_matches) - 1:
+            return source_text + f"{modifier} "
+        else:
+            return source_text + f"{modifier}"

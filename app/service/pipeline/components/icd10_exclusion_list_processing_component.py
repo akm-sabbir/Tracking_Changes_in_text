@@ -27,7 +27,7 @@ class CodeExclusionHandlingComponent(BasePipelineComponent):
                   NegationHandlingComponent, NotePreprocessingComponent,
                   ACMSciMetamapICD10AnnotationComponent,
                   ICD10ToHccAnnotationComponent]
-    __icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl(
+    icd10_exclusion_handling_service: Icd10CodeExclusionServiceImpl = Icd10CodeExclusionServiceImpl(
         ICDExclusions(exclusions_json_dict=Settings.get_exclusion_dict()))
 
     def __init__(self):

@@ -8,12 +8,7 @@ from app.service.pipeline.components.icd10_smoking_pattern_detection import Pati
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 
 
-def get_modified_text(source: str, modifier: str):
-    return source + modifier
-
-
 class SubjectiveSectionExtractorComponent(BasePipelineComponent):
-
     DEPENDS_ON = [PatientSmokingConditionDetectionComponent, SectionExclusionServiceComponent]
     note_section_service: MedantNoteSectionService = DependencyInjector.get_instance(MedantNoteSectionService)
 
@@ -29,10 +24,10 @@ class SubjectiveSectionExtractorComponent(BasePipelineComponent):
             relative_end = current_section_relative_start + len(section.group())
             text = section.group()
             if section.group()[-1] not in set(['.', ',', ';']):
-                text = get_modified_text(text, '. ' if index != len(subjective_section_matches) - 1 else '.')
+                text = self.__get_modified_text(text, index, subjective_section_matches, '.')
                 relative_end = relative_end + (2 if index != len(subjective_section_matches) - 1 else 1)
             else:
-                text += get_modified_text(text, ' ' if index != len(subjective_section_matches) - 1 else '')
+                text += self.__get_modified_text(text, index, subjective_section_matches, '')
                 relative_end = relative_end + (1 if index != len(subjective_section_matches) - 1 else 0)
 
             current_section = SubjectiveSection(text, section.start(), section.end(), relative_start,
@@ -48,3 +43,9 @@ class SubjectiveSectionExtractorComponent(BasePipelineComponent):
                                                          len(subjective_text)))
 
         return [SubjectiveText(subjective_text, subjective_sections)]
+
+    def __get_modified_text(self, source_text: str, index: int, subjective_section_matches: List, modifier: str):
+        if index != len(subjective_section_matches) - 1:
+            return source_text + f"{modifier} "
+        else:
+            return source_text + f"{modifier}"
