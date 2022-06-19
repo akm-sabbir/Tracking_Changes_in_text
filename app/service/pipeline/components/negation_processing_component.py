@@ -1,69 +1,60 @@
-import re
 from typing import Dict, List
 
-import spacy
-from spacy.tokens import Token
-
+from app.dto.core.service.Tokens import TokenInfo
 from app.service.icd10_negation_service import ICD10NegationService
 from app.service.impl.icd10_negation_service_impl import Icd10NegationServiceImpl
 from app.service.pipeline.components.base_pipeline_component import BasePipelineComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from app.settings import Settings
 from app.util.dependency_injector import DependencyInjector
 from app.util.pipeline_util import PipelineUtil
 from app.dto.pipeline.negation_component_result import NegationResult
+from app.util.text_span_discovery import TextSpanDiscovery
+from app.service.pipeline.components.icd10_token_to_graph_generation_component import GraphTokenResult, \
+    TextToGraphGenerationComponent
 
 
 class NegationHandlingComponent(BasePipelineComponent):
-    DEPENDS_ON = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent]
+    DEPENDS_ON = [SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent, TextTokenizationComponent]
 
     def __init__(self):
         super().__init__()
         self.__icd10_negation_fixing_service: ICD10NegationService = DependencyInjector.get_instance(
             Icd10NegationServiceImpl)
+        self.__text_span_discovery: TextSpanDiscovery = TextSpanDiscovery()
 
     def run(self, annotation_results: dict) -> List[NegationResult]:
         if annotation_results['acm_cached_result'] is not None:
             return []
-        tokenizer = Settings.get_settings_tokenizer()
 
-        subjective_section_text_tokens = self.__fix_negation_for_section(tokenizer,
-                                                                         annotation_results[
-                                                                            SubjectiveSectionExtractorComponent][
-                                                                            0].text,
-                                                                         annotation_results)
+        updated_graph, new_subjective_section_text_tokens = self.__fix_negation_for_section(
+            annotation_results[TextTokenizationComponent][0].token_container,
+            annotation_results[TextToGraphGenerationComponent][0].graph_token_container)
 
-        medication_section_text_tokens = self.__fix_negation_for_section(tokenizer,
-                                                                         annotation_results[
-                                                                            MedicationSectionExtractorComponent][
-                                                                            0].text,
-                                                                         annotation_results)
-        subjective_section_text = "".join(subjective_section_text_tokens).strip()
-        medication_section_text = "".join(medication_section_text_tokens).strip()
+        annotation_results[TextToGraphGenerationComponent][0].graph_token_container = updated_graph
+        updated_graph, new_medication_section_text_tokens = self.__fix_negation_for_section(
+            annotation_results[TextTokenizationComponent][1].token_container,
+            annotation_results[TextToGraphGenerationComponent][1].graph_token_container)
 
-        return [NegationResult(text=subjective_section_text),
-                NegationResult(text=medication_section_text)]
+        annotation_results[TextToGraphGenerationComponent][1].graph_token_container = updated_graph
 
-    def __fix_negation_for_section(self, tokenizer: spacy.Any, text: str, annotation_results: dict):
-        tokens = tokenizer(text.lower())
-        text_tokens = [each.text for each in tokens]
-        for index, token in enumerate(tokens):
-            each_token = token.text.lower()
-            if each_token.lower().find("no") == 0:
+        return [NegationResult(token_info_with_span=new_subjective_section_text_tokens),
+                NegationResult(token_info_with_span=new_medication_section_text_tokens)]
+
+    def __fix_negation_for_section(self, token_container: List[TokenInfo], token_graphs: dict):
+        changed_token_dict = {}
+        for index, token in enumerate(token_container):
+            each_token = token.token.lower()
+            token_container[index].token = each_token
+            if each_token.find("no") == 0:
                 fixed_token = self.__icd10_negation_fixing_service.get_icd_10_text_negation_fixed(each_token)
-                text_tokens[index] = fixed_token
-                self._track_text_change(fixed_token, each_token, token, annotation_results)
+                changed_token_dict[each_token] = fixed_token
+        return self._track_text_change_part(changed_token_dict, token_container, token_graphs)
 
-        return (" " + each_token if each_token not in [",", "?", "!", ".", ";", ":"] else each_token
-                for each_token in text_tokens)
-
-    def _track_text_change(self, fixed_token: str, each_token: str, token: Token, annotation_results: Dict):
-        fixed_words = re.sub(r"[^\w]", " ", fixed_token).split()
-        if len(fixed_words) < 2:
-            return
-        original_word = each_token.replace("no", "").strip()
-        changed_word = fixed_words[1]
-        start = token.idx + each_token.find(original_word)
-        end = token.idx + len(original_word)
-        PipelineUtil.track_changed_words(original_word, changed_word, start, end, annotation_results)
+    def _track_text_change_part(self, dictionary: dict, token_container: List[TokenInfo], token_graphs):
+        self.__text_span_discovery.set_changed_text_dictionary(dictionary)
+        updated_graphs, new_text_span = self.__text_span_discovery.generate_metainfo_for_changed_text(token_graphs,
+                                                                                                      token_container)
+        return updated_graphs, new_text_span

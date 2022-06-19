@@ -4,7 +4,7 @@ from app.dto.pipeline.base_pipeline_component_result import BasePipelineComponen
 
 
 class SubjectiveSection(BasePipelineComponentResult):
-    def __init__(self, text: str, start: int, end: int, relative_start: int , relative_end: int):
+    def __init__(self, text: str, start: int, end: int, relative_start: int, relative_end: int):
         self.text = text
         self.start = start
         self.end = end

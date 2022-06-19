@@ -1,3 +1,4 @@
+import nltk
 import spacy
 from scispacy.candidate_generation import LinkerPaths
 from spacy.lang.en import English
@@ -10,6 +11,7 @@ from app.dto.core.trie_structure import Trie
 from nltk.corpus import words
 import json
 import codecs
+from nltk import TreebankWordTokenizer
 
 
 class Settings:
@@ -19,9 +21,9 @@ class Settings:
     icd10_threshold: float
     use_cache: bool
     eng_dict: Trie
-    spacy_tokenizer: spacy.Any
+    nltk_tokenizer: nltk.TreebankWordTokenizer
     exclusion_list_path: str
-    exclusion_dict: dict
+    exclusion_dict: dict = {}
     positive_sentiments_path: str = ""
     positive_sentiments_set: set = set()
     nlp_smoker_detector: spacy
@@ -67,7 +69,7 @@ class Settings:
         return Settings.eng_dict
 
     @staticmethod
-    def set_settings_tokenizer(tokenizer: object):
+    def set_settings_tokenizer(tokenizer: nltk.TreebankWordTokenizer):
         Settings.spacy_tokenizer = tokenizer
 
     @staticmethod
@@ -129,7 +131,7 @@ class Settings:
         for each_word in words.words('en'):
             eng_dic.insert_in(each_word, root)
         Settings.set_settings_dictionary(root)
-        Settings.set_settings_tokenizer(English())
+        Settings.set_settings_tokenizer(TreebankWordTokenizer())
         Settings.init_exclusion_dict()
 
     @staticmethod
