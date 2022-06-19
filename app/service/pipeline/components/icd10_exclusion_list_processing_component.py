@@ -41,8 +41,7 @@ class CodeExclusionHandlingComponent(BasePipelineComponent):
         icd10_meta_info: dict = annotation_results[ICD10ToHccAnnotationComponent][0].hcc_meta_map_info
         icd10_meta_info = self.icd10_exclusion_handling_service.get_icd_10_code_exclusion_decision(icd10_meta_info)
         for annotation_entity in annotated_list:
-            annotation_entity.suggested_codes: List[ICD10Annotation] \
-                = [icd10 for icd10 in annotation_entity.suggested_codes
-                   if icd10_meta_info[icd10.code.replace(".", "")].remove is not True]
+            annotation_entity.suggested_codes = [icd10 for icd10 in annotation_entity.suggested_codes
+                                                 if icd10_meta_info[icd10.code.replace(".", "")].remove is not True]
         acm_result[0].icd10_annotations = annotated_list
         return acm_result

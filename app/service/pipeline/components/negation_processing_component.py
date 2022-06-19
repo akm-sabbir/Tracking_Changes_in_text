@@ -30,16 +30,14 @@ class NegationHandlingComponent(BasePipelineComponent):
             return []
 
         updated_graph, new_subjective_section_text_tokens = self.__fix_negation_for_section(
-            annotation_results[
-                TextTokenizationComponent][
-                0].token_container,
+            annotation_results[TextTokenizationComponent][0].token_container,
             annotation_results[TextToGraphGenerationComponent][0].graph_token_container)
+
         annotation_results[TextToGraphGenerationComponent][0].graph_token_container = updated_graph
         updated_graph, new_medication_section_text_tokens = self.__fix_negation_for_section(
-            annotation_results[
-                TextTokenizationComponent][
-                1].token_container,
+            annotation_results[TextTokenizationComponent][1].token_container,
             annotation_results[TextToGraphGenerationComponent][1].graph_token_container)
+
         annotation_results[TextToGraphGenerationComponent][1].graph_token_container = updated_graph
 
         return [NegationResult(token_info_with_span=new_subjective_section_text_tokens),

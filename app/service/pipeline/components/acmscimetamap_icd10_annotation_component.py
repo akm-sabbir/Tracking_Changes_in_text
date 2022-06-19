@@ -5,7 +5,6 @@ from app.dto.core.medical_ontology import MedicalOntology
 from app.dto.core.pipeline.icd10_result import ICD10Result
 from app.dto.core.pipeline.paragraph import Paragraph
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
-from app.dto.pipeline.token_graph_component import GraphTokenResult
 from app.service.icd10_annotator_service import ICD10AnnotatorService
 from app.service.icd10_positive_sentiment_exclusion_service import ICD10SentimentExclusionService
 from app.service.impl.amazon_icd10_annotator_service import AmazonICD10AnnotatorServiceImpl
@@ -52,7 +51,7 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
         if annotation_results['acm_cached_result'] is not None:
             return annotation_results['acm_cached_result']
         paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent][0]
-        token_nodes_in_graph: GraphTokenResult = annotation_results[TextToGraphGenerationComponent][0].graph_token_container
+        token_nodes_in_graph: dict = annotation_results[TextToGraphGenerationComponent][0].graph_token_container
 
         icd10_annotation_results: List[ICD10AnnotationResult] = []
         raw_acm_data: List[Dict] = []
@@ -86,10 +85,9 @@ class ACMSciMetamapICD10AnnotationComponent(BasePipelineComponent):
 
         result = ICD10Result(annotation_results["id"], filtered_icd10_annotations_from_excluded_sections,
                              raw_acm_data)
-        
+
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
                                                                            annotation_results, token_nodes_in_graph)
-
 
         # exclude negated, less than dx_threshold and terms in exclusion list, e.g. "sick"
         result.icd10_annotations = [annotation for annotation in result.icd10_annotations

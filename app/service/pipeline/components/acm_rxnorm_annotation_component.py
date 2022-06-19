@@ -35,7 +35,7 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
             return []
 
         paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent][1]
-        token_nodes_in_graph: GraphTokenResult = annotation_results[TextToGraphGenerationComponent][1].graph_token_container
+        token_nodes_in_graph: dict = annotation_results[TextToGraphGenerationComponent][1].graph_token_container
         rxnorm_annotation_results: List[RxNormAnnotationResult] = []
         raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
@@ -49,6 +49,5 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
 
         result = ACMRxNormResult(annotation_results["id"], rxnorm_annotation_results, raw_acm_data)
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
-                                                                           annotation_results, token_nodes_in_graph,
-                                                                           )
+                                                                           annotation_results, token_nodes_in_graph)
         return [result]
