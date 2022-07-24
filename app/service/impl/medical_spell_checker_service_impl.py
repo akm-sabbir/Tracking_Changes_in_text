@@ -1,4 +1,3 @@
-import os
 from typing import List
 
 import spacy
@@ -7,10 +6,6 @@ from medcat.config import Config
 from medcat.utils.normalizers import BasicSpellChecker
 from medcat.vocab import Vocab
 
-from zipfile import ZipFile
-
-from app import app_base_path
-from app.service.downloader.s3_downloader import S3DownloaderService
 from app.service.spell_checker_service import SpellCheckerService
 from app.util.config_manager import ConfigManager
 

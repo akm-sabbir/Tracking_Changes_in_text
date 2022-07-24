@@ -1,13 +1,12 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock
 
-import spacy
 from medcat.cdb import CDB
 from medcat.config import Config
 from medcat.utils.normalizers import BasicSpellChecker
 from medcat.vocab import Vocab
 from spacy.lang.en import English
-from spacy.tokens import Doc, Token
+from spacy.tokens import Doc
 
 from app.service.impl.medical_spell_checker_service_impl import MedicalSpellCheckerServiceImpl
 
