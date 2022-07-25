@@ -19,7 +19,6 @@ class MedicalSpellCheckerServiceImpl(SpellCheckerService):
         self.nlp = spacy.load(self.__model_name)
 
     def get_corrected_text(self, sentence: str) -> List[tuple]:
-
         spacy_doc = self.nlp(sentence)
 
-        return [(token.text, self._medical_spell_checker.fix(token.lower_)) for token in spacy_doc]
+        return [(token.text, self._medical_spell_checker.fix(token.lower_)) for token in spacy_doc if token.is_alpha]

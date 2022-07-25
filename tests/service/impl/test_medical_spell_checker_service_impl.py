@@ -32,12 +32,12 @@ class TestMedicalSpellCheckerServiceImpl(TestCase):
 
         medical_spell_checker_service._medical_spell_checker = mock_spell_checker
 
-        mock_sentence = "ome 225"
+        mock_sentence = "ome 225,"
 
         result = medical_spell_checker_service.get_corrected_text(mock_sentence)
 
         assert result[0] == ("ome", "some")
-        assert result[1] == ("225", None)
+        assert result[1] == ("a225", None)
 
     def __get_dummy_spacy_object(self):
         mock_doc1 = Mock(Doc)
@@ -46,12 +46,17 @@ class TestMedicalSpellCheckerServiceImpl(TestCase):
         mock_doc1.is_alpha = True
 
         mock_doc2 = Mock(Doc)
-        mock_doc2.text = "225"
-        mock_doc2.lower_ = "225"
-        mock_doc2.is_alpha = False
+        mock_doc2.text = "a225"
+        mock_doc2.lower_ = "a225"
+        mock_doc2.is_alpha = True
+
+        mock_doc3 = Mock(Doc)
+        mock_doc3.text = ","
+        mock_doc3.lower_ = ","
+        mock_doc3.is_alpha = False
 
         mock_nlp = Mock(English)
-        mock_nlp.return_value = [mock_doc1, mock_doc2]
+        mock_nlp.return_value = [mock_doc1, mock_doc2, mock_doc3]
 
         return mock_nlp
 
