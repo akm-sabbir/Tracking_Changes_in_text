@@ -1,48 +1,64 @@
 from unittest import TestCase
 from unittest.mock import patch, Mock
 
-from symspellpy import SymSpell
-from symspellpy.suggest_item import SuggestItem
+from medcat.cdb import CDB
+from medcat.config import Config
+from medcat.utils.normalizers import BasicSpellChecker
+from medcat.vocab import Vocab
+from spacy.lang.en import English
+from spacy.tokens import Doc
 
 from app.service.impl.medical_spell_checker_service_impl import MedicalSpellCheckerServiceImpl
 
 
 class TestMedicalSpellCheckerServiceImpl(TestCase):
-    @patch("app.service.impl.medical_spell_checker_service_impl.pkg_resources.resource_filename")
-    @patch("app.service.impl.medical_spell_checker_service_impl.SymSpell")
-    def test__get_corrected_text__given_correct_input__should_return_corrected_text(self,
-                                                                                    mock_symspell: Mock,
-                                                                                    mock_pkg_resource: Mock):
-        mock_sentence = "shebreathing"
-        mock_spell = Mock(SymSpell)
-        mock_spell.lookup_compound.return_value = self._get_mock_suggest_item()
-        mock_symspell.return_value = mock_spell
-        mock_pathname = "mock path"
-        mock_pkg_resource.return_value = mock_pathname
+    @patch('app.service.impl.medical_spell_checker_service_impl.ConfigManager.get_specific_config', Mock())
+    @patch('app.service.impl.medical_spell_checker_service_impl.spacy.load')
+    def test__get_corrected_text__given_correct_input__should_return_corrected_text(self, mock_nlp: Mock):
+        mock_nlp.return_value = self.__get_dummy_spacy_object()
 
-        medical_spell_checker = MedicalSpellCheckerServiceImpl(0, 7)
+        mock_cdb_vocab = Mock(CDB)
+        mock_config = Mock(Config)
+        mock_data_vocab = Mock(Vocab)
 
-        result_text = medical_spell_checker.get_corrected_text(mock_sentence, 0, True, True, True, True)
+        mock_cdb_vocab.vocab = Mock()
+        mock_data_vocab.vocab = Mock()
 
-        mock_symspell.assert_called()
-        mock_symspell.assert_called_once_with(0, 7)
+        mock_spell_checker = Mock(BasicSpellChecker)
+        mock_spell_checker.fix = Mock()
+        mock_spell_checker.fix.side_effect = self.__get_dummy_spell_fixing_results()
 
-        mock_pkg_resource.assert_called()
+        medical_spell_checker_service = MedicalSpellCheckerServiceImpl(mock_cdb_vocab, mock_config, mock_data_vocab)
 
-        mock_spell.load_dictionary.assert_called_once_with(mock_pathname, 0, 1)
-        mock_spell.load_bigram_dictionary.assert_called_once_with(mock_pathname, term_index=0, count_index=2)
+        medical_spell_checker_service._medical_spell_checker = mock_spell_checker
 
-        mock_spell.lookup_compound.assert_called()
-        mock_spell.lookup_compound.assert_called_once_with(mock_sentence,
-                                                           max_edit_distance=0, transfer_casing=True,
-                                                           ignore_non_words=True, split_by_space=True,
-                                                           ignore_term_with_digits=True)
+        mock_sentence = "ome 225,"
 
-        assert result_text == "she breathing"
+        result = medical_spell_checker_service.get_corrected_text(mock_sentence)
 
-    def _get_mock_suggest_item(self):
-        mock_suggest_item = [Mock(SuggestItem)]
+        assert result[0] == ("ome", "some")
+        assert result[1] == ("a225", None)
 
-        mock_suggest_item[0].term = "she breathing"
+    def __get_dummy_spacy_object(self):
+        mock_doc1 = Mock(Doc)
+        mock_doc1.text = "ome"
+        mock_doc1.lower_ = "ome"
+        mock_doc1.is_alpha = True
 
-        return mock_suggest_item
+        mock_doc2 = Mock(Doc)
+        mock_doc2.text = "a225"
+        mock_doc2.lower_ = "a225"
+        mock_doc2.is_alpha = True
+
+        mock_doc3 = Mock(Doc)
+        mock_doc3.text = ","
+        mock_doc3.lower_ = ","
+        mock_doc3.is_alpha = False
+
+        mock_nlp = Mock(English)
+        mock_nlp.return_value = [mock_doc1, mock_doc2, mock_doc3]
+
+        return mock_nlp
+
+    def __get_dummy_spell_fixing_results(self):
+        return ["some", None]

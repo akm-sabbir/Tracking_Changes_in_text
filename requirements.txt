@@ -19,5 +19,6 @@ asyncmock==0.4.2
 simplejson==3.17.6
 symspellpy==6.7.6
 git+https://bitbucket.org/infolytxinc/avc_rnd.git@feature/Arefeen/medcat_package#egg=medcat
+git+https://bitbucket.org/infolytxinc/avc_rnd.git@feature/Arefeen/medcat_package#egg=medcat
 https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.4.0/en_core_sci_sm-0.4.0.tar.gz
 https://s3-us-west-2.amazonaws.com/ai2-s2-scispacy/releases/v0.4.0/en_ner_bc5cdr_md-0.4.0.tar.gz
