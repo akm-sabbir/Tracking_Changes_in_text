@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 from app.settings import Settings
 from app.service.icd10_negation_service import ICD10NegationService
 from app.util.english_dictionary import EnglishDictionary
@@ -39,14 +41,13 @@ class Icd10NegationServiceImpl(ICD10NegationService):
                                          index + 1, one_edit_words, form_strings, 0)
         return list(one_edit_words)
 
-    def get_icd_10_text_negation_fixed(self, text: str) -> str:
-        if text.strip() in self.medical_terms:
-            return text
+    def get_icd_10_text_negation_fixed(self, text: str) -> List[Tuple]:
         self.dict = Settings.get_settings_dictionary() if self.dict is None else self.dict
+        results = [(text, text)]
         if text.lower().find("no") == 0 and not self.utilize_dict.is_valid_word(text.lower(), self.dict, 0) \
                 and len(text) > 3:
-            results = self.build_one_edit_distance(text[2:].lower(), index=0)
-            results = ["no " + word for word in results] if len(results) != 0 else [text.lower()]
-            text = ", ".join(results)
+            curr_results = self.build_one_edit_distance(text[2:].lower(), index=0)
+            if len(curr_results) == 1:
+                results = [("no", "no"), (text[2:], curr_results[0])]
 
-        return text
+        return results

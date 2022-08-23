@@ -15,11 +15,13 @@ from app.dto.pipeline.smoker_condition import PatientSmokingCondition
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
 from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
-from app.service.pipeline.components.acm_rxnorm_annotation_component import ACMRxNormAnnotationComponent
 from app.service.pipeline.components.acmscimetamap_icd10_annotation_component import \
     ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
+from app.service.pipeline.components.icd10_text_reconstruction_component import TextReconstructionComponent
+from app.service.pipeline.components.icd10_token_to_graph_generation_component import TextToGraphGenerationComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
@@ -31,6 +33,9 @@ from tests.service.pipeline.components.dummy_component_two import DummyComponent
 
 
 class TestICD10PipelineServiceImpl(TestCase):
+    tuberculosis_text = "Tuberculosis of lung"
+    resp_tuberculosis_text_text = "Respiratory tuberculosis unspecified"
+
     __loop: AbstractEventLoop
 
     @classmethod
@@ -49,9 +54,9 @@ class TestICD10PipelineServiceImpl(TestCase):
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
     def test__annotate_icd_10__should_return_correct_response__given_correct_input(self,
                                                                                    mock_get_config: Mock):
-        mock_get_config.return_value = "table_name"
-        icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
-        icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
+        mock_get_config.return_value = "23"
+        icd10_annotation_1 = ICD10Annotation(code="A15.0", description=self.tuberculosis_text, score=0.7)
+        icd10_annotation_2 = ICD10Annotation(code="A15.9", description=self.resp_tuberculosis_text_text,
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,
@@ -67,7 +72,9 @@ class TestICD10PipelineServiceImpl(TestCase):
                                        demographics_score={},
                                        disease_interactions_score={},
                                        aggregated_risk_score=0.0,
-                                       demographics_details={})
+                                       demographics_details={},
+                                       hcc_categories={},
+                                       default_selection=[])
 
         mock_acm_response = Mock(ICD10Result)
         mock_acm_response.raw_acm_data = [{"acm_data": "data"}]
@@ -100,8 +107,10 @@ class TestICD10PipelineServiceImpl(TestCase):
         component_serial = [PatientSmokingConditionDetectionComponent,
                             SectionExclusionServiceComponent,
                             SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
-                            NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                            TextTokenizationComponent,
+                            TextToGraphGenerationComponent,
+                            NegationHandlingComponent, TextReconstructionComponent, NotePreprocessingComponent,
+                            ACMSciMetamapICD10AnnotationComponent,
                             FilteredICD10ToHccAnnotationComponent]
 
         for idx, type in enumerate(component_serial):
@@ -127,9 +136,9 @@ class TestICD10PipelineServiceImpl(TestCase):
     @patch("app.util.config_manager.ConfigManager.get_specific_config")
     def test__annotate_icd_10__should_return_correct_response__given_correct_input_and_no_cache(self,
                                                                                                 mock_get_config: Mock):
-        mock_get_config.return_value = "table_name"
-        icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
-        icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
+        mock_get_config.return_value = "23"
+        icd10_annotation_1 = ICD10Annotation(code="A15.0", description=self.tuberculosis_text, score=0.7)
+        icd10_annotation_2 = ICD10Annotation(code="A15.9", description=self.resp_tuberculosis_text_text,
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,
@@ -144,7 +153,9 @@ class TestICD10PipelineServiceImpl(TestCase):
                                        demographics_score={},
                                        disease_interactions_score={},
                                        aggregated_risk_score=0.0,
-                                       demographics_details={})
+                                       demographics_details={},
+                                       hcc_categories={},
+                                       default_selection=[])
 
         mock_acm_response = Mock(ICD10Result)
         mock_acm_response.raw_acm_data = [{"acm_data": "data"}]
@@ -176,8 +187,10 @@ class TestICD10PipelineServiceImpl(TestCase):
         component_serial = [PatientSmokingConditionDetectionComponent,
                             SectionExclusionServiceComponent,
                             SubjectiveSectionExtractorComponent, MedicationSectionExtractorComponent,
-                            NegationHandlingComponent, NotePreprocessingComponent,
-                            ACMSciMetamapICD10AnnotationComponent, ACMRxNormAnnotationComponent,
+                            TextTokenizationComponent,
+                            TextToGraphGenerationComponent,
+                            NegationHandlingComponent, TextReconstructionComponent, NotePreprocessingComponent,
+                            ACMSciMetamapICD10AnnotationComponent,
                             FilteredICD10ToHccAnnotationComponent]
 
         for idx, type in enumerate(component_serial):
@@ -193,8 +206,8 @@ class TestICD10PipelineServiceImpl(TestCase):
         assert pipeline_args["acm_cached_result"] is None
 
     def __get_dummy_icd10_data(self):
-        icd10_annotation_1 = ICD10Annotation(code="A15.0", description="Tuberculosis of lung", score=0.7)
-        icd10_annotation_2 = ICD10Annotation(code="A15.9", description="Respiratory tuberculosis unspecified",
+        icd10_annotation_1 = ICD10Annotation(code="A15.0", description=self.tuberculosis_text, score=0.7)
+        icd10_annotation_2 = ICD10Annotation(code="A15.9", description=self.resp_tuberculosis_text_text,
                                              score=0.54)
         icd10_annotation_result_1 = ICD10AnnotationResult(medical_condition="Tuberculosis", begin_offset=12,
                                                           end_offset=24, is_negated=False,

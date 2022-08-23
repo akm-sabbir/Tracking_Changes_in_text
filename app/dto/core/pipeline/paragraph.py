@@ -11,3 +11,4 @@ class Paragraph(BasePipelineComponentResult):
     text: str
     start_index: int
     end_index: int
+    relative_position: int

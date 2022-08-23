@@ -1,4 +1,4 @@
-image: python:3.7.3
+image: python:3.8.10
 
 definitions:
   caches:
@@ -20,6 +20,7 @@ definitions:
         services:
           - docker
         script:
+          - sed -i -e "s/bitbucket.org/$USERNAME:$TOKEN@bitbucket.org/g" requirements.txt
           - python run.py setup
           - python run.py coverage/xml
           - pipe: sonarsource/sonarcloud-scan:1.0.1

@@ -3,7 +3,11 @@ from typing import List, Dict
 from app.dto.core.medical_ontology import MedicalOntology
 from app.dto.core.pipeline.acm_rxnorm_response import ACMRxNormResult
 from app.dto.core.pipeline.paragraph import Paragraph
+from app.dto.pipeline.medication_section import MedicationSection, MedicationText
 from app.dto.pipeline.rxnorm_annotation_result import RxNormAnnotationResult
+from app.dto.pipeline.token_graph_component import GraphTokenResult
+from app.service.pipeline.components.icd10_token_to_graph_generation_component import TextToGraphGenerationComponent
+from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.rxnorm_annotator_service import RxNormAnnotatorService
 from app.service.impl.amazon_rxnorm_annotator_service import AmazonRxNormAnnotatorServiceImpl
@@ -31,7 +35,7 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
             return []
 
         paragraphs: List[Paragraph] = annotation_results[NotePreprocessingComponent][1]
-
+        token_nodes_in_graph: dict = annotation_results[TextToGraphGenerationComponent][1].graph_token_container
         rxnorm_annotation_results: List[RxNormAnnotationResult] = []
         raw_acm_data: List[Dict] = []
         for paragraph in paragraphs:
@@ -45,5 +49,5 @@ class ACMRxNormAnnotationComponent(BasePipelineComponent):
 
         result = ACMRxNormResult(annotation_results["id"], rxnorm_annotation_results, raw_acm_data)
         AnnotationAlignmentUtil.align_start_and_end_notes_from_annotations(self.__note_to_align, result,
-                                                                           annotation_results)
+                                                                           annotation_results, token_nodes_in_graph)
         return [result]

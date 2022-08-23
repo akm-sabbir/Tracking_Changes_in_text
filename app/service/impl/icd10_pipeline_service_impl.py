@@ -17,11 +17,15 @@ from app.service.pipeline.components.acmscimetamap_icd10_annotation_component im
     ACMSciMetamapICD10AnnotationComponent
 from app.service.pipeline.components.filtericd10_to_hcc_annotation import FilteredICD10ToHccAnnotationComponent
 from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
+from app.service.pipeline.components.icd10_token_to_graph_generation_component import TextToGraphGenerationComponent
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.note_preprocessing_component import NotePreprocessingComponent
 from app.service.pipeline.components.section_exclusion_service_component import SectionExclusionServiceComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
+from app.service.pipeline.components.icd10_smoking_pattern_detection import PatientSmokingConditionDetectionComponent
+from app.service.pipeline.components.icd10_tokenizing_text_component import TextTokenizationComponent
+from app.service.pipeline.components.icd10_text_reconstruction_component import TextReconstructionComponent
 from app.service.pipeline.pipeline_manager import PipelineManager
 from app.settings import Settings
 from app.util.config_manager import ConfigManager
@@ -33,8 +37,10 @@ class ICD10PipelineServiceImpl(ICD10PipelineService):
         self.__pipeline_components = [PatientSmokingConditionDetectionComponent(Settings.get_nlp_smoker_detector()),
                                       SectionExclusionServiceComponent(),
                                       SubjectiveSectionExtractorComponent(), MedicationSectionExtractorComponent(),
-                                      NegationHandlingComponent(), NotePreprocessingComponent(),
-                                      ACMSciMetamapICD10AnnotationComponent(), ACMRxNormAnnotationComponent(),
+                                      TextTokenizationComponent(),
+                                      TextToGraphGenerationComponent(),
+                                      NegationHandlingComponent(), TextReconstructionComponent(),NotePreprocessingComponent(),
+                                      ACMSciMetamapICD10AnnotationComponent(),
                                       FilteredICD10ToHccAnnotationComponent()]
 
         self.__pipeline_manager = PipelineManager(self.__pipeline_components)

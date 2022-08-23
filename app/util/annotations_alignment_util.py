@@ -5,19 +5,24 @@ from app.dto.core.medical_ontology import MedicalOntology
 from app.service.pipeline.components.medication_section_extractor_component import MedicationSectionExtractorComponent
 from app.service.pipeline.components.negation_processing_component import NegationHandlingComponent
 from app.service.pipeline.components.subjective_section_extractor_component import SubjectiveSectionExtractorComponent
+from app.service.impl.icd10_text_token_span_gen_service_impl import ICD10TextAndSpanGenerationServiceImpl
+from app.dto.core.service.Tokens import TokenInfo
+from app.util.text_span_discovery import TextSpanDiscovery
 
 
 class AnnotationAlignmentUtil:
+
+    tokenize_and_span_gen = ICD10TextAndSpanGenerationServiceImpl()
+    text_span_discoverer = TextSpanDiscovery()
+
     @staticmethod
     def align_start_and_end_notes_from_annotations(medical_ontology_to_align_on_note: str, acm_result,
-                                                   annotation_results) -> None:
+                                                   annotation_results, token_node_graph: dict) -> None:
         if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
             AnnotationAlignmentUtil.__align_start_and_text(medical_ontology_to_align_on_note,
                                                            acm_result.rxnorm_annotations,
-                                                           annotation_results[MedicationSectionExtractorComponent][
-                                                               0].text,
-                                                           annotation_results[NegationHandlingComponent][1].text,
-                                                           annotation_results['changed_words'])
+                                                           token_node_graph)
+
             AnnotationAlignmentUtil.__align_start_end_for_medical_part(acm_result.rxnorm_annotations,
                                                                        annotation_results[
                                                                            MedicationSectionExtractorComponent][
@@ -25,11 +30,8 @@ class AnnotationAlignmentUtil:
 
         elif medical_ontology_to_align_on_note == MedicalOntology.ICD10_CM.value:
             AnnotationAlignmentUtil.__align_start_and_text(medical_ontology_to_align_on_note,
-                                                           acm_result.icd10_annotations,
-                                                           annotation_results[SubjectiveSectionExtractorComponent][
-                                                               0].text,
-                                                           annotation_results[NegationHandlingComponent][0].text,
-                                                           annotation_results['changed_words'])
+                                                           acm_result.icd10_annotations, token_node_graph)
+
             AnnotationAlignmentUtil.__align_start_end_for_medical_part(acm_result.icd10_annotations, annotation_results[
                 SubjectiveSectionExtractorComponent][0].subjective_sections)
 
@@ -43,73 +45,32 @@ class AnnotationAlignmentUtil:
         raise ValueError("Unknown note to align!")
 
     @staticmethod
-    def __set_annotation_condition(medical_ontology_to_align_on_note: str, annotation, matched_value):
-        if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
-            annotation.medication = matched_value
-        elif medical_ontology_to_align_on_note == MedicalOntology.ICD10_CM.value:
-            annotation.medical_condition = matched_value
-
-    @staticmethod
-    def __align_start_and_text(medical_ontology_to_align_on_note: str, medical_annotations: List,
-                               original_text: str, changed_text: str, changed_words: dict):
+    def __align_start_and_text(medical_ontology_to_align_on_note: str, medical_annotations: List, token_node_graph: dict):
 
         for annotation in medical_annotations:
             annotation_text = AnnotationAlignmentUtil.__get_annotation_text(medical_ontology_to_align_on_note,
                                                                             annotation)
 
-            word_list = re.sub(r"[^\w]", " ", annotation_text).split()
-
-            match_found = AnnotationAlignmentUtil._reassign_acm_annotation_values(medical_ontology_to_align_on_note,
-                                                                                  annotation, word_list,
-                                                                                  original_text, changed_text)
-
-            if match_found:
-                continue
-
-            changed_word_list = []
-            for idx, word in enumerate(word_list):
-                if word in changed_words:
-                    changed_word_list.append(
-                        "|".join((changed_word.original_text for changed_word in changed_words[word])))
+            token_list: List[TokenInfo] = AnnotationAlignmentUtil.tokenize_and_span_gen.get_token_with_span(annotation_text)
+            pos, root_word = AnnotationAlignmentUtil.text_span_discoverer.get_start_end_pos_span(token_node_graph,
+                                                                token_list[0].token.lower(), annotation.begin_offset, "")
+            old_begin_offset = annotation.begin_offset
+            if pos != -1 and root_word != None:
+                if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
+                    annotation.medication = root_word + annotation.medication[len(token_list[0].token):]
                 else:
-                    changed_word_list.append(word)
-
-            consecutive_words_match_regex_changed = r"[^\w]*?".join(changed_word_list)
-            AnnotationAlignmentUtil._reassign_acm_annotation_values(medical_ontology_to_align_on_note, annotation,
-                                                                    word_list, original_text,
-                                                                    changed_text, consecutive_words_match_regex_changed)
-
-    @staticmethod
-    def _reassign_acm_annotation_values(medical_ontology_to_align_on_note: str, annotation, words_list: List,
-                                        original_text: str,
-                                        changed_text: str,
-                                        consecutive_words_match_regex_changed: str = None):
-
-        consecutive_words_match_regex = r"[^\w]*?".join(words_list)
-        matches_changed = (match for match in
-                           re.finditer(consecutive_words_match_regex, changed_text, re.IGNORECASE))
-
-        if consecutive_words_match_regex_changed:
-            consecutive_words_match_regex = consecutive_words_match_regex_changed
-
-        matches = [match for match in re.finditer(consecutive_words_match_regex, original_text, re.IGNORECASE)]
-
-        match_index = 0
-        match_found = False
-        for idx, match in enumerate(matches_changed):
-            if match.start() == annotation.begin_offset and match.end() == annotation.end_offset:
-                match_index = idx
-                match_found = True
-                break
-
-        if match_found and len(matches) > match_index:
-            annotation.begin_offset = matches[match_index].start()
-            annotation.end_offset = matches[match_index].end()
-            AnnotationAlignmentUtil.__set_annotation_condition(medical_ontology_to_align_on_note, annotation,
-                                                               matches[match_index].group())
-            return True
-        else:
-            return False
+                    annotation.medical_condition = root_word + annotation.medical_condition[len(token_list[0].token):]
+                annotation.begin_offset = pos
+                annotation.end_offset = pos + len(root_word)
+            if len(token_list) > 1:
+                pos, root_word = AnnotationAlignmentUtil.text_span_discoverer.get_start_end_pos_span(token_node_graph,
+                                                                                token_list[-1].token.lower(),
+                                                                                old_begin_offset + token_list[-1].start_of_span, "")
+                if medical_ontology_to_align_on_note == MedicalOntology.RXNORM.value:
+                    annotation.medication = annotation.medication[:annotation.medication.find(token_list[-1].token) ] + root_word
+                else:
+                    annotation.medical_condition = annotation.medical_condition[:annotation.medical_condition.find(token_list[-1].token)] + root_word
+                annotation.end_offset = pos + len(root_word)
 
     @staticmethod
     def __align_start_end_for_medical_part(acm_annotations: List, medical_sections):
@@ -126,3 +87,7 @@ class AnnotationAlignmentUtil:
                 annotation_index = annotation_index + 1
             else:
                 section_index = section_index + 1
+                if section_index == len(medical_sections):
+                    annotation.begin_offset = annotation.begin_offset - 3
+                    annotation.end_offset = annotation.end_offset - 3
+                    section_index = section_index - 1

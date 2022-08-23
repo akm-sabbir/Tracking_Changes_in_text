@@ -2,24 +2,24 @@ import asyncio
 from asyncio import AbstractEventLoop
 from unittest import TestCase
 from unittest.mock import Mock, patch
-from asyncmock import AsyncMock
 
+from asyncmock import AsyncMock
 from pydantic import ValidationError
-from app.settings import Settings
-Settings.exclusion_dict: dict = {}
-from app.dto.pipeline.Smoker import Smoker
-from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
+
 from app.dto.core.icd10_pipeline_params import ICD10PipelineParams
 from app.dto.core.service.hcc_code import HCCCode
+from app.dto.pipeline.Smoker import Smoker
 from app.dto.pipeline.icd10_annotation import ICD10Annotation
 from app.dto.pipeline.icd10_annotation_result import ICD10AnnotationResult
 from app.dto.request.icd10_annotation_request import ICD10AnnotationRequest
 from app.dto.response.hcc_response_dto import HCCResponseDto
 from app.dto.response.icd10_annotation_response import ICD10AnnotationResponse
+from app.settings import Settings
 
 
 class Test(TestCase):
     __loop: AbstractEventLoop
+    expected_error_message = 'text must be string and cannot be empty'
 
     @classmethod
     def setUpClass(cls):
@@ -30,7 +30,9 @@ class Test(TestCase):
         cls.__loop.close()
 
     @patch("app.util.dependency_injector.DependencyInjector.get_instance")
-    def test__annotation_router__given_correct_input__should_return_correct_response(self, mock_get_instance: Mock):
+    @patch("app.util.config_manager.ConfigManager.get_specific_config")
+    def test__annotation_router__given_correct_input__should_return_correct_response(self, mock_config_manager: Mock,
+                                                                                     mock_get_instance: Mock):
         Settings.dx_threshold = 0.7
         Settings.parent_threshold = 0.7
         Settings.icd10_threshold = 0.7
@@ -61,7 +63,8 @@ class Test(TestCase):
         mock_icd10_service.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
             id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps,
             is_smoker=Smoker.NOT_SMOKER)
-
+        mock_config_manager.return_value = "23"
+        from app.service.impl.icd10_pipeline_service_impl import ICD10PipelineServiceImpl
         async_mock_pipeline_impl = AsyncMock(spec=ICD10PipelineServiceImpl)
         async_mock_pipeline_impl.run_icd10_pipeline.return_value = ICD10AnnotationResponse(
             id="123", icd10_annotations=mock_icd10_results, raw_acm_data=[{"acm_data": "data"}], hcc_maps=mock_hcc_maps,
@@ -90,7 +93,7 @@ class Test(TestCase):
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
-        assert error_message == 'text must be string and cannot be empty'
+        assert error_message == self.expected_error_message
 
     @patch("app.util.dependency_injector.DependencyInjector.get_instance")
     def test_annotation_router__given_boolean_text_input__should_raise_validation_error(self, mock_get_instance):
@@ -101,14 +104,14 @@ class Test(TestCase):
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
-        assert error_message == 'text must be string and cannot be empty'
+        assert error_message == self.expected_error_message
 
         with self.assertRaises(ValidationError) as error:
             annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text=False)])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
-        assert error_message == 'text must be string and cannot be empty'
+        assert error_message == self.expected_error_message
 
     @patch("app.util.dependency_injector.DependencyInjector.get_instance")
     def test_annotation_router__given_numeric_text_input__should_raise_validation_error(self, mock_get_instance):
@@ -119,14 +122,14 @@ class Test(TestCase):
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
-        assert error_message == 'text must be string and cannot be empty'
+        assert error_message == self.expected_error_message
 
         with self.assertRaises(ValidationError) as error:
             annotation_router.annotate_icd_10([ICD10AnnotationRequest(id="123", text=111)])
         error_location = error.exception.errors()[0]['loc'][0]
         error_message = error.exception.errors()[0]['msg']
         assert error_location == 'text'
-        assert error_message == 'text must be string and cannot be empty'
+        assert error_message == self.expected_error_message
 
     @patch("app.util.dependency_injector.DependencyInjector.get_instance")
     def test_annotation_router__given_boolean_id__input__should_raise_validation_error(self, mock_get_instance):

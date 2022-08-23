@@ -23,7 +23,7 @@ class EncounterNoteUtil:
         start = 0
         end = 0
         paragraphs = []
-        curr_sent = None
+        curr_sent = ""
 
         for sentence in sentences:
             curr_end = sentence.end
@@ -58,7 +58,7 @@ class EncounterNoteUtil:
 
     @staticmethod
     def __break_into_multiple_sentences(sentence_span: Span, limit: int) -> List[Sentence]:
-        span = None
+        span = ""
         sentences = []
         text = ""
         start = 0
